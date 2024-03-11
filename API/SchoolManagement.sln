@@ -7,19 +7,21 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchoolManagement.Web", "Sch
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchoolManagement.Model", "SchoolManagement.Model\SchoolManagement.Model.csproj", "{805829D9-2424-44FE-9597-3F52B7769962}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchoolManagement.Entity", "SchoolManagement.Entity\SchoolManagement.Entity.csproj", "{7705F89D-7152-4FA8-B01B-DA00B62AABD9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchoolManagement.Entity", "SchoolManagement.Entity\SchoolManagement.Entity.csproj", "{7705F89D-7152-4FA8-B01B-DA00B62AABD9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchoolManagement.Service", "SchoolManagement.Service\SchoolManagement.Service.csproj", "{E4678552-9284-43CE-8BE2-D12C7B93A2E2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchoolManagement.Service", "SchoolManagement.Service\SchoolManagement.Service.csproj", "{E4678552-9284-43CE-8BE2-D12C7B93A2E2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchoolManagement.Common", "SchoolManagement.Common\SchoolManagement.Common.csproj", "{B22893E8-46AD-4F1A-B278-07D37DEFD66E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchoolManagement.Common", "SchoolManagement.Common\SchoolManagement.Common.csproj", "{B22893E8-46AD-4F1A-B278-07D37DEFD66E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchoolManagement.Database", "SchoolManagement.Database\SchoolManagement.Database.csproj", "{775F1ADE-2E8B-4C73-8209-E5C6ABB37FD9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchoolManagement.Database", "SchoolManagement.Database\SchoolManagement.Database.csproj", "{775F1ADE-2E8B-4C73-8209-E5C6ABB37FD9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchoolManagement.Service.Intention", "SchoolManagement.Service.Intention\SchoolManagement.Service.Intention.csproj", "{69CA4926-8A0E-4B59-85A4-C8423AADE3EA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchoolManagement.Service.Intention", "SchoolManagement.Service.Intention\SchoolManagement.Service.Intention.csproj", "{69CA4926-8A0E-4B59-85A4-C8423AADE3EA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchoolManagement.StartUp", "SchoolManagement.StartUp\SchoolManagement.StartUp.csproj", "{634C3830-CE2C-456A-A409-0B4119E0008F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchoolManagement.StartUp", "SchoolManagement.StartUp\SchoolManagement.StartUp.csproj", "{634C3830-CE2C-456A-A409-0B4119E0008F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchoolManagement.Repository", "SchoolManagement.Repository\SchoolManagement.Repository.csproj", "{B5C5A3B1-9A0A-442E-AB73-3771C2BC233C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchoolManagement.Repository", "SchoolManagement.Repository\SchoolManagement.Repository.csproj", "{B5C5A3B1-9A0A-442E-AB73-3771C2BC233C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchoolManagement.Repository.Intention", "SchoolManagement.Repository.Intention\SchoolManagement.Repository.Intention.csproj", "{CCC72811-FF2F-40F0-BF0B-76579ADC7CB4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,6 +65,10 @@ Global
 		{B5C5A3B1-9A0A-442E-AB73-3771C2BC233C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B5C5A3B1-9A0A-442E-AB73-3771C2BC233C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B5C5A3B1-9A0A-442E-AB73-3771C2BC233C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CCC72811-FF2F-40F0-BF0B-76579ADC7CB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCC72811-FF2F-40F0-BF0B-76579ADC7CB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCC72811-FF2F-40F0-BF0B-76579ADC7CB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCC72811-FF2F-40F0-BF0B-76579ADC7CB4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
