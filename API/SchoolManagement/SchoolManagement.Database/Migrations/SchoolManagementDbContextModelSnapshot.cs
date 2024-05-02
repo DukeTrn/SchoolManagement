@@ -41,7 +41,7 @@ namespace SchoolManagement.Database.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Status")
+                    b.Property<int>("Role")
                         .HasColumnType("int");
 
                     b.Property<string>("UserName")
@@ -272,6 +272,26 @@ namespace SchoolManagement.Database.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("AccountId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Avatar")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DOB")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Ethnic")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("FatherEmail")
                         .HasColumnType("nvarchar(max)");
 
@@ -285,6 +305,17 @@ namespace SchoolManagement.Database.Migrations
 
                     b.Property<string>("FatherPhoneNumber")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Gender")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("IdentificationNumber")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("MotherEmail")
@@ -302,15 +333,16 @@ namespace SchoolManagement.Database.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("StudentId");
 
-                    b.HasIndex("UserId")
+                    b.HasIndex("AccountId")
                         .IsUnique();
 
                     b.ToTable("Students");
@@ -345,51 +377,6 @@ namespace SchoolManagement.Database.Migrations
                     b.Property<string>("TeacherId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("ClassId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DepartmentId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<bool>("IsLeader")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsViceLeader")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Level")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("TimeEnd")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("TimeStart")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("TeacherId");
-
-                    b.HasIndex("DepartmentId");
-
-                    b.HasIndex("UserId")
-                        .IsUnique();
-
-                    b.ToTable("Teachers");
-                });
-
-            modelBuilder.Entity("SchoolManagement.Entity.UserEntity", b =>
-                {
-                    b.Property<Guid>("UserId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("AccountId")
                         .HasColumnType("uniqueidentifier");
 
@@ -400,8 +387,15 @@ namespace SchoolManagement.Database.Migrations
                     b.Property<string>("Avatar")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ClassId")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("DOB")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("DepartmentId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
@@ -421,16 +415,37 @@ namespace SchoolManagement.Database.Migrations
                     b.Property<string>("IdentificationNumber")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsLeader")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsViceLeader")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Level")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("UserId");
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("TimeEnd")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("TimeStart")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("TeacherId");
 
                     b.HasIndex("AccountId")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.HasIndex("DepartmentId");
+
+                    b.ToTable("Teachers");
                 });
 
             modelBuilder.Entity("SchoolManagement.Entity.AssessmentEntity", b =>
@@ -546,48 +561,40 @@ namespace SchoolManagement.Database.Migrations
 
             modelBuilder.Entity("SchoolManagement.Entity.StudentEntity", b =>
                 {
-                    b.HasOne("SchoolManagement.Entity.UserEntity", "User")
-                        .WithOne("Student")
-                        .HasForeignKey("SchoolManagement.Entity.StudentEntity", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("SchoolManagement.Entity.TeacherEntity", b =>
-                {
-                    b.HasOne("SchoolManagement.Entity.DepartmentEntity", "Department")
-                        .WithMany("Teachers")
-                        .HasForeignKey("DepartmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SchoolManagement.Entity.UserEntity", "User")
-                        .WithOne("Teacher")
-                        .HasForeignKey("SchoolManagement.Entity.TeacherEntity", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Department");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("SchoolManagement.Entity.UserEntity", b =>
-                {
                     b.HasOne("SchoolManagement.Entity.AccountEntity", "Account")
-                        .WithOne("User")
-                        .HasForeignKey("SchoolManagement.Entity.UserEntity", "AccountId")
+                        .WithOne("Student")
+                        .HasForeignKey("SchoolManagement.Entity.StudentEntity", "AccountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Account");
                 });
 
+            modelBuilder.Entity("SchoolManagement.Entity.TeacherEntity", b =>
+                {
+                    b.HasOne("SchoolManagement.Entity.AccountEntity", "Account")
+                        .WithOne("Teacher")
+                        .HasForeignKey("SchoolManagement.Entity.TeacherEntity", "AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SchoolManagement.Entity.DepartmentEntity", "Department")
+                        .WithMany("Teachers")
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Account");
+
+                    b.Navigation("Department");
+                });
+
             modelBuilder.Entity("SchoolManagement.Entity.AccountEntity", b =>
                 {
-                    b.Navigation("User")
+                    b.Navigation("Student")
+                        .IsRequired();
+
+                    b.Navigation("Teacher")
                         .IsRequired();
                 });
 
@@ -636,15 +643,6 @@ namespace SchoolManagement.Database.Migrations
                     b.Navigation("Assignments");
 
                     b.Navigation("Class")
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("SchoolManagement.Entity.UserEntity", b =>
-                {
-                    b.Navigation("Student")
-                        .IsRequired();
-
-                    b.Navigation("Teacher")
                         .IsRequired();
                 });
 #pragma warning restore 612, 618

@@ -12,7 +12,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SchoolManagement.Common\SchoolManagement.Common.csproj" />
+    <ProjectReference Include="..\SchoolManagement.Database\SchoolManagement.Database.csproj" />
+    <ProjectReference Include="..\SchoolManagement.Entity\SchoolManagement.Entity.csproj" />
     <ProjectReference Include="..\SchoolManagement.Service.Intention\SchoolManagement.Service.Intention.csproj" />
+    <ProjectReference Include="..\SchoolManagement.Share\SchoolManagement.Share.csproj" />
   </ItemGroup>
 
 </Project>

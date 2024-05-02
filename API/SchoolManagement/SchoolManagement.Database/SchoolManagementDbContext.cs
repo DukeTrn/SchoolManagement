@@ -11,7 +11,6 @@ namespace SchoolManagement.Database
         }
 
         public DbSet<AccountEntity> AccountEntities { get; set; } = null!;
-        public DbSet<UserEntity> UserEntities { get; set; } = null!;
         public DbSet<StudentEntity> StudentEntities { get; set; } = null!;
         public DbSet<TeacherEntity> TeacherEntities { get; set; } = null!;
         public DbSet<DepartmentEntity> DepartmentEntities { get; set; } = null!;
@@ -31,24 +30,17 @@ namespace SchoolManagement.Database
             modelBuilder.Entity<AccountEntity>()
                 .HasKey(a => a.AccountId);
 
-            // Mối quan hệ 1-1 giữa Account và User
-            modelBuilder.Entity<UserEntity>()
-                //.HasKey(
-                .HasOne(u => u.Account)
-                .WithOne(a => a.User)
-                .HasForeignKey<UserEntity>(u => u.AccountId);
-
             // Mối quan hệ 1-1 giữa User và Student
             modelBuilder.Entity<StudentEntity>()
-                .HasOne(s => s.User)
+                .HasOne(s => s.Account)
                 .WithOne(u => u.Student)
-                .HasForeignKey<StudentEntity>(s => s.UserId);
+                .HasForeignKey<StudentEntity>(s => s.AccountId);
 
             // Mối quan hệ 1-1 giữa User và Teacher
             modelBuilder.Entity<TeacherEntity>()
-                .HasOne(t => t.User)
+                .HasOne(t => t.Account)
                 .WithOne(u => u.Teacher)
-                .HasForeignKey<TeacherEntity>(t => t.UserId);
+                .HasForeignKey<TeacherEntity>(t => t.AccountId);
 
             // Mối quan hệ 1-N giữa Department và Teacher
             modelBuilder.Entity<DepartmentEntity>()

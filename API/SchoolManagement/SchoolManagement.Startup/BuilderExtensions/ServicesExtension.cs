@@ -1,13 +1,21 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using SchoolManagement.Service;
+using SchoolManagement.Service.Intention;
 using SchoolManagement.Service.Intention.Data;
 
 namespace SchoolManagement.Startup.BuilderExtensions
 {
     internal static class ServicesExtension
     {
-        internal static WebApplicationBuilder AddServices(this WebApplicationBuilder builder) => builder.AddToolServices();
+        internal static WebApplicationBuilder AddServices(this WebApplicationBuilder builder) => builder.AddToolServices()
+            .AddLogicServices();
+
+        private static WebApplicationBuilder AddLogicServices(this WebApplicationBuilder builder)
+        {
+            builder.Services.AddScoped<IStudentService, StudentService>();
+            return builder;
+        }
         private static WebApplicationBuilder AddToolServices(this WebApplicationBuilder builder)
         {
             builder.Services.AddSingleton(typeof(IEntityFilterService<>), typeof(EntityFilterService<>));

@@ -8,8 +8,6 @@
 
         public int? PageSize { get; set; }
 
-        public double? Threshold { get; set; }
-
         public int? TotalPageCount
         {
             get
