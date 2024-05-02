@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SchoolManagement.Common.Enum;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,7 @@ namespace SchoolManagement.Model
 {
     public class ResponseModel
     {
-        public string TraceParentId { get; set; } = null!;
+        public string? TraceParentId { get; set; } = null!;
         public bool Result { get; set; }
         public string? Message { get; set; }
         public object? Data { get; set; }

@@ -11,11 +11,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchoolManagement.Database",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchoolManagement.Startup", "SchoolManagement.Startup\SchoolManagement.Startup.csproj", "{917151E8-01C5-4404-87B1-FB36A4E49A8A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchoolManagement.Service.Intention", "SchoolManagement.Service.Intention\SchoolManagement.Service.Intention.csproj", "{5ED13E14-D48F-4942-9ED7-9CF35760CCCE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchoolManagement.Service.Intention", "SchoolManagement.Service.Intention\SchoolManagement.Service.Intention.csproj", "{5ED13E14-D48F-4942-9ED7-9CF35760CCCE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchoolManagement.Model", "SchoolManagement.Model\SchoolManagement.Model.csproj", "{0C6E27E4-A12E-4296-809D-C33EB944D52B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchoolManagement.Model", "SchoolManagement.Model\SchoolManagement.Model.csproj", "{0C6E27E4-A12E-4296-809D-C33EB944D52B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchoolManagement.Common", "SchoolManagement.Common\SchoolManagement.Common.csproj", "{1A1957D9-D0C4-4C8D-B5C8-9DDFA8AD37F9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchoolManagement.Common", "SchoolManagement.Common\SchoolManagement.Common.csproj", "{1A1957D9-D0C4-4C8D-B5C8-9DDFA8AD37F9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchoolManagement.Service", "SchoolManagement.Service\SchoolManagement.Service.csproj", "{69312D22-D4E5-434C-A959-DAF4D2690D62}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{1A1957D9-D0C4-4C8D-B5C8-9DDFA8AD37F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A1957D9-D0C4-4C8D-B5C8-9DDFA8AD37F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1A1957D9-D0C4-4C8D-B5C8-9DDFA8AD37F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69312D22-D4E5-434C-A959-DAF4D2690D62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69312D22-D4E5-434C-A959-DAF4D2690D62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69312D22-D4E5-434C-A959-DAF4D2690D62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69312D22-D4E5-434C-A959-DAF4D2690D62}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

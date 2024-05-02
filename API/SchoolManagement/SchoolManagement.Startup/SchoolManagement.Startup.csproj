@@ -22,6 +22,9 @@
   <ItemGroup>
     <ProjectReference Include="..\SchoolManagement.Database\SchoolManagement.Database.csproj" />
     <ProjectReference Include="..\SchoolManagement.Entity\SchoolManagement.Entity.csproj" />
+    <ProjectReference Include="..\SchoolManagement.Model\SchoolManagement.Model.csproj" />
+    <ProjectReference Include="..\SchoolManagement.Service.Intention\SchoolManagement.Service.Intention.csproj" />
+    <ProjectReference Include="..\SchoolManagement.Service\SchoolManagement.Service.csproj" />
   </ItemGroup>
 
 </Project>
