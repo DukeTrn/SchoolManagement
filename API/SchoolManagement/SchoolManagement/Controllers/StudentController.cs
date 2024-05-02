@@ -6,7 +6,7 @@ using SchoolManagement.Service.Intention;
 
 namespace SchoolManagement.Controllers
 {
-    [ApiController, Route("[controller]")]
+    [ApiController, Route("api/student")]
     public class StudentController : ControllerBase
     {
         private readonly IStudentService _service;
@@ -16,7 +16,7 @@ namespace SchoolManagement.Controllers
             _service = service;
         }
 
-        [HttpPost]
+        [HttpPost, Route("all")]
         public async ValueTask<PaginationModel<StudentModel>> GetAllStudents([FromBody] StudentQueryModel queryModel)
         {
             return await _service.GetAllStudents(queryModel);

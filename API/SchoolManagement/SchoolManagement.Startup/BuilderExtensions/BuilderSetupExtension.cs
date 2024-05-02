@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using SchoolManagement.Database;
+using SchoolManagement.Startup.BuilderExtensions;
 using System;
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -9,6 +10,7 @@ public static class BuilderSetupExtension
 {
     public static WebApplicationBuilder SetupBuilder(this WebApplicationBuilder builder)
     {
+        builder.AddServices();
         // Add services to the container.
         builder.Services.AddControllersWithViews();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
