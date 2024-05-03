@@ -26,8 +26,8 @@ namespace SchoolManagement.Entity
         public int Status { get; set; } // tình trạng làm việc: đang dạy, tạm nghỉ, nghỉ việc
 
         // 1-1 teacher-user
-        public Guid AccountId { get; set; } // Khóa ngoại tham chiếu đến UserEntity
-        public AccountEntity Account { get; set; } = null!;
+        public Guid? AccountId { get; set; } // Khóa ngoại tham chiếu đến UserEntity
+        public AccountEntity? Account { get; set; } = null!;
 
         // 1-N Department-Teacher
         public string DepartmentId { get; set; } = string.Empty;

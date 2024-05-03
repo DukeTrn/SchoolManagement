@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using SchoolManagement.Common.Enum;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SchoolManagement.Entity
@@ -11,9 +12,9 @@ namespace SchoolManagement.Entity
         public string UserName { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
-        public DateTime ModifiedAt { get; set; }
+        public DateTime? ModifiedAt { get; set; }
         public bool IsActive { get; set; }
-        public int Role { get; set; } // enum 
+        public RoleType Role { get; set; } // enum 
 
         // 1-1 User-Student
         public StudentEntity Student { get; set; } = null!;

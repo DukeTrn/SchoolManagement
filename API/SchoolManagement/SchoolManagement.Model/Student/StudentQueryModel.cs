@@ -1,4 +1,4 @@
-﻿namespace SchoolManagement.Model.Student
+﻿namespace SchoolManagement.Model
 {
     public class StudentQueryModel : PageQueryModel
     {

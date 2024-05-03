@@ -5,7 +5,7 @@ namespace SchoolManagement.Share
 {
     public static class StudentMapper
     {
-        public static StudentModel ToModel(this StudentEntity entity) => new()
+        public static StudentDisplayModel ToModel(this StudentEntity entity) => new()
         {
             StudentId = entity.StudentId,
             FullName = entity.FullName,

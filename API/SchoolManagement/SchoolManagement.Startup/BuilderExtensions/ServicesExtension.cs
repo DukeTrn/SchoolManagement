@@ -14,6 +14,7 @@ namespace SchoolManagement.Startup.BuilderExtensions
         private static WebApplicationBuilder AddLogicServices(this WebApplicationBuilder builder)
         {
             builder.Services.AddScoped<IStudentService, StudentService>();
+            builder.Services.AddScoped<IAccountService, AccountService>();
             return builder;
         }
         private static WebApplicationBuilder AddToolServices(this WebApplicationBuilder builder)
