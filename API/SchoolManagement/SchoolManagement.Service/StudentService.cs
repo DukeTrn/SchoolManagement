@@ -43,6 +43,23 @@ namespace SchoolManagement.Service
                 var query = _context.StudentEntities.AsQueryable();
                 int totalCount = await query.CountAsync();
 
+                #region Search
+                if (!string.IsNullOrEmpty(queryModel.SearchValue))
+                {
+                    _logger.LogInformation("Add Search Value: {SearchValue}", queryModel.SearchValue);
+                    var searchFilter = BuildSearchFilter(queryModel.SearchValue,
+                        nameof(StudentEntity.StudentId),
+                        nameof(StudentEntity.FullName),
+                        nameof(StudentEntity.IdentificationNumber),
+                        nameof(StudentEntity.Gender),
+                        nameof(StudentEntity.Ethnic),
+                        nameof(StudentEntity.Address),
+                        nameof(StudentEntity.PhoneNumber));
+                    filter.Or.AddRange(searchFilter);
+                }
+                #endregion
+
+                query = _filterBuilder.BuildFilterQuery(query, filter);
 
                 var paginatedData = await query
                             .Skip((pageNumber - 1) * pageSize)
@@ -69,7 +86,7 @@ namespace SchoolManagement.Service
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public async ValueTask<bool> CreateStudent(StudentAddModel model)
+        public async ValueTask CreateStudent(StudentAddModel model)
         {
             try
             {
@@ -80,7 +97,8 @@ namespace SchoolManagement.Service
                 if (existingStudent != null)
                 {
                     _logger.LogInformation("Record has already existed");
-                    throw ExistRecordException.ExistsRecord();
+                    throw ExistRecordException.ExistsRecord("Student ID already exists");
+                    //throw new Exception("Student ID already exists.");
                 }
 
                 else
@@ -113,7 +131,7 @@ namespace SchoolManagement.Service
                     await _context.SaveChangesAsync();
 
                     //return newStudent;
-                    return true;
+                    //return true;
                 }
             }
             catch (Exception ex)

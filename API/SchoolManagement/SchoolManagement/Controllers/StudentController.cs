@@ -1,6 +1,8 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using SchoolManagement.Common.Exceptions;
 using SchoolManagement.Entity;
 using SchoolManagement.Model;
+using SchoolManagement.Service;
 using SchoolManagement.Service.Intention;
 
 namespace SchoolManagement.Controllers
@@ -22,9 +24,30 @@ namespace SchoolManagement.Controllers
         }
 
         [HttpPost, Route("create")]
-        public async ValueTask<bool> CreateStudent([FromBody] StudentAddModel queryModel)
+        //public async ValueTask<IActionResult> CreateStudent([FromBody] StudentAddModel queryModel)
+        //{
+        //    await _service.CreateStudent(queryModel);
+        //}
+        public async ValueTask<IActionResult> CreateStudent(StudentAddModel model)
         {
-            return await _service.CreateStudent(queryModel);
+            try
+            {
+                await _service.CreateStudent(model);
+                return Ok(new { result = true, messageType = 0 });
+            }
+            catch (ExistRecordException ex)
+            {
+                // Log ex.LogMessage if needed
+                // Notify user based on ex.NotifactionType
+                // Handle error data in ex.ErrorData if needed
+
+                return Ok(new { result = false, messageType = 2, message = "ID này đã tồn tại" });
+            }
+            catch (Exception ex)
+            {
+                // Log other exceptions if needed
+                return StatusCode(500, new { result = false, messageType = 2 });
+            }
         }
     }
 }

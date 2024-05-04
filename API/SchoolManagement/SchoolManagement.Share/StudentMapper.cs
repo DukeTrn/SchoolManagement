@@ -14,6 +14,10 @@ namespace SchoolManagement.Share
             Gender = entity.Gender,
             Address = entity.Address,
             Ethnic = entity.Ethnic,
+            PhoneNumber = entity.PhoneNumber,
+            Avatar = entity.Avatar,
+            Email = entity.Email,
+            Status = entity.Status,
         };
     }
 }
