@@ -28,7 +28,7 @@ namespace SchoolManagement.Controllers
         //{
         //    await _service.CreateStudent(queryModel);
         //}
-        public async ValueTask<IActionResult> CreateStudent(StudentAddModel model)
+        public async ValueTask<IActionResult> CreateStudent([FromBody] StudentAddModel model)
         {
             try
             {
@@ -48,6 +48,31 @@ namespace SchoolManagement.Controllers
                 // Log other exceptions if needed
                 return StatusCode(500, new { result = false, messageType = 2 });
             }
+        }
+
+        [HttpGet("{id}")]
+        public async ValueTask<StudentFullDetailModel> GetStudentById(string id)
+        {
+            return await _service.GetStudentById(id);
+            //try
+            //{
+            //    await _service.GetStudentById(studentId);
+            //    return Ok(new { result = true, messageType = 0 });
+            //}
+            //catch (ExistRecordException ex)
+            //{
+            //    // Log ex.LogMessage if needed
+            //    // Notify user based on ex.NotifactionType
+            //    // Handle error data in ex.ErrorData if needed
+
+            //    return Ok(new { result = false, messageType = 2, message = "ID này đã tồn tại" });
+            //}
+            //catch (Exception ex)
+            //{
+            //    // Log other exceptions if needed
+            //    return StatusCode(500, new { result = false, messageType = 2 });
+            //}
+
         }
     }
 }

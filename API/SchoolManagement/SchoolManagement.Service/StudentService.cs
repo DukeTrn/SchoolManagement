@@ -82,6 +82,36 @@ namespace SchoolManagement.Service
         }
 
         /// <summary>
+        /// Get a student by ID (string)
+        /// </summary>
+        /// <param name="studentId"></param>
+        /// <returns></returns>
+        public async ValueTask<StudentFullDetailModel> GetStudentById(string studentId)
+        {
+            try
+            {
+                _logger.LogInformation("Start to get a student by id.");
+                var student = await _context.StudentEntities.FindAsync(studentId);
+                if (student == null)
+                {
+                    throw new Exception($"Student with ID {studentId} not found.");
+                }
+
+                // Chuyển đổi StudentEntity thành StudentFullDetailModel (nếu cần)
+                // Map properties from student entity to display model
+                var detailModel = student.ToFullDetailModel();
+
+                return detailModel;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occured while getting student by id. Error: {ex}", ex);
+                throw;
+            }
+        }
+
+
+        /// <summary>
         /// Add new student
         /// </summary>
         /// <param name="model"></param>

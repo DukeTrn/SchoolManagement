@@ -7,6 +7,6 @@ namespace SchoolManagement.Service.Intention
     {
         ValueTask<PaginationModel<StudentDisplayModel>> GetAllStudents(StudentQueryModel queryModel);
         ValueTask CreateStudent(StudentAddModel model);
-
+        ValueTask<StudentFullDetailModel> GetStudentById(string studentId);
     }
 }
