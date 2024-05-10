@@ -39,7 +39,6 @@ namespace SchoolManagement.Service
                 int pageSize = queryModel.PageSize != null && queryModel.PageSize.Value > 0 ? queryModel.PageSize.Value : 10;
                 
                 FilterModel filter = new();
-                //var query = _context.StudentEntities.FromSqlRaw("SELECT * FROM dbo.Students").ToList();
                 var query = _context.StudentEntities.AsQueryable();
                 int totalCount = await query.CountAsync();
 
@@ -94,7 +93,7 @@ namespace SchoolManagement.Service
                 var student = await _context.StudentEntities.FindAsync(studentId);
                 if (student == null)
                 {
-                    throw new Exception($"Student with ID {studentId} not found.");
+                    throw new NotFoundException($"Student with ID {studentId} not found.");
                 }
 
                 // Chuyển đổi StudentEntity thành StudentFullDetailModel (nếu cần)
@@ -128,7 +127,6 @@ namespace SchoolManagement.Service
                 {
                     _logger.LogInformation("Record has already existed");
                     throw ExistRecordException.ExistsRecord("Student ID already exists");
-                    //throw new Exception("Student ID already exists.");
                 }
 
                 else
@@ -159,14 +157,86 @@ namespace SchoolManagement.Service
 
                     _context.StudentEntities.Add(newStudent);
                     await _context.SaveChangesAsync();
-
-                    //return newStudent;
-                    //return true;
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError("An error occured while creating new student. Error: {ex}", ex);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Update a student by his/her ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public async ValueTask UpdateStudent(string id, StudentUpdateModel model)
+        {
+            try
+            {
+                _logger.LogInformation("Start to update new student.");
+                var student = await _context.StudentEntities.FirstOrDefaultAsync(s => s.StudentId == id);
+                if (student == null)
+                {
+                    throw new NotFoundException($"Student with ID {id} not found.");
+                }
+                student.FullName = model.FullName;
+                student.DOB = model.DOB;
+                student.IdentificationNumber = model.IdentificationNumber;
+                student.Gender = model.Gender;
+                student.Address = model.Address;
+                student.Ethnic = model.Ethnic;
+                student.PhoneNumber = model.PhoneNumber;
+                student.Avatar = model.Avatar;
+                student.Email = model.Email;
+                // Parent info
+                student.FatherName = model.FatherName;
+                student.FatherJob = model.FatherJob;
+                student.FatherPhoneNumber = model.FatherPhoneNumber;
+                student.FatherEmail = model.FatherEmail;
+                student.MotherName = model.MotherName;
+                student.MotherJob = model.MotherJob;
+                student.MotherPhoneNumber = model.MotherPhoneNumber;
+                student.MotherEmail = model.MotherEmail;
+
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occured while updating a student. Error: {ex}", ex);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Delete student by his/her ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        /// <exception cref="NotFoundException"></exception>
+        public async ValueTask DeleteStudent(string id)
+        {
+            try
+            {
+                _logger.LogInformation("Start deleting student with ID {id}", id);
+
+                var student = await _context.StudentEntities.FirstOrDefaultAsync(s => s.StudentId == id);
+
+                if (student == null)
+                {
+                    throw new NotFoundException($"Student with ID {id} not found.");
+                }
+
+                _context.StudentEntities.Remove(student);
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Student with ID {id} deleted successfully.", id);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occurred while deleting student with ID {id}. Error: {ex}", id, ex);
                 throw;
             }
         }
