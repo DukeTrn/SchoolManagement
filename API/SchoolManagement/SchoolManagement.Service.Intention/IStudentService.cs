@@ -1,5 +1,6 @@
 ﻿using SchoolManagement.Entity;
 using SchoolManagement.Model;
+using System.Data;
 
 namespace SchoolManagement.Service.Intention
 {
@@ -10,5 +11,7 @@ namespace SchoolManagement.Service.Intention
         ValueTask CreateStudent(StudentAddModel model);
         ValueTask UpdateStudent(string id, StudentUpdateModel model);
         ValueTask DeleteStudent(string id);
+        //ValueTask<string> ExportStudents(ExportQueryModel queryModel);
+        DataTable ExportStudentsTest();
     }
 }

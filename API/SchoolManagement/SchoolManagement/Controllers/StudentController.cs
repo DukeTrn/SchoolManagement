@@ -1,4 +1,5 @@
-﻿using MathNet.Numerics.Distributions;
+﻿using ClosedXML.Excel;
+using MathNet.Numerics.Distributions;
 using Microsoft.AspNetCore.Mvc;
 using SchoolManagement.Common.Enum;
 using SchoolManagement.Common.Exceptions;
@@ -151,6 +152,52 @@ namespace SchoolManagement.Controllers
                     messageType = MessageType.Error,
                     message = $"An error occurred while deleting student: {ex}"
                 });
+            }
+        }
+
+        //[HttpPost("export")]
+        //public async Task<ActionResult> ExportStudents([FromBody] ExportQueryModel queryModel)
+        //{
+        //    try
+        //    {
+        //        var filePath = await _service.ExportStudents(queryModel);
+
+        //        //string downloadsPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        //        //string filePath = Path.Combine(downloadsPath + "\\Downloads", "Students.xlsx");
+
+        //        //// Tạo đường dẫn tải xuống dựa trên filePath
+        //        //string downloadUrl = Path.Combine(Request.Scheme + "://" + Request.Host.Value, filePath);
+
+        //        var contentType = "application/octet-stream";
+
+        //        // Tạo phản hồi FileResult để trả về tệp xuất khẩu
+        //        var fileResult = File(filePath, contentType, "students.xlsx");
+
+        //        return fileResult;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(new
+        //        {
+        //            result = false,
+        //            messageType = MessageType.Error,
+        //            message = $"An error occurred while exporting students: {ex.Message}"
+        //        });
+        //    }
+        //}
+
+        [HttpGet("export")]
+        public ActionResult Export()
+        {
+            var data = _service.ExportStudentsTest();
+            using(XLWorkbook wb = new())
+            {
+                wb.AddWorksheet(data, "Testing");
+                using(MemoryStream ms = new MemoryStream())
+                {
+                    wb.SaveAs(ms);
+                    return File(ms.ToArray(),"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet","Test.xlsx");
+                }
             }
         }
     }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
@@ -24,6 +25,13 @@ public static class AppSetupExtension
         app.UseAuthorization();
 
         app.MapControllers();
+
+        //app.UseStaticFiles(new StaticFileOptions
+        //{
+        //    //Map virtual folder to physical folder. Used for UseSwaggerUI.InjectStylesheet function.
+        //    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Swagger")),
+        //    //RequestPath = $"{SwaggerConstants.PrefixWithStartSlash}/swagger/static"
+        //});
         return app;
     }
 }

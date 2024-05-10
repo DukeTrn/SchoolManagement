@@ -1,5 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
+using OfficeOpenXml;
 using SchoolManagement.Common.Enum;
 using SchoolManagement.Common.Exceptions;
 using SchoolManagement.Database;
@@ -8,6 +11,7 @@ using SchoolManagement.Model;
 using SchoolManagement.Service.Intention;
 using SchoolManagement.Service.Intention.Data;
 using SchoolManagement.Share;
+using System.Data;
 
 namespace SchoolManagement.Service
 {
@@ -27,7 +31,7 @@ namespace SchoolManagement.Service
         }
 
         /// <summary>
-        /// Get list of all students
+        /// Get list of all students with pagination
         /// </summary>
         /// <param name="queryModel"></param>
         public async ValueTask<PaginationModel<StudentDisplayModel>> GetAllStudents(StudentQueryModel queryModel)
@@ -241,6 +245,127 @@ namespace SchoolManagement.Service
             }
         }
 
+        //public async ValueTask<string> ExportStudents(ExportQueryModel queryModel)
+        //{
+        //    try
+        //    {
+        //        _logger.LogInformation("Start expoting students");
+        //        // Tạo truy vấn ban đầu từ bảng StudentEntities
+        //        var query = _context.StudentEntities.AsQueryable();
+
+        //        // Áp dụng điều kiện tìm kiếm nếu có
+        //        if (!string.IsNullOrEmpty(queryModel.SearchValue))
+        //        {
+        //            query = query.Where(s => s.FullName.Contains(queryModel.SearchValue));
+        //        }
+
+        //        // Lấy dữ liệu từ cơ sở dữ liệu
+        //        var students = await query
+        //            .Select(s => new StudentFullDetailModel
+        //            {
+        //                StudentId = s.StudentId,
+        //                FullName = s.FullName,
+        //                DOB = s.DOB,
+        //                // Các trường dữ liệu khác bạn muốn xuất
+        //            })
+        //            .ToListAsync();
+
+
+        //        //using (var package = new ExcelPackage())
+        //        //{
+        //        //    var worksheet = package.Workbook.Worksheets.Add("Students");
+        //        //    // Add headers
+        //        //    worksheet.Cells[1, 1].Value = "StudentId";
+        //        //    worksheet.Cells[1, 2].Value = "FullName";
+        //        //    // Add other properties as needed
+
+        //        //    // Add data
+        //        //    int row = 2;
+        //        //    foreach (var student in students)
+        //        //    {
+        //        //        worksheet.Cells[row, 1].Value = student.StudentId;
+        //        //        worksheet.Cells[row, 2].Value = student.FullName;
+        //        //        // Add other properties as needed
+        //        //        row++;
+        //        //    }
+        //        //    // Convert Excel package to byte array
+        //        //    return await package.GetAsByteArrayAsync();
+        //        //}
+
+
+        //        // Tạo một workbook mới
+        //        IWorkbook workbook = new XSSFWorkbook();
+
+        //        // Tạo một trang tính mới
+        //        ISheet sheet = workbook.CreateSheet("Học sinh");
+
+        //        // Tạo hàng tiêu đề
+        //        IRow headerRow = sheet.CreateRow(0);
+        //        headerRow.CreateCell(0).SetCellValue("ID");
+        //        headerRow.CreateCell(1).SetCellValue("Họ tên");
+        //        headerRow.CreateCell(2).SetCellValue("Ngày sinh");
+        //        // Thêm các cột khác tùy ý tại đây
+
+        //        // Thêm dữ liệu học sinh vào từ danh sách
+        //        for (int i = 0; i < students.Count; i++)
+        //        {
+        //            var student = students[i];
+        //            IRow dataRow = sheet.CreateRow(i + 1);
+        //            dataRow.CreateCell(0).SetCellValue(student.StudentId);
+        //            dataRow.CreateCell(1).SetCellValue(student.FullName);
+        //            dataRow.CreateCell(2).SetCellValue(student.DOB.ToString("dd-MM-yyyy"));
+        //            // Thêm các dữ liệu khác tùy ý tại đây
+        //        }
+
+
+
+        //        //// Lấy đường dẫn đến thư mục Downloads
+        //        //string downloadsPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        //        //string filePath = Path.Combine(downloadsPath + "\\Downloads", "Students.xlsx");
+        //        //// Lưu workbook vào một tệp Excel
+        //        //// Ghi workbook vào tệp Excel
+        //        //using (FileStream fileStream = new FileStream(filePath, FileMode.Create))
+        //        //{
+        //        //    workbook.Write(fileStream);
+        //        //}
+
+        //        // Save the workbook to a file
+        //        var fileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads", "students.xlsx");
+        //        using (var fileStream = new FileStream(fileName, FileMode.Create, FileAccess.Write))
+        //        {
+        //            workbook.Write(fileStream);
+        //        }
+
+        //        _logger.LogInformation("Export students successfully");
+        //        return fileName;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError("An error occurred while exporting students. Error: {ex}", ex);
+        //        throw;
+        //    }
+        //}
+
+        public DataTable ExportStudentsTest()
+        {
+            var dt = new DataTable();
+
+
+            dt.TableName = "Test";
+            dt.Columns.Add("ID", typeof(string));
+
+
+             var list = _context.StudentEntities.AsQueryable()/*ToListAsync*/;
+            var count = list.Count();
+             if (count > 0)
+            {
+                list.ForEachAsync(item =>
+                {
+                    dt.Rows.Add(item.StudentId);
+                });
+            }
+            return dt;
+        }
 
         /// <summary>
         /// Search function
