@@ -186,18 +186,35 @@ namespace SchoolManagement.Controllers
         //    }
         //}
 
-        [HttpGet("export")]
-        public ActionResult Export()
+        //[HttpGet("export")]
+        //public ActionResult Export()
+        //{
+        //    var data = _service.ExportStudentsTest();
+        //    string fileName = $"Quản lý học sinh_{DateTime.Now:yyyyMMddHHmmss}.xlsx";
+        //    using (XLWorkbook wb = new())
+        //    {
+        //        wb.AddWorksheet(data, "Testing");
+        //        using(MemoryStream ms = new MemoryStream())
+        //        {
+        //            wb.SaveAs(ms);
+        //            return File(ms.ToArray(),"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+        //        }
+        //    }
+        //}
+        [HttpPost("export")]
+        public async Task<IActionResult> ExportToExcel([FromBody] ExportQueryModel queryModel)
         {
-            var data = _service.ExportStudentsTest();
-            using(XLWorkbook wb = new())
+            try
             {
-                wb.AddWorksheet(data, "Testing");
-                using(MemoryStream ms = new MemoryStream())
-                {
-                    wb.SaveAs(ms);
-                    return File(ms.ToArray(),"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet","Test.xlsx");
-                }
+                byte[] fileContents = await _service.ExportToExcelAsync(queryModel);
+
+                // Trả về tệp Excel đã xuất
+                string fileName = $"Quản lý học sinh_{DateTime.Now:ddMMyyyyHHmmss}.xlsx";
+                return File(fileContents, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Lỗi khi xuất dữ liệu: {ex.Message}");
             }
         }
     }

@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using ClosedXML.Excel;
+using MathNet.Numerics.Distributions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
@@ -346,25 +348,136 @@ namespace SchoolManagement.Service
         //    }
         //}
 
-        public DataTable ExportStudentsTest()
+        public DataTable ExportStudentsTest(ExportQueryModel queryModel)
         {
-            var dt = new DataTable();
-
-
-            dt.TableName = "Test";
-            dt.Columns.Add("ID", typeof(string));
-
-
-             var list = _context.StudentEntities.AsQueryable()/*ToListAsync*/;
-            var count = list.Count();
-             if (count > 0)
+            try
             {
-                list.ForEachAsync(item =>
+                var query = _context.StudentEntities.AsQueryable()/*ToListAsync*/;
+                var count = query.Count();
+
+                //Áp dụng điều kiện tìm kiếm nếu có
+                if (!string.IsNullOrEmpty(queryModel.SearchValue))
                 {
-                    dt.Rows.Add(item.StudentId);
-                });
+                    query = query.Where(s => s.FullName.Contains(queryModel.SearchValue));
+                }
+
+                // Lấy dữ liệu từ cơ sở dữ liệu
+                //var students = await query
+                //    .Select(s => new StudentFullDetailModel
+                //    {
+                //        StudentId = s.StudentId,
+                //        FullName = s.FullName,
+                //        DOB = s.DOB,
+                //        // Các trường dữ liệu khác bạn muốn xuất
+                //    })
+                //    .ToListAsync();
+
+                var dt = new DataTable();
+                dt.TableName = "Test";
+                dt.Columns.Add("ID", typeof(string));
+
+                if (count > 0)
+                {
+                    query.ForEachAsync(item =>
+                    {
+                        dt.Rows.Add(item.StudentId);
+                        dt.Rows.Add(item.FullName);
+                        dt.Rows.Add(item.DOB);
+                        dt.Rows.Add(item.IdentificationNumber);
+                        dt.Rows.Add(item.Gender);
+                        dt.Rows.Add(item.Address);
+                        dt.Rows.Add(item.Ethnic);
+                        dt.Rows.Add(item.PhoneNumber);
+                        dt.Rows.Add(item.Avatar);
+                        dt.Rows.Add(item.Email);
+                        dt.Rows.Add(item.Status);
+                        // Parent info
+                        dt.Rows.Add(item.FatherName);
+                        dt.Rows.Add(item.FatherJob);
+                        dt.Rows.Add(item.FatherPhoneNumber);
+                        dt.Rows.Add(item.FatherEmail);
+                        dt.Rows.Add(item.MotherName);
+                        dt.Rows.Add(item.MotherJob);
+                        dt.Rows.Add(item.MotherPhoneNumber);
+                        dt.Rows.Add(item.MotherEmail);
+                        dt.Rows.Add(item.AcademicYear);
+                    });
+                }
+                _logger.LogInformation("Export students successfully");
+                return dt;
             }
-            return dt;
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occurred while exporting students. Error: {ex}", ex);
+                throw;
+            }
+        }
+
+        public async Task<byte[]> ExportToExcelAsync(ExportQueryModel queryModel)
+        {
+            try
+            {
+                var students = new List<StudentEntity>();
+
+                // Lọc dữ liệu theo các điều kiện trong query
+                if (queryModel.StudentIds.Any())
+                {
+                    students = await _context.StudentEntities.Where(s => queryModel.StudentIds.Contains(s.StudentId)).ToListAsync();
+                }
+                else
+                {
+                    students = await _context.StudentEntities.ToListAsync();
+                }
+                // Lọc theo danh sách trạng thái nếu có
+                if (queryModel.Status.Any())
+                {
+                    students = students.Where(s => queryModel.Status.Contains(s.Status)).ToList();
+                }
+
+                /// Dịch enum sang tiếng Việt
+                var translatedStudents = students.Select(s => new
+                {
+                    StudentId = s.StudentId,
+                    FullName = s.FullName,
+                    Status = TranslateStatus(s.Status),
+                    DOB = s.DOB // Thêm trường ngày sinh
+                });
+
+                // Tạo DataTable và thêm dữ liệu sinh viên vào đó
+                DataTable dt = new DataTable();
+                dt.Columns.Add("ID", typeof(string));
+                dt.Columns.Add("Họ và tên", typeof(string));
+                dt.Columns.Add("Ngày sinh", typeof(string));
+                dt.Columns.Add("Tình trạng học tập", typeof(string));
+
+                foreach (var student in translatedStudents)
+                {
+                    dt.Rows.Add(student.StudentId, 
+                        student.FullName, 
+                        student.DOB.ToString("dd/MM/yyyy"),
+                        student.Status);
+                }
+
+                // Xuất dữ liệu sang tệp Excel
+                using (var workbook = new XLWorkbook())
+                {
+                    var worksheet = workbook.Worksheets.Add("Danh sách Học sinh");
+                    worksheet.Cell(1, 1).InsertTable(dt);
+
+                    // Lưu tệp Excel vào một mảng byte[]
+                    using (MemoryStream memoryStream = new MemoryStream())
+                    {
+                        workbook.SaveAs(memoryStream);
+                        return memoryStream.ToArray();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Xử lý lỗi, có thể ghi log và ném ngoại lệ hoặc trả về null tùy theo yêu cầu
+                _logger.LogError("An error occurred while exporting students. Error: {ex}", ex);
+                throw;
+            }
         }
 
         /// <summary>
@@ -387,6 +500,22 @@ namespace SchoolManagement.Service
                 });
             }
             return filters;
+        }
+
+        // Phương thức dịch enum sang tiếng Việt
+        private string TranslateStatus(StatusType status)
+        {
+            switch (status)
+            {
+                case StatusType.Active:
+                    return "Đang học";
+                case StatusType.Suspended:
+                    return "Đình chỉ";
+                case StatusType.Inactive:
+                    return "Nghỉ học";
+                default:
+                    return string.Empty;
+            }
         }
     }
 }
