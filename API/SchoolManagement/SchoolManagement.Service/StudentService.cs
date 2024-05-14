@@ -1,15 +1,12 @@
 ﻿using ClosedXML.Excel;
-using MathNet.Numerics.Distributions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using NPOI.SS.UserModel;
-using NPOI.XSSF.UserModel;
-using OfficeOpenXml;
 using SchoolManagement.Common.Enum;
 using SchoolManagement.Common.Exceptions;
 using SchoolManagement.Database;
 using SchoolManagement.Entity;
 using SchoolManagement.Model;
+using SchoolManagement.Service.Data;
 using SchoolManagement.Service.Intention;
 using SchoolManagement.Service.Intention.Data;
 using SchoolManagement.Share;
@@ -22,14 +19,17 @@ namespace SchoolManagement.Service
         private readonly ILogger<StudentService> _logger;
         private readonly SchoolManagementDbContext _context;
         private readonly IEntityFilterService<StudentEntity> _filterBuilder;
+        private readonly ICloudinaryService _cloudinary;
 
-        public StudentService(ILogger<StudentService> logger, 
+        public StudentService(ILogger<StudentService> logger,
             IEntityFilterService<StudentEntity> filterBuilder,
-            SchoolManagementDbContext context)
+            SchoolManagementDbContext context,
+            ICloudinaryService cloudinary)
         {
             _logger = logger;
             _filterBuilder = filterBuilder;
             _context = context;
+            _cloudinary = cloudinary;
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace SchoolManagement.Service
                 _logger.LogInformation("Start to get list students.");
                 int pageNumber = queryModel.PageNumber != null && queryModel.PageNumber.Value > 0 ? queryModel.PageNumber.Value : 1;
                 int pageSize = queryModel.PageSize != null && queryModel.PageSize.Value > 0 ? queryModel.PageSize.Value : 10;
-                
+
                 FilterModel filter = new();
                 var query = _context.StudentEntities.AsQueryable();
                 int totalCount = await query.CountAsync();
@@ -135,35 +135,40 @@ namespace SchoolManagement.Service
                     throw ExistRecordException.ExistsRecord("Student ID already exists");
                 }
 
-                else
+                // Upload avatar to Cloudinary if provided
+                string? avatarUrl = null;
+                if (model.Avatar != null)
                 {
-                    var newStudent = new StudentEntity()
-                    {
-                        StudentId = studentId,
-                        FullName = model.FullName,
-                        DOB = model.DOB,
-                        IdentificationNumber = model.IdentificationNumber,
-                        Gender = model.Gender,
-                        Address = model.Address,
-                        Ethnic = model.Ethnic,
-                        PhoneNumber = model.PhoneNumber,
-                        Avatar = model.Avatar,
-                        Email = model.Email,
-                        Status = StatusType.Active,
-                        FatherName = model.FatherName,
-                        FatherJob = model.FatherJob,
-                        FatherPhoneNumber = model.FatherPhoneNumber,
-                        FatherEmail = model.FatherEmail,
-                        MotherName = model.MotherName,
-                        MotherJob = model.MotherJob,
-                        MotherPhoneNumber = model.MotherPhoneNumber,
-                        MotherEmail = model.MotherEmail,
-                        AcademicYear = DateTime.Now.Year.ToString() + " - " + DateTime.Now.AddYears(3).Year.ToString(),
-                    };
-
-                    _context.StudentEntities.Add(newStudent);
-                    await _context.SaveChangesAsync();
+                    avatarUrl = await _cloudinary.UploadImageAsync(model.Avatar);
                 }
+
+                var newStudent = new StudentEntity()
+                {
+                    StudentId = studentId,
+                    FullName = model.FullName,
+                    DOB = model.DOB,
+                    IdentificationNumber = model.IdentificationNumber,
+                    Gender = model.Gender,
+                    Address = model.Address,
+                    Ethnic = model.Ethnic,
+                    PhoneNumber = model.PhoneNumber,
+                    Avatar = avatarUrl,
+                    Email = model.Email,
+                    Status = StatusType.Active,
+                    FatherName = model.FatherName,
+                    FatherJob = model.FatherJob,
+                    FatherPhoneNumber = model.FatherPhoneNumber,
+                    FatherEmail = model.FatherEmail,
+                    MotherName = model.MotherName,
+                    MotherJob = model.MotherJob,
+                    MotherPhoneNumber = model.MotherPhoneNumber,
+                    MotherEmail = model.MotherEmail,
+                    AcademicYear = DateTime.Now.Year.ToString() + " - " + DateTime.Now.AddYears(3).Year.ToString(),
+                };
+
+                _context.StudentEntities.Add(newStudent);
+                await _context.SaveChangesAsync();
+
             }
             catch (Exception ex)
             {
@@ -188,6 +193,11 @@ namespace SchoolManagement.Service
                 {
                     throw new NotFoundException($"Student with ID {id} not found.");
                 }
+                string? avatarUrl = null;
+                if (model.Avatar != null)
+                {
+                    avatarUrl = await _cloudinary.UploadImageAsync(model.Avatar);
+                }
                 student.FullName = model.FullName;
                 student.DOB = model.DOB;
                 student.IdentificationNumber = model.IdentificationNumber;
@@ -195,7 +205,7 @@ namespace SchoolManagement.Service
                 student.Address = model.Address;
                 student.Ethnic = model.Ethnic;
                 student.PhoneNumber = model.PhoneNumber;
-                student.Avatar = model.Avatar;
+                student.Avatar = avatarUrl;
                 student.Email = model.Email;
                 // Parent info
                 student.FatherName = model.FatherName;

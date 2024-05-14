@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using SchoolManagement.Service;
+using SchoolManagement.Service.Data;
 using SchoolManagement.Service.Intention;
 using SchoolManagement.Service.Intention.Data;
 
@@ -20,6 +21,7 @@ namespace SchoolManagement.Startup.BuilderExtensions
         private static WebApplicationBuilder AddToolServices(this WebApplicationBuilder builder)
         {
             builder.Services.AddSingleton(typeof(IEntityFilterService<>), typeof(EntityFilterService<>));
+            builder.Services.AddSingleton<ICloudinaryService, CloudinaryService>();
             return builder;
         }
     }

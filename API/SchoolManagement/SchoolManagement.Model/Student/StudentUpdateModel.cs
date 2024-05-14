@@ -1,4 +1,6 @@
-﻿namespace SchoolManagement.Model
+﻿using Microsoft.AspNetCore.Http;
+
+namespace SchoolManagement.Model
 {
     public class StudentUpdateModel
     {
@@ -9,7 +11,7 @@
         public string Address { get; set; } = string.Empty;
         public string Ethnic { get; set; } = string.Empty;
         public string PhoneNumber { get; set; } = string.Empty;
-        public string? Avatar { get; set; }
+        public IFormFile? Avatar { get; set; }
         public string? Email { get; set; }
         //public StatusType Status { get; set; } // tình trạng học tập (đang học - đình chỉ - thôi học)
 

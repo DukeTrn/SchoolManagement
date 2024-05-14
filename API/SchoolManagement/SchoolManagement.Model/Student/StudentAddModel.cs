@@ -1,4 +1,5 @@
-﻿using SchoolManagement.Common.Enum;
+﻿using Microsoft.AspNetCore.Http;
+using SchoolManagement.Common.Enum;
 
 namespace SchoolManagement.Model
 {
@@ -12,7 +13,8 @@ namespace SchoolManagement.Model
         public string Address { get; set; } = string.Empty;
         public string Ethnic { get; set; } = string.Empty;
         public string PhoneNumber { get; set; } = string.Empty;
-        public string? Avatar { get; set; }
+        //public string? Avatar { get; set; }
+        public IFormFile? Avatar { get; set; }
         public string? Email { get; set; }
         //public StatusType Status { get; set; } // tình trạng học tập (đang học - đình chỉ - thôi học)
 

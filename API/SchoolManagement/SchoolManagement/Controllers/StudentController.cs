@@ -1,12 +1,9 @@
-﻿using ClosedXML.Excel;
-using MathNet.Numerics.Distributions;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using SchoolManagement.Common.Enum;
 using SchoolManagement.Common.Exceptions;
-using SchoolManagement.Entity;
 using SchoolManagement.Model;
-using SchoolManagement.Service;
 using SchoolManagement.Service.Intention;
+using SchoolManagement.Service.Intention.Data;
 
 namespace SchoolManagement.Controllers
 {
@@ -14,10 +11,12 @@ namespace SchoolManagement.Controllers
     public class StudentController : ControllerBase
     {
         private readonly IStudentService _service;
+        private readonly ICloudinaryService _cloudinary;
 
-        public StudentController(IStudentService service)
+        public StudentController(IStudentService service, ICloudinaryService cloudinary)
         {
             _service = service;
+            _cloudinary = cloudinary;
         }
 
         /// <summary>
@@ -73,7 +72,7 @@ namespace SchoolManagement.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost, Route("create")]
-        public async ValueTask<IActionResult> CreateStudent([FromBody] StudentAddModel model)
+        public async ValueTask<IActionResult> CreateStudent([FromForm] StudentAddModel model)
         {
             try
             {
@@ -102,7 +101,7 @@ namespace SchoolManagement.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPut("{id}")]
-        public async ValueTask<ActionResult> UpdateStudent(string id, [FromBody] StudentUpdateModel model)
+        public async ValueTask<ActionResult> UpdateStudent(string id, [FromForm] StudentUpdateModel model)
         {
             try
             {
@@ -170,6 +169,18 @@ namespace SchoolManagement.Controllers
             {
                 return StatusCode(500, $"Lỗi khi xuất dữ liệu: {ex.Message}");
             }
+        }
+
+        [HttpPost("upload-avatar")]
+        public async Task<IActionResult> UploadAvatar([FromForm] IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest("No file uploaded.");
+            }
+
+            var uploadResult = await _cloudinary.UploadImageAsync(file);
+            return Ok(new { Url = uploadResult });
         }
     }
 }
