@@ -9,7 +9,9 @@ namespace SchoolManagement.Entity
     {
         [Key]
         public Guid AccountId { get; set; } // Khóa chính cho AccountEntity
+        [Required]
         public string UserName { get; set; } = string.Empty;
+        [Required]
         public string Password { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
         public DateTime? ModifiedAt { get; set; }

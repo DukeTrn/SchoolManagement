@@ -25,7 +25,8 @@ public static class AppSetupExtension
         app.UseAuthorization();
 
         app.MapControllers();
-
+        app.UseAuthentication();
+        app.UseAuthorization();
         //app.UseStaticFiles(new StaticFileOptions
         //{
         //    //Map virtual folder to physical folder. Used for UseSwaggerUI.InjectStylesheet function.
