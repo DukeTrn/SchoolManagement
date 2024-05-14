@@ -155,52 +155,6 @@ namespace SchoolManagement.Controllers
             }
         }
 
-        //[HttpPost("export")]
-        //public async Task<ActionResult> ExportStudents([FromBody] ExportQueryModel queryModel)
-        //{
-        //    try
-        //    {
-        //        var filePath = await _service.ExportStudents(queryModel);
-
-        //        //string downloadsPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-        //        //string filePath = Path.Combine(downloadsPath + "\\Downloads", "Students.xlsx");
-
-        //        //// Tạo đường dẫn tải xuống dựa trên filePath
-        //        //string downloadUrl = Path.Combine(Request.Scheme + "://" + Request.Host.Value, filePath);
-
-        //        var contentType = "application/octet-stream";
-
-        //        // Tạo phản hồi FileResult để trả về tệp xuất khẩu
-        //        var fileResult = File(filePath, contentType, "students.xlsx");
-
-        //        return fileResult;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest(new
-        //        {
-        //            result = false,
-        //            messageType = MessageType.Error,
-        //            message = $"An error occurred while exporting students: {ex.Message}"
-        //        });
-        //    }
-        //}
-
-        //[HttpGet("export")]
-        //public ActionResult Export()
-        //{
-        //    var data = _service.ExportStudentsTest();
-        //    string fileName = $"Quản lý học sinh_{DateTime.Now:yyyyMMddHHmmss}.xlsx";
-        //    using (XLWorkbook wb = new())
-        //    {
-        //        wb.AddWorksheet(data, "Testing");
-        //        using(MemoryStream ms = new MemoryStream())
-        //        {
-        //            wb.SaveAs(ms);
-        //            return File(ms.ToArray(),"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
-        //        }
-        //    }
-        //}
         [HttpPost("export")]
         public async Task<IActionResult> ExportToExcel([FromBody] ExportQueryModel queryModel)
         {
