@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using SchoolManagement.Entity;
 using SchoolManagement.Service.Intention.Authentication;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -15,12 +16,13 @@ namespace SchoolManagement.Service.Authentication
         {
             _configuration = configuration;
         }
-        public string GenerateToken(string userId)
+        public string GenerateToken(AccountEntity entity)
         {
             var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub, userId),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                new Claim(ClaimTypes.Email, entity.UserName),
+                new Claim("Id", entity.AccountId.ToString()),
+                new Claim("TokenId", Guid.NewGuid().ToString()),
                 //new Claim(JwtRegisteredClaimNames, Guid.NewGuid().ToString())
             };
 

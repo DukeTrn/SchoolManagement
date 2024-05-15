@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SchoolManagement.Common.Enum;
 using SchoolManagement.Common.Exceptions;
 using SchoolManagement.Model;
@@ -8,6 +9,7 @@ using SchoolManagement.Service.Intention.Data;
 namespace SchoolManagement.Controllers
 {
     [ApiController, Route("api/student")]
+    //[Authorize]
     public class StudentController : ControllerBase
     {
         private readonly IStudentService _service;
@@ -25,9 +27,17 @@ namespace SchoolManagement.Controllers
         /// <param name="queryModel"></param>
         /// <returns></returns>
         [HttpPost, Route("all")]
-        public async ValueTask<PaginationModel<StudentDisplayModel>> GetAllStudents([FromBody] StudentQueryModel queryModel)
+        public async ValueTask<IActionResult> GetAllStudents([FromBody] StudentQueryModel queryModel)
         {
-            return await _service.GetAllStudents(queryModel);
+            try
+            {
+                var result = await _service.GetAllStudents(queryModel);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(200, new { result = false, messageType = MessageType.Error, message = ex });
+            }
         }
 
         /// <summary>
@@ -81,10 +91,6 @@ namespace SchoolManagement.Controllers
             }
             catch (ExistRecordException)
             {
-                // Log ex.LogMessage if needed
-                // Notify user based on ex.NotifactionType
-                // Handle error data in ex.ErrorData if needed
-
                 return Ok(new { result = false, messageType = MessageType.Duplicated, message = "ID này đã tồn tại" });
             }
             catch (Exception ex)

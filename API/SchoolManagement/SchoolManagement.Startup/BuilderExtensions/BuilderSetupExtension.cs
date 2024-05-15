@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using SchoolManagement.Database;
 using SchoolManagement.Startup.BuilderExtensions;
 using System;
+using System.Reflection;
 using System.Text;
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -20,7 +21,8 @@ public static class BuilderSetupExtension
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen(c => {
-            c.OperationFilter<SwaggerExtension>();
+            //c.OperationFilter<SwaggerExtension>();
+            c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetEntryAssembly()?.GetName().Name}.xml"));
         });
         builder.Services.AddCors(opt =>
         {
@@ -52,7 +54,7 @@ public static class BuilderSetupExtension
                 ValidateIssuerSigningKey = true,
                 //ValidIssuer = jwtSettings["Issuer"],
                 //ValidAudience = jwtSettings["Audience"],
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]))
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["SecretKeys"]))
             };
         });
 

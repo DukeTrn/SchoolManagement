@@ -1,4 +1,5 @@
-﻿using SchoolManagement.Entity;
+﻿using SchoolManagement.Common.Enum;
+using SchoolManagement.Entity;
 using SchoolManagement.Model;
 
 namespace SchoolManagement.Share
@@ -17,7 +18,7 @@ namespace SchoolManagement.Share
             PhoneNumber = entity.PhoneNumber,
             Avatar = entity.Avatar,
             Email = entity.Email,
-            Status = entity.Status,
+            Status = TranslateStatus(entity.Status),
         };
 
         public static StudentFullDetailModel ToFullDetailModel(this StudentEntity entity) => new()
@@ -32,7 +33,7 @@ namespace SchoolManagement.Share
             PhoneNumber = entity.PhoneNumber,
             Avatar = entity.Avatar,
             Email = entity.Email,
-            Status = entity.Status,
+            Status = TranslateStatus(entity.Status),
             FatherName = entity.FatherName,
             FatherJob = entity.FatherJob,
             FatherPhoneNumber = entity.FatherPhoneNumber,
@@ -43,5 +44,20 @@ namespace SchoolManagement.Share
             MotherEmail = entity.MotherEmail,
             AcademicYear = entity.AcademicYear
         };
+
+        private static string TranslateStatus(StatusType status)
+        {
+            switch (status)
+            {
+                case StatusType.Active:
+                    return "Đang học";
+                case StatusType.Suspended:
+                    return "Đình chỉ";
+                case StatusType.Inactive:
+                    return "Nghỉ học";
+                default:
+                    return string.Empty;
+            }
+        }
     }
 }

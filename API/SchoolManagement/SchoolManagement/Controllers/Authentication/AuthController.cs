@@ -6,7 +6,7 @@ using SchoolManagement.Service.Intention.Authentication;
 namespace SchoolManagement.Web.Controllers.Authentication
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/user")]
     public class AuthController : ControllerBase
     {
         private readonly ITokenService _tokenService;
@@ -26,7 +26,7 @@ namespace SchoolManagement.Web.Controllers.Authentication
                 p.Password == model.Password);
             if (user != null)
             {
-                var token = _tokenService.GenerateToken("admin");
+                var token = _tokenService.GenerateToken(user);
                 return Ok(new {
                     result = true,
                     message = "Authentication success",

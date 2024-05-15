@@ -14,7 +14,7 @@ namespace SchoolManagement.Model
         public string PhoneNumber { get; set; } = string.Empty;
         public string? Avatar { get; set; }
         public string? Email { get; set; }
-        public StatusType Status { get; set; } // tình trạng học tập (đang học - đình chỉ - thôi học)
+        public string Status { get; set; } = string.Empty; // tình trạng học tập (đang học - đình chỉ - thôi học)
     }
 
     public class StudentFullDetailModel : StudentDisplayModel

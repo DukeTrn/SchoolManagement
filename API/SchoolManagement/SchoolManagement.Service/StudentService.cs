@@ -6,7 +6,6 @@ using SchoolManagement.Common.Exceptions;
 using SchoolManagement.Database;
 using SchoolManagement.Entity;
 using SchoolManagement.Model;
-using SchoolManagement.Service.Data;
 using SchoolManagement.Service.Intention;
 using SchoolManagement.Service.Intention.Data;
 using SchoolManagement.Share;
@@ -34,6 +33,7 @@ namespace SchoolManagement.Service
 
         /// <summary>
         /// Get list of all students with pagination
+        /// will add status filter
         /// </summary>
         /// <param name="queryModel"></param>
         public async ValueTask<PaginationModel<StudentDisplayModel>> GetAllStudents(StudentQueryModel queryModel)
@@ -378,7 +378,7 @@ namespace SchoolManagement.Service
         }
 
         // Translate StatusType enum
-        private string TranslateStatus(StatusType status)
+        private static string TranslateStatus(StatusType status)
         {
             switch (status)
             {

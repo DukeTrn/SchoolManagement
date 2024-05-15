@@ -21,5 +21,9 @@
     <ProjectReference Include="..\SchoolManagement.Entity\SchoolManagement.Entity.csproj" />
     <ProjectReference Include="..\SchoolManagement.Startup\SchoolManagement.Startup.csproj" />
   </ItemGroup>
+  <PropertyGroup>
+	<GenerateDocumentationFile>true</GenerateDocumentationFile>
+	<NoWarn>$(NoWarn);1591</NoWarn>
+  </PropertyGroup>
 
 </Project>
