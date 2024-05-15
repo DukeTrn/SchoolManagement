@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using SchoolManagement.Service;
+using SchoolManagement.Service.Authentication;
 using SchoolManagement.Service.Data;
 using SchoolManagement.Service.Intention;
+using SchoolManagement.Service.Intention.Authentication;
 using SchoolManagement.Service.Intention.Data;
 
 namespace SchoolManagement.Startup.BuilderExtensions
@@ -16,6 +18,7 @@ namespace SchoolManagement.Startup.BuilderExtensions
         {
             builder.Services.AddScoped<IStudentService, StudentService>();
             builder.Services.AddScoped<IAccountService, AccountService>();
+            builder.Services.AddScoped<ITokenService, TokenService>();
             return builder;
         }
         private static WebApplicationBuilder AddToolServices(this WebApplicationBuilder builder)
