@@ -22,7 +22,7 @@ namespace SchoolManagement.Controllers
         }
 
         /// <summary>
-        /// Get list of all student
+        /// Get list of all student (not full information)
         /// </summary>
         /// <param name="queryModel"></param>
         /// <returns></returns>
@@ -41,7 +41,7 @@ namespace SchoolManagement.Controllers
         }
 
         /// <summary>
-        /// Get student by ID
+        /// Get student by ID (full information of 1 student)
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>

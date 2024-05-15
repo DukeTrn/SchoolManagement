@@ -5,14 +5,13 @@ using SchoolManagement.Service.Intention.Authentication;
 
 namespace SchoolManagement.Web.Controllers.Authentication
 {
-    [ApiController]
-    [Route("api/user")]
-    public class AuthController : ControllerBase
+    [ApiController, Route("api/user")]
+    public class LoginController : ControllerBase
     {
         private readonly ITokenService _tokenService;
         private readonly SchoolManagementDbContext _context;
 
-        public AuthController(ITokenService tokenService, SchoolManagementDbContext context)
+        public LoginController(ITokenService tokenService, SchoolManagementDbContext context)
         {
             _tokenService = tokenService;
             _context = context;

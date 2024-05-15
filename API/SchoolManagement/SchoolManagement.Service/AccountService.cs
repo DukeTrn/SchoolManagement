@@ -1,13 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SchoolManagement.Common.Enum;
+using SchoolManagement.Common.Exceptions;
 using SchoolManagement.Database;
 using SchoolManagement.Entity;
 using SchoolManagement.Model;
 using SchoolManagement.Model.Account;
 using SchoolManagement.Service.Intention;
 using SchoolManagement.Service.Intention.Data;
-using SchoolManagement.Share;
 
 namespace SchoolManagement.Service
 {
@@ -122,7 +122,58 @@ namespace SchoolManagement.Service
             }
             catch (Exception ex)
             {
-                _logger.LogError("An error occured while creating new acoount. Error: {ex}", ex);
+                _logger.LogError("An error occured while creating new acoount. Error: {ex}", ex.Message);
+                throw;
+            }
+        }
+
+        public async Task ChangePasswordAsync(Guid accountId, ChangePasswordModel model)
+        {
+            try
+            {
+                _logger.LogInformation($"Start to change password for account with ID {accountId}.");
+
+                var account = await _context.AccountEntities.FindAsync(accountId);
+
+                if (account == null)
+                {
+                    _logger.LogWarning($"Account with ID {accountId} not found.");
+                    throw new NotFoundException($"Account with ID {accountId} not found.");
+                }
+
+                // Kiểm tra mật khẩu cũ
+                if (!BCrypt.Net.BCrypt.Verify(model.OldPassword, account.Password))
+                {
+                    _logger.LogWarning($"Old password provided is incorrect for account with ID {accountId}.");
+                    throw new UnauthorizedAccessException("Old password provided is incorrect.");
+                }
+
+                // Mật khẩu mới phải khác mật khẩu cũ
+                if (model.NewPassword == model.OldPassword)
+                {
+                    _logger.LogWarning($"New password must be different from old password for account with ID {accountId}.");
+                    throw new ArgumentException("New password must be different from old password.");
+                }
+
+                // Xác nhận mật khẩu mới
+                if (model.NewPassword != model.ConfirmPassword)
+                {
+                    _logger.LogWarning($"New password and confirm password do not match for account with ID {accountId}.");
+                    throw new ArgumentException("New password and confirm password do not match.");
+                }
+
+                // Mã hóa mật khẩu mới
+                string hashedPassword = BCrypt.Net.BCrypt.HashPassword(model.NewPassword);
+                account.Password = hashedPassword;
+
+                _context.AccountEntities.Update(account);
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation($"Successfully changed password for account with ID {accountId}.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"An error occurred while changing password for account with ID {accountId}. Error: {ex.Message}");
                 throw;
             }
         }
