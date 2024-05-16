@@ -4,6 +4,7 @@ using SchoolManagement.Common.Exceptions;
 using SchoolManagement.Model;
 using SchoolManagement.Model.Account;
 using SchoolManagement.Service.Intention;
+using SchoolManagement.Service.Intention.ResetPassword;
 
 namespace SchoolManagement.Web.Controllers
 {
@@ -12,10 +13,13 @@ namespace SchoolManagement.Web.Controllers
     public class AccountController : ControllerBase
     {
         private readonly IAccountService _accountService;
+        private readonly IEmailVerificationService _emailVerificationService;
 
-        public AccountController(IAccountService accountService)
+        public AccountController(IAccountService accountService,
+            IEmailVerificationService emailVerificationService)
         {
             _accountService = accountService;
+            _emailVerificationService = emailVerificationService;
         }
 
         /// <summary>
@@ -64,7 +68,7 @@ namespace SchoolManagement.Web.Controllers
             try
             {
                 await _accountService.ChangePasswordAsync(accountId, model);
-                return NoContent();
+                return Ok(new { result = true, message = "Đổi mật khẩu thành công"});
             }
             catch (NotFoundException ex)
             {
@@ -83,6 +87,39 @@ namespace SchoolManagement.Web.Controllers
                 // Log lỗi không xác định
                 return StatusCode(StatusCodes.Status500InternalServerError, $"An error occurred while processing your request. {ex.Message}");
             }
+        }
+
+        [HttpPost("send-code")]
+        public async Task<IActionResult> SendVerificationCode(string email)
+        {
+            // Gửi mã xác nhận qua email
+            string verificationCode = GenerateRandomCode();
+            bool sentSuccessfully = await _emailVerificationService.SendVerificationEmailAsync(email, verificationCode);
+
+            if (sentSuccessfully)
+                return Ok(new { Message = "Verification code sent successfully" });
+            else
+                return BadRequest(new { Message = "Failed to send verification code" });
+        }
+
+        [HttpPost("verify-code")]
+        public async Task<IActionResult> VerifyCode(string email, string verificationCode)
+        {
+            // Xác minh mã xác nhận từ người dùng
+            bool isCodeValid = await _emailVerificationService.VerifyCodeAsync(email, verificationCode);
+
+            if (isCodeValid)
+                return Ok(new { Message = "Verification code is valid" });
+            else
+                return BadRequest(new { Message = "Invalid verification code" });
+        }
+
+        private string GenerateRandomCode()
+        {
+            // Đây là nơi bạn triển khai logic để tạo mã xác nhận ngẫu nhiên
+            // Trong ví dụ này, chúng tôi giả định mã có 6 chữ số
+            Random random = new Random();
+            return random.Next(100000, 999999).ToString();
         }
     }
 }

@@ -6,6 +6,8 @@ using SchoolManagement.Service.Data;
 using SchoolManagement.Service.Intention;
 using SchoolManagement.Service.Intention.Authentication;
 using SchoolManagement.Service.Intention.Data;
+using SchoolManagement.Service.Intention.ResetPassword;
+using SchoolManagement.Service.ResetPassword;
 
 namespace SchoolManagement.Startup.BuilderExtensions
 {
@@ -19,6 +21,8 @@ namespace SchoolManagement.Startup.BuilderExtensions
             builder.Services.AddScoped<IStudentService, StudentService>();
             builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<ITokenService, TokenService>();
+            builder.Services.AddScoped<IEmailService, EmailService>();
+            builder.Services.AddScoped<IEmailVerificationService, EmailVerificationService>();
             return builder;
         }
         private static WebApplicationBuilder AddToolServices(this WebApplicationBuilder builder)

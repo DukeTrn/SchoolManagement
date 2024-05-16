@@ -165,6 +165,7 @@ namespace SchoolManagement.Service
                 // Mã hóa mật khẩu mới
                 string hashedPassword = BCrypt.Net.BCrypt.HashPassword(model.NewPassword);
                 account.Password = hashedPassword;
+                account.ModifiedAt = DateTime.UtcNow;
 
                 _context.AccountEntities.Update(account);
                 await _context.SaveChangesAsync();
@@ -178,6 +179,53 @@ namespace SchoolManagement.Service
             }
         }
 
+        //public async Task<string> GeneratePasswordResetTokenAsync(Guid accountId)
+        //{
+        //    var account = await _context.AccountEntities.FindAsync(accountId);
+        //    if (account == null)
+        //    {
+        //        throw new NotFoundException($"Account with ID {accountId} not found.");
+        //    }
+
+        //    var token = Guid.NewGuid().ToString(); // Bạn có thể sử dụng bất kỳ logic nào để tạo token
+        //    account.ResetToken = token;
+        //    account.ResetTokenExpiry = DateTime.UtcNow.AddHours(1); // Token hết hạn sau 1 giờ
+
+        //    await _context.SaveChangesAsync();
+
+        //    return token;
+        //}
+
+        //public async Task<bool> ResetPasswordAsync(string token, string newPassword)
+        //{
+        //    var account = await _context.AccountEntities.SingleOrDefaultAsync(a => a.ResetToken == token && a.ResetTokenExpiry > DateTime.UtcNow);
+        //    if (account == null)
+        //    {
+        //        return false;
+        //    }
+
+        //    account.Password = BCrypt.Net.BCrypt.HashPassword(newPassword);
+        //    account.ModifiedAt = DateTime.UtcNow;
+        //    account.ResetToken = null; // Xóa token sau khi sử dụng
+        //    account.ResetTokenExpiry = null;
+
+        //    _context.AccountEntities.Update(account);
+        //    await _context.SaveChangesAsync();
+
+        //    return true;
+        //}
+
+        public async Task<AccountEntity> ValidateAccountAsync(string username, string password)
+        {
+            var account = await _context.AccountEntities.SingleOrDefaultAsync(a => a.UserName == username);
+
+            if (account == null || !BCrypt.Net.BCrypt.Verify(password, account.Password))
+            {
+                throw new UnauthorizedAccessException("Invalid username or password.");
+            }
+
+            return account;
+        }
 
         /// <summary>
         /// Search function
