@@ -19,22 +19,22 @@ namespace SchoolManagement.Service.ResetPassword
             _logger = logger;
         }
 
-        public async Task<bool> SendVerificationEmailAsync(string email, string verificationCode)
-        {
-            try
-            {
-                string subject = "Password Reset Verification";
-                string body = $"Your verification code is: {verificationCode}";
+        //public async Task<bool> SendVerificationEmailAsync(string email, string verificationCode)
+        //{
+        //    try
+        //    {
+        //        string subject = "Password Reset Verification";
+        //        string body = $"Your verification code is: {verificationCode}";
 
-                await _emailService.SendEmailAsync(email, subject, body);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("Error sending verification email: {ex}", ex);
-                return false;
-            }
-        }
+        //        await _emailService.SendEmailAsync(email, subject, body);
+        //        return true;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError("Error sending verification email: {ex}", ex);
+        //        return false;
+        //    }
+        //}
 
         public async Task<bool> VerifyCodeAsync(string email, string verificationCode)
         {

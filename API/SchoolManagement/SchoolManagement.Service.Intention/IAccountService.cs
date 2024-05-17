@@ -8,6 +8,7 @@ namespace SchoolManagement.Service.Intention
     {
         ValueTask<PaginationModel<AccountDisplayModel>> GetAllAccounts(AccountQueryModel queryModel);
         ValueTask<AccountEntity> CreateAccount(AccountAddModel model);
+        ValueTask<AccountEntity> CreateAccountAutomatically(AccountAutomaticallyAddModel model);
         Task ChangePasswordAsync(Guid accountId, ChangePasswordModel model);
         Task<AccountEntity> ValidateAccountAsync(string username, string password);
         //Task<string> GeneratePasswordResetTokenAsync(Guid accountId);

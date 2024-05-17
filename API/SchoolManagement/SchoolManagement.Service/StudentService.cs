@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SchoolManagement.Common.Enum;
 using SchoolManagement.Common.Exceptions;
+using SchoolManagement.Common.Extensions;
 using SchoolManagement.Database;
 using SchoolManagement.Entity;
 using SchoolManagement.Model;
@@ -19,18 +20,23 @@ namespace SchoolManagement.Service
         private readonly SchoolManagementDbContext _context;
         private readonly IEntityFilterService<StudentEntity> _filterBuilder;
         private readonly ICloudinaryService _cloudinary;
+        private readonly IAccountService _account;
 
         public StudentService(ILogger<StudentService> logger,
             IEntityFilterService<StudentEntity> filterBuilder,
             SchoolManagementDbContext context,
-            ICloudinaryService cloudinary)
+            ICloudinaryService cloudinary,
+            IAccountService account)
         {
             _logger = logger;
             _filterBuilder = filterBuilder;
             _context = context;
             _cloudinary = cloudinary;
+            _account = account;
         }
 
+
+        #region List students
         /// <summary>
         /// Get list of all students with pagination
         /// will add status filter
@@ -85,6 +91,7 @@ namespace SchoolManagement.Service
                 throw;
             }
         }
+        #endregion
 
         /// <summary>
         /// Get a student by ID (string)
@@ -126,6 +133,7 @@ namespace SchoolManagement.Service
             try
             {
                 _logger.LogInformation("Start to create new student.");
+                // create Student ID: Current Year + ID
                 var studentId = DateTime.Now.Year.ToString() + model.StudentId;
                 var existingStudent = await _context.StudentEntities.FirstOrDefaultAsync(s => s.StudentId == studentId);
 
@@ -134,6 +142,18 @@ namespace SchoolManagement.Service
                     _logger.LogInformation("Record has already existed");
                     throw ExistRecordException.ExistsRecord("Student ID already exists");
                 }
+
+                // automatically create account when creating new student
+                AccountAutomaticallyAddModel addAccount = new()
+                {
+                    UserName = StringExtensions.GenerateEmailBasedFullName(model.FullName, studentId),
+                    Role = RoleType.Student
+                };
+                var newAccount = await _account.CreateAccountAutomatically(addAccount);
+
+                //
+                //var queryNewAccount = _context.AccountEntities.AsQueryable();
+                //var newAccount = queryNewAccount.FirstOrDefault(s => s.AccountId == addAccount.UserName)
 
                 // Upload avatar to Cloudinary if provided
                 string? avatarUrl = null;
@@ -164,6 +184,7 @@ namespace SchoolManagement.Service
                     MotherPhoneNumber = model.MotherPhoneNumber,
                     MotherEmail = model.MotherEmail,
                     AcademicYear = DateTime.Now.Year.ToString() + " - " + DateTime.Now.AddYears(3).Year.ToString(),
+                    AccountId = newAccount.AccountId
                 };
 
                 _context.StudentEntities.Add(newStudent);

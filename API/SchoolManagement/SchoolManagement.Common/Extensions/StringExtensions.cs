@@ -206,5 +206,19 @@ namespace SchoolManagement.Common.Extensions
         {
             return str.Split(separator, stringSplitOptions);
         }
+        public static string GenerateEmailBasedFullName(string fullName, string id)
+        {
+            // Tách các từ trong tên
+            string[] words = fullName.ToLower().Split(' ');
+
+            // Lấy chữ cái đầu của mỗi từ
+            string initials = string.Join("", words.Select(w => w[0]));
+
+            // Lấy chữ cái cuối của từ cuối cùng
+            string lastNameLastChar = words[^1][^1].ToString();
+
+            // Kết hợp các kí tự vừa lấy được với id
+            return $"{initials}{lastNameLastChar}{id}@thptquangtrung.edu";
+        }
     }
 }

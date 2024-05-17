@@ -8,6 +8,7 @@ using SchoolManagement.Model;
 using SchoolManagement.Model.Account;
 using SchoolManagement.Service.Intention;
 using SchoolManagement.Service.Intention.Data;
+using System.Text;
 
 namespace SchoolManagement.Service
 {
@@ -17,7 +18,7 @@ namespace SchoolManagement.Service
         private readonly SchoolManagementDbContext _context;
         private readonly IEntityFilterService<AccountEntity> _filterBuilder;
 
-        public AccountService(ILogger<AccountService> logger, 
+        public AccountService(ILogger<AccountService> logger,
             SchoolManagementDbContext context,
             IEntityFilterService<AccountEntity> filterBuilder)
         {
@@ -41,7 +42,7 @@ namespace SchoolManagement.Service
                 FilterModel filter = new();
                 var query = _context.AccountEntities.AsQueryable();
                 int totalCount = await query.CountAsync();
-               
+
                 #region Search
                 if (!string.IsNullOrEmpty(queryModel.SearchValue))
                 {
@@ -71,7 +72,7 @@ namespace SchoolManagement.Service
                     AccountId = a.AccountId,
                     FullName = a.Student != null ? a.Student.FullName : a.Teacher != null ? a.Teacher.FullName : string.Empty,
                     UserName = a.UserName,
-                    Password = a.Password,
+                    Password = a.PasswordHashed,
                     CreatedAt = a.CreatedAt,
                     ModifiedAt = a.ModifiedAt,
                     IsActive = a.IsActive,
@@ -93,7 +94,7 @@ namespace SchoolManagement.Service
         }
 
         /// <summary>
-        /// Create new account
+        /// Create new account (manually) (for testing)
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
@@ -108,8 +109,48 @@ namespace SchoolManagement.Service
 
                 var newAccount = new AccountEntity()
                 {
+                    AccountId = Guid.NewGuid(),
                     UserName = model.UserName,
-                    Password = hashedPassword,
+                    Password = model.Password,
+                    PasswordHashed = hashedPassword,
+                    CreatedAt = DateTime.Now,
+                    ModifiedAt = null,
+                    IsActive = true,
+                    Role = model.Role,
+                };
+                _context.AccountEntities.Add(newAccount);
+                await _context.SaveChangesAsync();
+
+                return newAccount;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occured while creating new acoount. Error: {ex}", ex.Message);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Create new account (automatically) when creating new entity (student/teacher)
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public async ValueTask<AccountEntity> CreateAccountAutomatically(AccountAutomaticallyAddModel model)
+        {
+            try
+            {
+                _logger.LogInformation("Start to create new account.");
+                // Mã hóa mật khẩu trước khi lưu vào cơ sở dữ liệu
+                // thuật toán mã hóa BlowFish
+                var randomPassword = GeneratePassword(8);
+                string hashedPassword = BCrypt.Net.BCrypt.HashPassword(randomPassword);
+
+                var newAccount = new AccountEntity()
+                {
+                    AccountId = Guid.NewGuid(),
+                    UserName = model.UserName,
+                    Password = randomPassword,
+                    PasswordHashed = hashedPassword,
                     CreatedAt = DateTime.Now,
                     ModifiedAt = null,
                     IsActive = true,
@@ -179,6 +220,7 @@ namespace SchoolManagement.Service
             }
         }
 
+        #region Forget password (not done)
         //public async Task<string> GeneratePasswordResetTokenAsync(Guid accountId)
         //{
         //    var account = await _context.AccountEntities.FindAsync(accountId);
@@ -214,6 +256,7 @@ namespace SchoolManagement.Service
 
         //    return true;
         //}
+        #endregion
 
         public async Task<AccountEntity> ValidateAccountAsync(string username, string password)
         {
@@ -265,6 +308,20 @@ namespace SchoolManagement.Service
                 default:
                     return string.Empty;
             }
+        }
+
+        private static string GeneratePassword(int length)
+        {
+            const string ValidChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            var random = new Random();
+            var passwordBuilder = new StringBuilder();
+            for (int i = 0; i < length; i++)
+            {
+                passwordBuilder.Append(ValidChars[random.Next(ValidChars.Length)]);
+            }
+
+            return passwordBuilder.ToString();
+
         }
     }
 }

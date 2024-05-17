@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using SchoolManagement.Model;
 using SchoolManagement.Service;
 using SchoolManagement.Service.Authentication;
 using SchoolManagement.Service.Data;
@@ -29,6 +31,10 @@ namespace SchoolManagement.Startup.BuilderExtensions
         {
             builder.Services.AddSingleton(typeof(IEntityFilterService<>), typeof(EntityFilterService<>));
             builder.Services.AddSingleton<ICloudinaryService, CloudinaryService>();
+            // Add email configuration
+            var configuration = builder.Configuration;
+            var emailConfig = configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>();
+            builder.Services.AddSingleton(emailConfig);
             return builder;
         }
     }

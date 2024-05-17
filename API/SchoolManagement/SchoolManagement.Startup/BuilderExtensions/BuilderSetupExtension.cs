@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using SchoolManagement.Database;
+using SchoolManagement.Model;
 using SchoolManagement.Startup.BuilderExtensions;
 using System;
 using System.Reflection;
@@ -56,7 +57,7 @@ public static class BuilderSetupExtension
                 //ValidAudience = jwtSettings["Audience"],
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["SecretKeys"]))
             };
-        });
+        });      
 
         // Add Authorization
         builder.Services.AddAuthorization();

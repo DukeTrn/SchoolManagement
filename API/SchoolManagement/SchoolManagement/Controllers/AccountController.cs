@@ -89,37 +89,37 @@ namespace SchoolManagement.Web.Controllers
             }
         }
 
-        [HttpPost("send-code")]
-        public async Task<IActionResult> SendVerificationCode(string email)
-        {
-            // Gửi mã xác nhận qua email
-            string verificationCode = GenerateRandomCode();
-            bool sentSuccessfully = await _emailVerificationService.SendVerificationEmailAsync(email, verificationCode);
+        //[HttpPost("send-code")]
+        //public async Task<IActionResult> SendVerificationCode(string email)
+        //{
+        //    // Gửi mã xác nhận qua email
+        //    string verificationCode = GenerateRandomCode();
+        //    bool sentSuccessfully = await _emailVerificationService.SendVerificationEmailAsync(email, verificationCode);
 
-            if (sentSuccessfully)
-                return Ok(new { Message = "Verification code sent successfully" });
-            else
-                return BadRequest(new { Message = "Failed to send verification code" });
-        }
+        //    if (sentSuccessfully)
+        //        return Ok(new { Message = "Verification code sent successfully" });
+        //    else
+        //        return BadRequest(new { Message = "Failed to send verification code" });
+        //}
 
-        [HttpPost("verify-code")]
-        public async Task<IActionResult> VerifyCode(string email, string verificationCode)
-        {
-            // Xác minh mã xác nhận từ người dùng
-            bool isCodeValid = await _emailVerificationService.VerifyCodeAsync(email, verificationCode);
+        //[HttpPost("verify-code")]
+        //public async Task<IActionResult> VerifyCode(string email, string verificationCode)
+        //{
+        //    // Xác minh mã xác nhận từ người dùng
+        //    bool isCodeValid = await _emailVerificationService.VerifyCodeAsync(email, verificationCode);
 
-            if (isCodeValid)
-                return Ok(new { Message = "Verification code is valid" });
-            else
-                return BadRequest(new { Message = "Invalid verification code" });
-        }
+        //    if (isCodeValid)
+        //        return Ok(new { Message = "Verification code is valid" });
+        //    else
+        //        return BadRequest(new { Message = "Invalid verification code" });
+        //}
 
-        private string GenerateRandomCode()
-        {
-            // Đây là nơi bạn triển khai logic để tạo mã xác nhận ngẫu nhiên
-            // Trong ví dụ này, chúng tôi giả định mã có 6 chữ số
-            Random random = new Random();
-            return random.Next(100000, 999999).ToString();
-        }
+        //private string GenerateRandomCode()
+        //{
+        //    // Đây là nơi bạn triển khai logic để tạo mã xác nhận ngẫu nhiên
+        //    // Trong ví dụ này, chúng tôi giả định mã có 6 chữ số
+        //    Random random = new Random();
+        //    return random.Next(100000, 999999).ToString();
+        //}
     }
 }

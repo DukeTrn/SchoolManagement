@@ -8,4 +8,9 @@ namespace SchoolManagement.Model
         public string Password { get; set; } = string.Empty;
         public RoleType Role { get; set; }
     }
+    public class AccountAutomaticallyAddModel
+    {
+        public string UserName { get; set; } = string.Empty;
+        public RoleType Role { get; set; }
+    }
 }
