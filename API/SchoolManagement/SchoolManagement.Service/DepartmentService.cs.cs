@@ -146,7 +146,7 @@ namespace SchoolManagement.Service
 
                 if (dept == null)
                 {
-                    throw new NotFoundException($"Student with ID {id} not found.");
+                    throw new NotFoundException($"Department with ID {id} not found.");
                 }
 
                 _context.DepartmentEntities.Remove(dept);
@@ -161,27 +161,6 @@ namespace SchoolManagement.Service
             }
         }
         #endregion
-
-        /// <summary>
-        /// Search function
-        /// </summary>
-        /// <param name="searchKey"></param>
-        /// <param name="properties"></param>
-        /// <returns></returns>
-        private static List<FilterOperatorItemModel> BuildSearchFilter(string searchKey, params string[] properties)
-        {
-            List<FilterOperatorItemModel> filters = new();
-            foreach (var prop in properties)
-            {
-                filters.Add(new FilterOperatorItemModel()
-                {
-                    KeyName = prop,
-                    Values = new List<string> { searchKey },
-                    KeyType = typeof(string),
-                    Operator = FilterOperator.Contains
-                });
-            }
-            return filters;
-        }
+        
     }
 }

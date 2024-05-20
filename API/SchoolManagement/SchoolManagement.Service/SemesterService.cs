@@ -81,7 +81,7 @@ namespace SchoolManagement.Service
                 {
                     SemesterId = model.SemesterId,
                     SemesterName = model.SemesterName,
-                    AcademicYear = DateTime.Now.Year.ToString() + DateTime.Now.AddYears(1).Year.ToString(),
+                    AcademicYear = DateTime.Now.Year.ToString() + " - " + DateTime.Now.AddYears(1).Year.ToString(),
                     TimeStart = model.TimeStart,
                     TimeEnd = model.TimeEnd,
                 };
@@ -93,6 +93,71 @@ namespace SchoolManagement.Service
             catch (Exception ex)
             {
                 _logger.LogError("An error occured while creating new Semester. Error: {ex}", ex);
+                throw;
+            }
+        }
+        #endregion
+
+        #region Update
+        /// <summary>
+        /// Update a semester by ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public async ValueTask UpdateSemester(string id, SemesterUpdateModel model)
+        {
+            try
+            {
+                _logger.LogInformation("Start to update a semester.");
+                var sem = await _context.SemesterEntities.FirstOrDefaultAsync(s => s.SemesterId == id);
+                if (sem == null)
+                {
+                    throw new NotFoundException($"Semester with ID {id} not found.");
+                }
+
+                sem.SemesterName = model.SemesterName;
+                sem.TimeStart = model.TimeStart;
+                sem.TimeEnd = model.TimeEnd;
+
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occured while updating a Semester. Error: {ex}", ex);
+                throw;
+            }
+        }
+        #endregion
+
+        #region Delete
+        /// <summary>
+        /// Delete semester by ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        /// <exception cref="NotFoundException"></exception>
+        public async ValueTask DeleteSemester(string id)
+        {
+            try
+            {
+                _logger.LogInformation("Start deleting Semester with ID {id}", id);
+
+                var sem = await _context.SemesterEntities.FirstOrDefaultAsync(s => s.SemesterId == id);
+
+                if (sem == null)
+                {
+                    throw new NotFoundException($"Semester with ID {id} not found.");
+                }
+
+                _context.SemesterEntities.Remove(sem);
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Semester with ID {id} deleted successfully.", id);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occurred while deleting Semester with ID {id}. Error: {ex}", id, ex);
                 throw;
             }
         }

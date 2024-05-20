@@ -2,31 +2,32 @@
 using SchoolManagement.Common.Enum;
 using SchoolManagement.Common.Exceptions;
 using SchoolManagement.Model;
+using SchoolManagement.Model.Semester;
 using SchoolManagement.Service.Intention;
 
 namespace SchoolManagement.Web.Controllers
 {
-    [ApiController, Route("api/department")]
-    public class DepartmentController : ControllerBase
+    [ApiController, Route("api/semester")]
+    public class SemesterController : ControllerBase
     {
-        private readonly IDepartmentService _service;
+        private readonly ISemesterService _service;
 
-        public DepartmentController(IDepartmentService service)
+        public SemesterController(ISemesterService service)
         {
             _service = service;
         }
 
         /// <summary>
-        /// Get list of all departments
+        /// Get list of all semesters
         /// </summary>
         /// <param name="queryModel"></param>
         /// <returns></returns>
         [HttpPost, Route("all")]
-        public async ValueTask<IActionResult> GetAllDepartments([FromBody] PageModel queryModel)
+        public async ValueTask<IActionResult> GetAllSemesters([FromBody] PageModel queryModel)
         {
             try
             {
-                var result = await _service.GetAllDepartments(queryModel);
+                var result = await _service.GetAllSemesters(queryModel);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -36,16 +37,16 @@ namespace SchoolManagement.Web.Controllers
         }
 
         /// <summary>
-        /// Create a new department
+        /// Create a new semester
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost, Route("create")]
-        public async ValueTask<IActionResult> CreateDepartment([FromBody] DepartmentAddModel model)
+        public async ValueTask<IActionResult> CreateSemester([FromBody] SemesterAddModel model)
         {
             try
             {
-                await _service.CreateDepartment(model);
+                await _service.CreateSemester(model);
                 return Ok(new { result = true, messageType = 0 });
             }
             catch (ExistRecordException)
@@ -59,17 +60,17 @@ namespace SchoolManagement.Web.Controllers
         }
 
         /// <summary>
-        /// Update a department by ID.
+        /// Update a semester by ID.
         /// </summary>
         /// <param name="id"></param>
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPut("{id}")]
-        public async ValueTask<ActionResult> UpdateDepartment(string id, [FromBody] DepartmentUpdateModel model)
+        public async ValueTask<ActionResult> UpdateSemester(string id, [FromBody] SemesterUpdateModel model)
         {
             try
             {
-                await _service.UpdateDepartment(id, model);
+                await _service.UpdateSemester(id, model);
                 return Ok(new
                 {
                     result = true,
@@ -87,11 +88,11 @@ namespace SchoolManagement.Web.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteDepartment(string id)
+        public async Task<IActionResult> DeleteSemester(string id)
         {
             try
             {
-                await _service.DeleteDepartment(id);
+                await _service.DeleteSemester(id);
                 return Ok(new
                 {
                     result = true,
@@ -104,7 +105,7 @@ namespace SchoolManagement.Web.Controllers
                 {
                     result = false,
                     messageType = MessageType.Error,
-                    message = $"Không tìm thấy bộ môn với ID {id} này!"
+                    message = $"Không tìm thấy học kì với ID {id} này!"
                 });
             }
             catch (Exception ex)
