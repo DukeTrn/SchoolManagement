@@ -27,6 +27,7 @@ namespace SchoolManagement.Service
             _filterBuilder = filterBuilder;
         }
 
+        #region Get datas
         /// <summary>
         /// Get list of all accounts with pagination
         /// </summary>
@@ -41,7 +42,6 @@ namespace SchoolManagement.Service
                 int pageSize = queryModel.PageSize != null && queryModel.PageSize.Value > 0 ? queryModel.PageSize.Value : 10;
                 FilterModel filter = new();
                 var query = _context.AccountEntities.AsQueryable();
-                int totalCount = await query.CountAsync();
 
                 #region Search
                 if (!string.IsNullOrEmpty(queryModel.SearchValue))
@@ -49,25 +49,22 @@ namespace SchoolManagement.Service
                     _logger.LogInformation("Add Search Value: {SearchValue}", queryModel.SearchValue);
                     var searchFilter = BuildSearchFilter(queryModel.SearchValue,
                         nameof(AccountEntity.UserName));
+                    //query = query.Where(a => (a.Student != null && a.Student.FullName.Contains(queryModel.SearchValue)) ||
+                    //                          (a.Teacher != null && a.Teacher.FullName.Contains(queryModel.SearchValue)));
                     filter.Or.AddRange(searchFilter);
-                }
-                if (!string.IsNullOrEmpty(queryModel.SearchValue))
-                {
-                    query = query.Where(a => (a.Student != null && a.Student.FullName.Contains(queryModel.SearchValue)) ||
-                                              (a.Teacher != null && a.Teacher.FullName.Contains(queryModel.SearchValue)));
                 }
                 #endregion
 
                 query = _filterBuilder.BuildFilterQuery(query, filter);
 
-                var accounts = await query
+                var accountsQuery = await query
                     .Include(a => a.Student)
                     .Include(a => a.Teacher)
                     .Skip((pageNumber - 1) * pageSize)
                     .Take(pageSize)
                     .ToListAsync();
 
-                var accountDisplayModels = accounts.Select(a => new AccountDisplayModel
+                var accountDisplayModels = accountsQuery.Select(a => new AccountDisplayModel
                 {
                     AccountId = a.AccountId,
                     FullName = a.Student != null ? a.Student.FullName : a.Teacher != null ? a.Teacher.FullName : string.Empty,
@@ -80,7 +77,7 @@ namespace SchoolManagement.Service
                 }).ToList();
                 return new PaginationModel<AccountDisplayModel>
                 {
-                    TotalCount = totalCount,
+                    TotalCount = accountsQuery.Count,
                     PageNumber = pageNumber,
                     PageSize = pageSize,
                     DataList = accountDisplayModels
@@ -93,6 +90,7 @@ namespace SchoolManagement.Service
             }
         }
 
+        #endregion
 
         #region Create account
         /// <summary>
@@ -171,11 +169,12 @@ namespace SchoolManagement.Service
         }
         #endregion
 
-        #region Delete account
-        public async Task<bool> DeleteAccountAsync(Guid accountId)
+        #region Update account
+        public async Task<bool> UpdateStatusAsync(Guid accountId, bool isActive)
         {
             try
             {
+                _logger.LogInformation($"Start to change status for account with ID {accountId}.");
                 var account = await _context.AccountEntities.FindAsync(accountId);
                 if (account == null)
                 {
@@ -183,18 +182,18 @@ namespace SchoolManagement.Service
                     return false;
                 }
 
-                _context.AccountEntities.Remove(account);
+                account.IsActive = isActive;
+                account.ModifiedAt = DateTime.Now;
                 await _context.SaveChangesAsync();
-                _logger.LogInformation("Account with ID {accountId} deleted successfully.", accountId);
+                _logger.LogInformation("Account with ID {accountId} status updated to {isActive}.", accountId, isActive);
                 return true;
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error deleting account with ID {accountId}: {ex}", accountId, ex);
+                _logger.LogError($"An error occurred while updating status for account with ID {accountId}. Error: {ex.Message}");
                 throw;
             }
         }
-        #endregion
 
         public async Task ChangePasswordAsync(Guid accountId, ChangePasswordModel model)
         {
@@ -247,6 +246,34 @@ namespace SchoolManagement.Service
                 throw;
             }
         }
+
+        #endregion
+
+        #region Delete account
+        public async Task<bool> DeleteAccountAsync(Guid accountId)
+        {
+            try
+            {
+                var account = await _context.AccountEntities.FindAsync(accountId);
+                if (account == null)
+                {
+                    _logger.LogWarning("Account with ID {accountId} not found.", accountId);
+                    return false;
+                }
+
+                _context.AccountEntities.Remove(account);
+                await _context.SaveChangesAsync();
+                _logger.LogInformation("Account with ID {accountId} deleted successfully.", accountId);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error deleting account with ID {accountId}: {ex}", accountId, ex);
+                throw;
+            }
+        }
+        #endregion
+
 
         #region Forget password (not done)
         //public async Task<string> GeneratePasswordResetTokenAsync(Guid accountId)

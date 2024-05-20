@@ -79,7 +79,7 @@ namespace SchoolManagement.Web.Controllers
             return Ok(new { result = true, message = "Xóa tài khoản thành công" });
         }
 
-        #region Change password (not completed)
+        #region Change password
         [HttpPut("{accountId}/changepassword")]
         public async Task<IActionResult> ChangePassword(Guid accountId, [FromBody] ChangePasswordModel model)
         {
@@ -107,6 +107,26 @@ namespace SchoolManagement.Web.Controllers
             }
         }
 
+        [HttpPut("{accountId}/status/{isActive}")]
+        public async Task<IActionResult> UpdateAccountStatus(Guid accountId, bool isActive)
+        {
+            var result = await _accountService.UpdateStatusAsync(accountId, isActive);
+            if (!result)
+            {
+                return NotFound(new { Result = false, 
+                    MessageType = MessageType.Error,
+                    Message = "Không tìm thấy tài khoản." 
+                });
+            }
+
+            return Ok(new {
+                Result = true,
+                MessageType = MessageType.Information,
+                Message = "Cập nhật trạng thái tài khoản thành công!" });
+        }
+        #endregion
+
+        #region Forget password (not completed)
         //[HttpPost("send-code")]
         //public async Task<IActionResult> SendVerificationCode(string email)
         //{

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Client;
 using SchoolManagement.Common.Enum;
 using SchoolManagement.Common.Exceptions;
 using SchoolManagement.Model;
@@ -40,6 +41,7 @@ namespace SchoolManagement.Controllers
             }
         }
 
+        #region Get a record
         /// <summary>
         /// Get student by ID (full information of 1 student)
         /// </summary>
@@ -75,6 +77,43 @@ namespace SchoolManagement.Controllers
                 return StatusCode(500, ex);
             }
         }
+
+        /// <summary>
+        /// Get student by account ID (use for Account service, full information of 1 student)
+        /// </summary>
+        /// <param name="accountId"></param>
+        /// <returns></returns>
+        [HttpGet("account/{accountId}")]
+        public async ValueTask<ActionResult<StudentFullDetailModel>> GetStudentByAccountId(Guid accountId)
+        {
+            try
+            {
+                // Gọi service để lấy thông tin học sinh bằng ID
+                var student = await _service.GetStudentByAccountId(accountId);
+                if (student == null)
+                {
+                    return NotFound($"Student with account ID {accountId} not found.");
+                }
+
+                // Trả về thông tin học sinh nếu tìm thấy
+                return Ok(new
+                {
+                    result = true,
+                    data = student,
+                    messageType = 0
+                });
+            }
+            catch (NotFoundException)
+            {
+                // Xử lý ngoại lệ và trả về lỗi nếu có
+                return NotFound(new { result = false, messageType = MessageType.Error, message = $"Không tìm thấy học sinh với ID tài khoản này!" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+        }
+        #endregion
 
         /// <summary>
         /// Create a new student

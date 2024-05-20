@@ -52,7 +52,7 @@ namespace SchoolManagement.Service
 
                 FilterModel filter = new();
                 var query = _context.StudentEntities.AsQueryable();
-                int totalCount = await query.CountAsync();
+                //int totalCount = await query.CountAsync();
 
                 #region Search
                 if (!string.IsNullOrEmpty(queryModel.SearchValue))
@@ -78,7 +78,7 @@ namespace SchoolManagement.Service
                             .ToListAsync();
                 return new PaginationModel<StudentDisplayModel>
                 {
-                    TotalCount = totalCount,
+                    TotalCount = query.Count(),
                     PageNumber = pageNumber,
                     PageSize = pageSize,
                     DataList = from item in paginatedData
@@ -93,6 +93,7 @@ namespace SchoolManagement.Service
         }
         #endregion
 
+        #region Get a record
         /// <summary>
         /// Get a student by ID (string)
         /// </summary>
@@ -122,7 +123,38 @@ namespace SchoolManagement.Service
             }
         }
 
+        /// <summary>
+        /// Get a student by account ID (Guid). Use for account service
+        /// </summary>
+        /// <param name="accountId"></param>
+        /// <returns></returns>
+        /// <exception cref="NotFoundException"></exception>
+        public async ValueTask<StudentFullDetailModel> GetStudentByAccountId(Guid accountId)
+        {
+            try
+            {
+                _logger.LogInformation("Start to get a student by account id.");
+                var student = await _context.StudentEntities.FirstOrDefaultAsync(s => s.AccountId == accountId);
+                if (student == null)
+                {
+                    throw new NotFoundException($"Student with ID {accountId} not found.");
+                }
 
+                // Chuyển đổi StudentEntity thành StudentFullDetailModel (nếu cần)
+                // Map properties from student entity to display model
+                var detailModel = student.ToFullDetailModel();
+
+                return detailModel;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occured while getting student by account id. Error: {ex}", ex);
+                throw;
+            }
+        }
+        #endregion
+
+        #region Create
         /// <summary>
         /// Add new student
         /// </summary>
@@ -150,10 +182,6 @@ namespace SchoolManagement.Service
                     Role = RoleType.Student
                 };
                 var newAccount = await _account.CreateAccountAutomatically(addAccount);
-
-                //
-                //var queryNewAccount = _context.AccountEntities.AsQueryable();
-                //var newAccount = queryNewAccount.FirstOrDefault(s => s.AccountId == addAccount.UserName)
 
                 // Upload avatar to Cloudinary if provided
                 string? avatarUrl = null;
@@ -197,7 +225,9 @@ namespace SchoolManagement.Service
                 throw;
             }
         }
+        #endregion
 
+        #region Update
         /// <summary>
         /// Update a student by his/her ID
         /// </summary>
@@ -246,7 +276,9 @@ namespace SchoolManagement.Service
                 throw;
             }
         }
+        #endregion
 
+        #region Delete
         /// <summary>
         /// Delete student by his/her ID (for testing)
         /// </summary>
@@ -277,6 +309,7 @@ namespace SchoolManagement.Service
                 throw;
             }
         }
+        #endregion
 
         #region Export
         public async Task<byte[]> ExportToExcelAsync(ExportQueryModel queryModel)
@@ -378,6 +411,8 @@ namespace SchoolManagement.Service
         }
         #endregion
 
+        // Check data (related to class detail entity)
+        
         /// <summary>
         /// Search function
         /// </summary>
@@ -400,7 +435,11 @@ namespace SchoolManagement.Service
             return filters;
         }
 
-        // Translate StatusType enum
+        /// <summary>
+        /// Translate StatusType enum
+        /// </summary>
+        /// <param name="status"></param>
+        /// <returns></returns>
         private static string TranslateStatus(StatusType status)
         {
             switch (status)
