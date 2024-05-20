@@ -5,7 +5,7 @@ namespace SchoolManagement.Model
 {
     public class StudentAddModel
     {
-        [Required(ErrorMessage = "StudentId is required")]
+        [Required(ErrorMessage = "Student Id is required")]
         public string StudentId { get; set; } = string.Empty; // Khóa chính Student
         [Required(ErrorMessage = "FullName is required")]
         public string FullName { get; set; } = string.Empty;
@@ -23,7 +23,7 @@ namespace SchoolManagement.Model
         //public string? Avatar { get; set; }
         public IFormFile? Avatar { get; set; }
         [Required(ErrorMessage = "Email is required")]
-        public string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
         //public StatusType Status { get; set; } // tình trạng học tập (đang học - đình chỉ - thôi học)
 
         // Parent information

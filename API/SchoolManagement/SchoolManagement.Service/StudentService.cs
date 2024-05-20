@@ -39,7 +39,7 @@ namespace SchoolManagement.Service
         #region List students
         /// <summary>
         /// Get list of all students with pagination
-        /// will add status filter
+        /// will add status filter (if any)
         /// </summary>
         /// <param name="queryModel"></param>
         public async ValueTask<PaginationModel<StudentDisplayModel>> GetAllStudents(StudentQueryModel queryModel)
@@ -52,7 +52,6 @@ namespace SchoolManagement.Service
 
                 FilterModel filter = new();
                 var query = _context.StudentEntities.AsQueryable();
-                //int totalCount = await query.CountAsync();
 
                 #region Search
                 if (!string.IsNullOrEmpty(queryModel.SearchValue))
@@ -61,12 +60,18 @@ namespace SchoolManagement.Service
                     var searchFilter = BuildSearchFilter(queryModel.SearchValue,
                         nameof(StudentEntity.StudentId),
                         nameof(StudentEntity.FullName),
-                        nameof(StudentEntity.IdentificationNumber),
                         nameof(StudentEntity.Gender),
-                        nameof(StudentEntity.Ethnic),
-                        nameof(StudentEntity.Address),
+                        nameof(StudentEntity.Email),
                         nameof(StudentEntity.PhoneNumber));
                     filter.Or.AddRange(searchFilter);
+                }
+                #endregion
+
+                #region Status Filter
+                if (queryModel.Status.Count > 0)
+                {
+                    _logger.LogInformation("Add Status condition: {Status}", queryModel.Status.ToString());
+                    filter.AddAnd((StudentEntity entity) => entity.Status, queryModel.Status);
                 }
                 #endregion
 
@@ -202,7 +207,7 @@ namespace SchoolManagement.Service
                     PhoneNumber = model.PhoneNumber,
                     Avatar = avatarUrl,
                     Email = model.Email,
-                    Status = StatusType.Active,
+                    Status = StudentStatusType.Active,
                     FatherName = model.FatherName,
                     FatherJob = model.FatherJob,
                     FatherPhoneNumber = model.FatherPhoneNumber,
@@ -238,7 +243,7 @@ namespace SchoolManagement.Service
         {
             try
             {
-                _logger.LogInformation("Start to update new student.");
+                _logger.LogInformation("Start to update a student.");
                 var student = await _context.StudentEntities.FirstOrDefaultAsync(s => s.StudentId == id);
                 if (student == null)
                 {
@@ -258,6 +263,7 @@ namespace SchoolManagement.Service
                 student.PhoneNumber = model.PhoneNumber;
                 student.Avatar = avatarUrl;
                 student.Email = model.Email;
+                student.Status = model.Status;
                 // Parent info
                 student.FatherName = model.FatherName;
                 student.FatherJob = model.FatherJob;
@@ -440,15 +446,15 @@ namespace SchoolManagement.Service
         /// </summary>
         /// <param name="status"></param>
         /// <returns></returns>
-        private static string TranslateStatus(StatusType status)
+        private static string TranslateStatus(StudentStatusType status)
         {
             switch (status)
             {
-                case StatusType.Active:
+                case StudentStatusType.Active:
                     return "Đang học";
-                case StatusType.Suspended:
+                case StudentStatusType.Suspended:
                     return "Đình chỉ";
-                case StatusType.Inactive:
+                case StudentStatusType.Inactive:
                     return "Nghỉ học";
                 default:
                     return string.Empty;

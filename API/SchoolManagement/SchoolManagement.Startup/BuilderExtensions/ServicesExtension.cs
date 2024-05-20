@@ -22,6 +22,8 @@ namespace SchoolManagement.Startup.BuilderExtensions
         {
             builder.Services.AddScoped<IStudentService, StudentService>();
             builder.Services.AddScoped<IAccountService, AccountService>();
+            builder.Services.AddScoped<ITeacherService, TeacherService>();
+            builder.Services.AddScoped<IDepartmentService, DepartmentService>();
             builder.Services.AddScoped<ITokenService, TokenService>();
             builder.Services.AddScoped<IEmailService, EmailService>();
             builder.Services.AddScoped<IEmailVerificationService, EmailVerificationService>();

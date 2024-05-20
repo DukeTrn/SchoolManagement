@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using SchoolManagement.Common.Enum;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SchoolManagement.Entity
@@ -23,14 +24,14 @@ namespace SchoolManagement.Entity
         public bool IsLeader { get; set; } // tổ trưởng
         public bool IsViceLeader { get; set; } // tổ phó
         //public bool NotificationIsSeen { get; set; } // đã xem
-        public int Status { get; set; } // tình trạng làm việc: đang dạy, tạm nghỉ, nghỉ việc
+        public TeacherStatusType Status { get; set; } // tình trạng làm việc: đang dạy, tạm nghỉ, nghỉ việc
 
         // 1-1 teacher-user
         public Guid? AccountId { get; set; } // Khóa ngoại tham chiếu đến UserEntity
         public AccountEntity? Account { get; set; } = null!;
 
         // 1-N Department-Teacher
-        public string DepartmentId { get; set; } = string.Empty;
+        public string? DepartmentId { get; set; } = string.Empty;
         public DepartmentEntity Department { get; set; } = null!;
 
         // 1-1 HomeroomTeacher-Class

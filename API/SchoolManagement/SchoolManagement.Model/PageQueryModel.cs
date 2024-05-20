@@ -10,4 +10,12 @@ namespace SchoolManagement.Model
         [Required]
         public int? PageNumber { get; set; } = 1;
     }
+
+    public class PageModel
+    {
+        [Required]
+        public int? PageSize { get; set; } = 10;
+        [Required]
+        public int? PageNumber { get; set; } = 1;
+    }
 }

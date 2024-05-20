@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Client;
+﻿using Microsoft.AspNetCore.Mvc;
 using SchoolManagement.Common.Enum;
 using SchoolManagement.Common.Exceptions;
 using SchoolManagement.Model;
@@ -140,7 +138,8 @@ namespace SchoolManagement.Controllers
         }
 
         /// <summary>
-        /// Update student's information by his/her ID
+        /// Update student's information by his/her ID.
+        /// Status: 1 (Active), 2 (Suspended), 3 (Inactive)
         /// </summary>
         /// <param name="id"></param>
         /// <param name="model"></param>
@@ -199,6 +198,11 @@ namespace SchoolManagement.Controllers
             }
         }
 
+        /// <summary>
+        /// Status: 1 (Active), 2 (Suspended), 3 (Inactive)
+        /// </summary>
+        /// <param name="queryModel"></param>
+        /// <returns></returns>
         [HttpPost("export")]
         public async Task<IActionResult> ExportToExcel([FromBody] ExportQueryModel queryModel)
         {

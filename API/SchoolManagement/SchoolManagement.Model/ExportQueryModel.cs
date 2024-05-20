@@ -11,6 +11,6 @@ namespace SchoolManagement.Model
         [Required]
         public int? PageNumber { get; set; } = 1;
         public List<string> StudentIds { get; set; } = new List<string>();
-        public List<StatusType> Status { get; set; } = new();
+        public List<StudentStatusType> Status { get; set; } = new();
     }
 }

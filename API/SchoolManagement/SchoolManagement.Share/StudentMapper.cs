@@ -11,12 +11,8 @@ namespace SchoolManagement.Share
             StudentId = entity.StudentId,
             FullName = entity.FullName,
             DOB = entity.DOB,
-            IdentificationNumber = entity.IdentificationNumber,
             Gender = entity.Gender,
-            Address = entity.Address,
-            Ethnic = entity.Ethnic,
             PhoneNumber = entity.PhoneNumber,
-            Avatar = entity.Avatar,
             Email = entity.Email,
             Status = TranslateStatus(entity.Status),
         };
@@ -45,15 +41,15 @@ namespace SchoolManagement.Share
             AcademicYear = entity.AcademicYear
         };
 
-        private static string TranslateStatus(StatusType status)
+        private static string TranslateStatus(StudentStatusType status)
         {
             switch (status)
             {
-                case StatusType.Active:
+                case StudentStatusType.Active:
                     return "Đang học";
-                case StatusType.Suspended:
+                case StudentStatusType.Suspended:
                     return "Đình chỉ";
-                case StatusType.Inactive:
+                case StudentStatusType.Inactive:
                     return "Nghỉ học";
                 default:
                     return string.Empty;

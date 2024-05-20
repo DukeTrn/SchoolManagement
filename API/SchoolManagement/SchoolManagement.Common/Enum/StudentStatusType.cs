@@ -1,8 +1,7 @@
 ﻿using System.ComponentModel;
-
 namespace SchoolManagement.Common.Enum
 {
-    public enum StatusType
+    public enum StudentStatusType
     {
         [Description("Đang học")]
         Active = 1,
