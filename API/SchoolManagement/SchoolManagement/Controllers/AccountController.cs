@@ -62,6 +62,24 @@ namespace SchoolManagement.Web.Controllers
             }
         }
 
+        /// <summary>
+        /// Use for testing (delete student/teacher first, then delete account
+        /// </summary>
+        /// <param name="accountId"></param>
+        /// <returns></returns>
+        [HttpDelete("{accountId}")]
+        public async Task<IActionResult> DeleteAccount(Guid accountId)
+        {
+            var result = await _accountService.DeleteAccountAsync(accountId);
+            if (!result)
+            {
+                return NotFound(new { Message = "Không tìm thấy tài khoản này!" });
+            }
+
+            return Ok(new { result = true, message = "Xóa tài khoản thành công" });
+        }
+
+        #region Change password (not completed)
         [HttpPut("{accountId}/changepassword")]
         public async Task<IActionResult> ChangePassword(Guid accountId, [FromBody] ChangePasswordModel model)
         {
@@ -121,5 +139,7 @@ namespace SchoolManagement.Web.Controllers
         //    Random random = new Random();
         //    return random.Next(100000, 999999).ToString();
         //}
+        #endregion
+
     }
 }

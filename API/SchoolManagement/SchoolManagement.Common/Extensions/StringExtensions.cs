@@ -208,17 +208,22 @@ namespace SchoolManagement.Common.Extensions
         }
         public static string GenerateEmailBasedFullName(string fullName, string id)
         {
-            // Tách các từ trong tên
-            string[] words = fullName.ToLower().Split(' ');
+            // Tách họ, tên đệm và tên
+            string[] nameParts = fullName.Split(' ');
+            string lastName = nameParts[0];
+            string middleName = string.Join(" ", nameParts.Skip(1).Take(nameParts.Length - 2));
+            string firstName = nameParts[nameParts.Length - 1];
 
-            // Lấy chữ cái đầu của mỗi từ
-            string initials = string.Join("", words.Select(w => w[0]));
+            // Lấy ký tự đầu tiên từ họ, tên đệm và tên
+            string initials = lastName[0].ToString().ToLower();
+            initials += string.Join("", middleName.Split(' ').Select(n => n[0].ToString().ToLower()));
+            initials += firstName[0].ToString().ToLower();
 
-            // Lấy chữ cái cuối của từ cuối cùng
-            string lastNameLastChar = words[^1][^1].ToString();
+            // Lấy 6 chữ số cuối của ID
+            string idSuffix = id.Substring(id.Length - 6);
 
             // Kết hợp các kí tự vừa lấy được với id
-            return $"{initials}{lastNameLastChar}{id}@thptquangtrung.edu";
+            return $"{initials}{idSuffix}@thptquangtrung.edu";
         }
     }
 }

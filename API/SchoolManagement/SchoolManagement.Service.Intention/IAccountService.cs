@@ -10,6 +10,7 @@ namespace SchoolManagement.Service.Intention
         ValueTask<AccountEntity> CreateAccount(AccountAddModel model);
         ValueTask<AccountEntity> CreateAccountAutomatically(AccountAutomaticallyAddModel model);
         Task ChangePasswordAsync(Guid accountId, ChangePasswordModel model);
+        Task<bool> DeleteAccountAsync(Guid accountId);
         Task<AccountEntity> ValidateAccountAsync(string username, string password);
         //Task<string> GeneratePasswordResetTokenAsync(Guid accountId);
         //Task<bool> ResetPasswordAsync(string token, string newPassword);

@@ -248,7 +248,7 @@ namespace SchoolManagement.Service
         }
 
         /// <summary>
-        /// Delete student by his/her ID
+        /// Delete student by his/her ID (for testing)
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -278,6 +278,7 @@ namespace SchoolManagement.Service
             }
         }
 
+        #region Export
         public async Task<byte[]> ExportToExcelAsync(ExportQueryModel queryModel)
         {
             try
@@ -375,6 +376,7 @@ namespace SchoolManagement.Service
                 throw;
             }
         }
+        #endregion
 
         /// <summary>
         /// Search function

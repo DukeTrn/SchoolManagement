@@ -93,6 +93,8 @@ namespace SchoolManagement.Service
             }
         }
 
+
+        #region Create account
         /// <summary>
         /// Create new account (manually) (for testing)
         /// </summary>
@@ -167,6 +169,32 @@ namespace SchoolManagement.Service
                 throw;
             }
         }
+        #endregion
+
+        #region Delete account
+        public async Task<bool> DeleteAccountAsync(Guid accountId)
+        {
+            try
+            {
+                var account = await _context.AccountEntities.FindAsync(accountId);
+                if (account == null)
+                {
+                    _logger.LogWarning("Account with ID {accountId} not found.", accountId);
+                    return false;
+                }
+
+                _context.AccountEntities.Remove(account);
+                await _context.SaveChangesAsync();
+                _logger.LogInformation("Account with ID {accountId} deleted successfully.", accountId);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error deleting account with ID {accountId}: {ex}", accountId, ex);
+                throw;
+            }
+        }
+        #endregion
 
         public async Task ChangePasswordAsync(Guid accountId, ChangePasswordModel model)
         {
