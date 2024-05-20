@@ -88,5 +88,37 @@ namespace SchoolManagement.Web.Controllers
                 return StatusCode(500, new { result = false, messageType = MessageType.Error, message = ex });
             }
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteDepartment(string id)
+        {
+            try
+            {
+                await _service.DeleteDepartment(id);
+                return Ok(new
+                {
+                    result = true,
+                    messageType = MessageType.Information
+                });
+            }
+            catch (NotFoundException)
+            {
+                return NotFound(new
+                {
+                    result = false,
+                    messageType = MessageType.Error,
+                    message = $"Không tìm thấy bộ môn với ID {id} này!"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    result = false,
+                    messageType = MessageType.Error,
+                    message = $"An error occurred while deleting student: {ex.Message}"
+                });
+            }
+        }
     }
 }

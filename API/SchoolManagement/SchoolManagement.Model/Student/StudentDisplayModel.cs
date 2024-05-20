@@ -1,12 +1,10 @@
-﻿using SchoolManagement.Common.Enum;
-
-namespace SchoolManagement.Model
+﻿namespace SchoolManagement.Model
 {
     public class StudentDisplayModel
     {
         public string StudentId { get; set; } = string.Empty; // Khóa chính Student
         public string FullName { get; set; } = string.Empty;
-        public DateTime DOB { get; set; }       
+        public string DOB { get; set; } = string.Empty;
         public string Gender { get; set; } = string.Empty;       
         public string PhoneNumber { get; set; } = string.Empty;    
         public string? Email { get; set; }

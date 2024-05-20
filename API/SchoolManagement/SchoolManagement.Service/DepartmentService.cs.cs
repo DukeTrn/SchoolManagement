@@ -130,6 +130,39 @@ namespace SchoolManagement.Service
         }
         #endregion
 
+        #region Delete
+        /// <summary>
+        /// Delete dept by ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        /// <exception cref="NotFoundException"></exception>
+        public async ValueTask DeleteDepartment(string id)
+        {
+            try
+            {
+                _logger.LogInformation("Start deleting department with ID {id}", id);
+
+                var dept = await _context.DepartmentEntities.FirstOrDefaultAsync(s => s.DepartmentId == id);
+
+                if (dept == null)
+                {
+                    throw new NotFoundException($"Student with ID {id} not found.");
+                }
+
+                _context.DepartmentEntities.Remove(dept);
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Department with ID {id} deleted successfully.", id);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occurred while deleting Department with ID {id}. Error: {ex}", id, ex);
+                throw;
+            }
+        }
+        #endregion
+
         /// <summary>
         /// Search function
         /// </summary>

@@ -9,5 +9,6 @@ namespace SchoolManagement.Service.Intention
         ValueTask<PaginationModel<DepartmentDisplayModel>> GetAllDepartments(PageModel queryModel);
         ValueTask CreateDepartment(DepartmentAddModel model);
         ValueTask UpdateDepartment(string id, DepartmentUpdateModel model);
+        ValueTask DeleteDepartment(string id);
     }
 }

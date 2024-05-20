@@ -70,8 +70,8 @@ namespace SchoolManagement.Service
                     FullName = a.Student != null ? a.Student.FullName : a.Teacher != null ? a.Teacher.FullName : string.Empty,
                     UserName = a.UserName,
                     Password = a.PasswordHashed,
-                    CreatedAt = a.CreatedAt,
-                    ModifiedAt = a.ModifiedAt,
+                    CreatedAt = a.CreatedAt.ToString("dd/MM/yyyy"),
+                    ModifiedAt = a.ModifiedAt == null ? "" : a.ModifiedAt.Value.ToString("dd/MM/yyyy"),
                     IsActive = a.IsActive,
                     Role = TranslateStatus(a.Role)
                 }).ToList();

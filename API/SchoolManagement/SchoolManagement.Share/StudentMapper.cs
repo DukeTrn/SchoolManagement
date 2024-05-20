@@ -10,7 +10,7 @@ namespace SchoolManagement.Share
         {
             StudentId = entity.StudentId,
             FullName = entity.FullName,
-            DOB = entity.DOB,
+            DOB = entity.DOB.ToString("dd/MM/yyyy"),
             Gender = entity.Gender,
             PhoneNumber = entity.PhoneNumber,
             Email = entity.Email,
@@ -21,7 +21,7 @@ namespace SchoolManagement.Share
         {
             StudentId = entity.StudentId,
             FullName = entity.FullName,
-            DOB = entity.DOB,
+            DOB = entity.DOB.ToString("dd/MM/yyyy"),
             IdentificationNumber = entity.IdentificationNumber,
             Gender = entity.Gender,
             Address = entity.Address,
