@@ -1,6 +1,4 @@
-﻿using SchoolManagement.Entity;
-using SchoolManagement.Model;
-using SchoolManagement.Model.Department;
+﻿using SchoolManagement.Model;
 
 namespace SchoolManagement.Service.Intention
 {

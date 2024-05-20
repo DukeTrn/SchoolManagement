@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SchoolManagement.Database;
-using SchoolManagement.Model.Department;
 using SchoolManagement.Model;
 using SchoolManagement.Service.Intention;
 using SchoolManagement.Share;

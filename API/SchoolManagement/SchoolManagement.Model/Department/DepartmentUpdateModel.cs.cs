@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SchoolManagement.Model.Department
+namespace SchoolManagement.Model
 {
     public class DepartmentUpdateModel
     {

@@ -1,4 +1,4 @@
-﻿namespace SchoolManagement.Model.Department
+﻿namespace SchoolManagement.Model
 {
     public class DepartmentDisplayModel
     {

@@ -1,11 +1,8 @@
-﻿using CloudinaryDotNet;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using SchoolManagement.Common.Enum;
 using SchoolManagement.Common.Exceptions;
 using SchoolManagement.Model;
-using SchoolManagement.Model.Department;
 using SchoolManagement.Service.Intention;
-using SchoolManagement.Service.Intention.Data;
 
 namespace SchoolManagement.Web.Controllers
 {

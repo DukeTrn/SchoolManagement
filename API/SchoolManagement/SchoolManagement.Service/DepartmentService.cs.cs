@@ -5,7 +5,6 @@ using SchoolManagement.Common.Exceptions;
 using SchoolManagement.Database;
 using SchoolManagement.Entity;
 using SchoolManagement.Model;
-using SchoolManagement.Model.Department;
 using SchoolManagement.Service.Intention;
 using SchoolManagement.Share;
 

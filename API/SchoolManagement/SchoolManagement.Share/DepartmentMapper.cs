@@ -1,5 +1,5 @@
 ﻿using SchoolManagement.Entity;
-using SchoolManagement.Model.Department;
+using SchoolManagement.Model;
 
 namespace SchoolManagement.Share
 {
