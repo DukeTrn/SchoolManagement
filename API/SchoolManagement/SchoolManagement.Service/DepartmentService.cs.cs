@@ -23,17 +23,17 @@ namespace SchoolManagement.Service
             _context = context;
         }
 
+        #region List departments
         /// <summary>
         /// Get list of all departments
         /// </summary>
         /// <param name="queryModel"></param>
         /// <returns></returns>
-        #region List departments
         public async ValueTask<PaginationModel<DepartmentDisplayModel>> GetAllDepartments(PageModel queryModel)
         {
             try
             {
-                _logger.LogInformation("Start to get list students.");
+                _logger.LogInformation("Start to get list departments.");
                 int pageNumber = queryModel.PageNumber != null && queryModel.PageNumber.Value > 0 ? queryModel.PageNumber.Value : 1;
                 int pageSize = queryModel.PageSize != null && queryModel.PageSize.Value > 0 ? queryModel.PageSize.Value : 10;
 
@@ -54,7 +54,7 @@ namespace SchoolManagement.Service
             }
             catch (Exception ex)
             {
-                _logger.LogError("An error occured while getting list of all students. Error: {ex}", ex);
+                _logger.LogError("An error occured while getting list of all departments. Error: {ex}", ex);
                 throw;
             }
         }
@@ -71,8 +71,8 @@ namespace SchoolManagement.Service
             try
             {
                 _logger.LogInformation("Start to create new department.");
-                var existingStudent = await _context.DepartmentEntities.FirstOrDefaultAsync(s => s.DepartmentId == model.DepartmentId);
-                if (existingStudent != null)
+                var existingDept = await _context.DepartmentEntities.FirstOrDefaultAsync(s => s.DepartmentId == model.DepartmentId);
+                if (existingDept != null)
                 {
                     _logger.LogInformation("Department has already existed");
                     throw ExistRecordException.ExistsRecord("Department ID already exists");

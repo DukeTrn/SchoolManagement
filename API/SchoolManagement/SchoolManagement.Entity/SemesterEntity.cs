@@ -8,10 +8,10 @@ namespace SchoolManagement.Entity
     {
         [Key]
         public string SemesterId { get; set; } = string.Empty;
-        public string SemesterName { get; set; } = string.Empty;
-        public string AcademicYear { get; set; } = string.Empty; // nien khoa
+        public string SemesterName { get; set; } = string.Empty; // nam hoc 2024
+        public string AcademicYear { get; set; } = string.Empty; // nien khoa 2024-2025
         public DateTime TimeStart { get; set; }
-        public DateTime TimeEnd { get; set; }
+        public DateTime? TimeEnd { get; set; }
 
         // 1-N Semester-Conducts
         public ICollection<ConductEntity> Conducts { get; set; } = null!;
