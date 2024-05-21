@@ -7,9 +7,10 @@ namespace SchoolManagement.Entity
     public class SubjectEntity
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int SubjectId { get; set; } // khóa chính , maybe using Enum
         public string SubjectName { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
+        public string? Description { get; set; } = string.Empty;
         public int Grade { get; set; }
 
         // 1-N Subject-Assignments

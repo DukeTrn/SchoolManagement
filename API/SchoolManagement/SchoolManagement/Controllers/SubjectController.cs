@@ -6,27 +6,27 @@ using SchoolManagement.Service.Intention;
 
 namespace SchoolManagement.Web.Controllers
 {
-    [ApiController, Route("api/department")]
-    public class DepartmentController : ControllerBase
+    [ApiController, Route("api/subject")]
+    public class SubjectController : ControllerBase
     {
-        private readonly IDepartmentService _service;
+        private readonly ISubjectService _service;
 
-        public DepartmentController(IDepartmentService service)
+        public SubjectController(ISubjectService service)
         {
             _service = service;
         }
 
         /// <summary>
-        /// Get list of all departments
+        /// Get list of all subjects in 1 grade
         /// </summary>
-        /// <param name="queryModel"></param>
+        /// <param name="grade"></param>
         /// <returns></returns>
-        [HttpPost, Route("all")]
-        public async ValueTask<IActionResult> GetAllDepartments([FromBody] PageModel queryModel)
+        [HttpPost, Route("all/{grade}")]
+        public async ValueTask<IActionResult> GetSubjectsByGrade(int grade)
         {
             try
             {
-                var result = await _service.GetAllDepartments(queryModel);
+                var result = await _service.GetSubjectsByGrade(grade);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -36,16 +36,16 @@ namespace SchoolManagement.Web.Controllers
         }
 
         /// <summary>
-        /// Create a new department
+        /// Create a new subject
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost, Route("create")]
-        public async ValueTask<IActionResult> CreateDepartment([FromBody] DepartmentAddModel model)
+        public async ValueTask<IActionResult> CreateSubject([FromBody] SubjectAddModel model)
         {
             try
             {
-                await _service.CreateDepartment(model);
+                await _service.CreateSubject(model);
                 return Ok(new { result = true, messageType = 0 });
             }
             catch (ExistRecordException)
@@ -59,17 +59,17 @@ namespace SchoolManagement.Web.Controllers
         }
 
         /// <summary>
-        /// Update a department by ID.
+        /// Update a subject by ID.
         /// </summary>
         /// <param name="id"></param>
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPut("{id}")]
-        public async ValueTask<ActionResult> UpdateDepartment(string id, [FromBody] DepartmentUpdateModel model)
+        public async ValueTask<ActionResult> UpdateSubject(int id, [FromBody] SubjectUpdateModel model)
         {
             try
             {
-                await _service.UpdateDepartment(id, model);
+                await _service.UpdateSubject(id, model);
                 return Ok(new
                 {
                     result = true,
@@ -78,7 +78,7 @@ namespace SchoolManagement.Web.Controllers
             }
             catch (NotFoundException)
             {
-                return NotFound(new { result = false, messageType = MessageType.Error, message = $"Không tìm thấy bộ môn với ID {id} này!" });
+                return NotFound(new { result = false, messageType = MessageType.Error, message = $"Không tìm thấy môn học với ID {id} này!" });
             }
             catch (Exception ex)
             {
@@ -87,11 +87,11 @@ namespace SchoolManagement.Web.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteDepartment(string id)
+        public async Task<IActionResult> DeleteSubject(int id)
         {
             try
             {
-                await _service.DeleteDepartment(id);
+                await _service.DeleteSubject(id);
                 return Ok(new
                 {
                     result = true,
@@ -104,7 +104,7 @@ namespace SchoolManagement.Web.Controllers
                 {
                     result = false,
                     messageType = MessageType.Error,
-                    message = $"Không tìm thấy bộ môn với ID {id} này!"
+                    message = $"Không tìm thấy môn học với ID {id} này!"
                 });
             }
             catch (Exception ex)

@@ -42,6 +42,7 @@ namespace SchoolManagement.Service
                             .Skip((pageNumber - 1) * pageSize)
                             .Take(pageSize)
                             .ToListAsync();
+                _logger.LogInformation("Success to get list departments.");
                 return new PaginationModel<DepartmentDisplayModel>
                 {
                     TotalCount = query.Count(),

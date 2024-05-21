@@ -77,11 +77,14 @@ namespace SchoolManagement.Service
                     throw ExistRecordException.ExistsRecord("Semester ID already exists");
                 }
 
+                // Logic for academic year
+                var prefixAcaYear = CalculateAcademicYear(model.SemesterId);
+
                 var newSem = new SemesterEntity()
                 {
                     SemesterId = model.SemesterId,
                     SemesterName = model.SemesterName,
-                    AcademicYear = DateTime.Now.Year.ToString() + " - " + DateTime.Now.AddYears(1).Year.ToString(),
+                    AcademicYear = prefixAcaYear,
                     TimeStart = model.TimeStart,
                     TimeEnd = model.TimeEnd,
                 };
@@ -162,5 +165,24 @@ namespace SchoolManagement.Service
             }
         }
         #endregion
+
+        // Logic for check data?
+
+        private static string CalculateAcademicYear(string semesterId)
+        {
+            // Assuming semesterId is in the format "YYYY1" or "YYYY2"
+            if (semesterId.Length < 5)
+            {
+                throw new ArgumentException("Semester ID is invalid. Expected format: 'YYYY1' or 'YYYY2'");
+            }
+
+            string yearPart = semesterId.Substring(0, 4);
+            if (!int.TryParse(yearPart, out int year))
+            {
+                throw new ArgumentException("Semester ID year part is not valid");
+            }
+
+            return $"{year} - {year + 1}";
+        }
     }
 }
