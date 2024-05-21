@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using ClosedXML.Excel;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SchoolManagement.Common.Enum;
 using SchoolManagement.Common.Exceptions;
@@ -9,6 +10,7 @@ using SchoolManagement.Model;
 using SchoolManagement.Service.Intention;
 using SchoolManagement.Service.Intention.Data;
 using SchoolManagement.Share;
+using System.Data;
 
 namespace SchoolManagement.Service
 {
@@ -295,6 +297,120 @@ namespace SchoolManagement.Service
             }
         }
         #endregion
+
+        #region Export
+        public async Task<byte[]> ExportToExcelAsync(TeacherExportQueryModel queryModel)
+        {
+            try
+            {
+                // will add search func later
+                var teachers = new List<TeacherEntity>();
+
+                // Lọc dữ liệu theo các điều kiện trong query
+                if (queryModel.TeacherIds.Any())
+                {
+                    teachers = await _context.TeacherEntities.Where(s => queryModel.TeacherIds.Contains(s.TeacherId)).ToListAsync();
+                }
+                else
+                {
+                    teachers = await _context.TeacherEntities.ToListAsync();
+                }
+                // Lọc theo danh sách trạng thái nếu có
+                if (queryModel.Status.Any())
+                {
+                    teachers = teachers.Where(s => queryModel.Status.Contains(s.Status)).ToList();
+                }
+
+                /// Dịch enum sang tiếng Việt
+                var convertedStudents = teachers.Select(s => new
+                {
+                    s.TeacherId,
+                    s.FullName,
+                    s.DOB,
+                    s.IdentificationNumber,
+                    s.Gender,
+                    s.Ethnic,
+                    s.Address,
+                    s.PhoneNumber,
+                    //s.Email,
+                    s.TimeStart,
+                    s.TimeEnd,
+                    s.Level,
+                    Status = TranslateStatus(s.Status),
+                });
+
+                // Tạo DataTable và thêm dữ liệu sinh viên vào đó
+                DataTable dt = new DataTable();
+                dt.Columns.Add("MSGV", typeof(string));
+                dt.Columns.Add("Họ và tên", typeof(string));
+                dt.Columns.Add("Ngày sinh", typeof(string));
+                dt.Columns.Add("CCCD", typeof(string));
+                dt.Columns.Add("Giới tính", typeof(string));
+                dt.Columns.Add("Dân tộc", typeof(string));
+                dt.Columns.Add("Địa chỉ", typeof(string));
+                dt.Columns.Add("SĐT", typeof(string));
+                dt.Columns.Add("Trình độ", typeof(string));
+                dt.Columns.Add("Bắt đầu", typeof(string));
+                dt.Columns.Add("Kết thúc", typeof(string));
+                dt.Columns.Add("Tình trạng giảng dạy", typeof(string));
+
+                foreach (var st in convertedStudents)
+                {
+                    dt.Rows.Add(st.TeacherId,
+                        st.FullName,
+                        st.DOB.ToString("dd/MM/yyyy"),
+                        st.IdentificationNumber,
+                        st.Gender,
+                        st.Ethnic,
+                        st.Address,
+                        st.PhoneNumber,
+                        st.Level,
+                        st.TimeStart.ToString("dd/MM/yyyy"),
+                        st.TimeEnd.HasValue ? st.TimeEnd.Value.ToString("dd/MM/yyyy") : string.Empty,
+                        st.Status);
+                }
+
+                // Xuất dữ liệu sang tệp Excel
+                using (var workbook = new XLWorkbook())
+                {
+                    var worksheet = workbook.Worksheets.Add("Danh sách Giáo viên");
+                    worksheet.Cell(1, 1).InsertTable(dt);
+
+                    // Lưu tệp Excel vào một mảng byte[]
+                    using (MemoryStream memoryStream = new MemoryStream())
+                    {
+                        workbook.SaveAs(memoryStream);
+                        return memoryStream.ToArray();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occurred while exporting teachers. Error: {ex}", ex);
+                throw;
+            }
+        }
+        #endregion
+
+        /// <summary>
+        /// Translate StatusType enum
+        /// </summary>
+        /// <param name="status"></param>
+        /// <returns></returns>
+        private static string TranslateStatus(TeacherStatusType status)
+        {
+            switch (status)
+            {
+                case TeacherStatusType.Active:
+                    return "Đang giảng dạy";
+                case TeacherStatusType.Suspended:
+                    return "Tạm nghỉ";
+                case TeacherStatusType.Inactive:
+                    return "Nghỉ việc";
+                default:
+                    return string.Empty;
+            }
+        }
 
         /// <summary>
         /// Search function

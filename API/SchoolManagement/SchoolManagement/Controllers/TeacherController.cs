@@ -190,5 +190,27 @@ namespace SchoolManagement.Web.Controllers
                 });
             }
         }
+
+        /// <summary>
+        /// Status: 1 (Active), 2 (Suspended), 3 (Inactive)
+        /// </summary>
+        /// <param name="queryModel"></param>
+        /// <returns></returns>
+        [HttpPost("export")]
+        public async Task<IActionResult> ExportToExcel([FromBody] TeacherExportQueryModel queryModel)
+        {
+            try
+            {
+                byte[] fileContents = await _service.ExportToExcelAsync(queryModel);
+
+                // Trả về tệp Excel đã xuất
+                string fileName = $"Quản lý giáo viên_{DateTime.Now:ddMMyyyyHHmmss}.xlsx";
+                return File(fileContents, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Lỗi khi xuất dữ liệu: {ex.Message}");
+            }
+        }
     }
 }

@@ -318,7 +318,7 @@ namespace SchoolManagement.Service
         #endregion
 
         #region Export
-        public async Task<byte[]> ExportToExcelAsync(ExportQueryModel queryModel)
+        public async Task<byte[]> ExportToExcelAsync(StudentExportQueryModel queryModel)
         {
             try
             {

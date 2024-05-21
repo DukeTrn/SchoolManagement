@@ -10,5 +10,6 @@ namespace SchoolManagement.Service.Intention
         ValueTask CreateTeacher(TeacherAddModel model);
         ValueTask UpdateTeacher(string id, TeacherUpdateModel model);
         ValueTask DeleteTeacher(string id);
+        Task<byte[]> ExportToExcelAsync(TeacherExportQueryModel queryModel);
     }
 }

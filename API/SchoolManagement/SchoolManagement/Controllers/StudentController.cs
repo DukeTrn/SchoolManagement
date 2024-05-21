@@ -204,7 +204,7 @@ namespace SchoolManagement.Controllers
         /// <param name="queryModel"></param>
         /// <returns></returns>
         [HttpPost("export")]
-        public async Task<IActionResult> ExportToExcel([FromBody] ExportQueryModel queryModel)
+        public async Task<IActionResult> ExportToExcel([FromBody] StudentExportQueryModel queryModel)
         {
             try
             {
