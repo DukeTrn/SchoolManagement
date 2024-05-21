@@ -12,8 +12,8 @@ using SchoolManagement.Database;
 namespace SchoolManagement.Database.Migrations
 {
     [DbContext(typeof(SchoolManagementDbContext))]
-    [Migration("20240517081324_AddPasswordHashed")]
-    partial class AddPasswordHashed
+    [Migration("20240521084059_InitDB")]
+    partial class InitDB
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -79,7 +79,7 @@ namespace SchoolManagement.Database.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("ModifiedAt")
+                    b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Score")
@@ -186,7 +186,7 @@ namespace SchoolManagement.Database.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<DateTime>("ModifiedAt")
+                    b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("ClassId");
@@ -236,7 +236,6 @@ namespace SchoolManagement.Database.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Notification")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SubjectName")
@@ -261,7 +260,7 @@ namespace SchoolManagement.Database.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("TimeEnd")
+                    b.Property<DateTime?>("TimeEnd")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("TimeStart")
@@ -295,6 +294,7 @@ namespace SchoolManagement.Database.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Ethnic")
@@ -367,7 +367,6 @@ namespace SchoolManagement.Database.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SubjectId"), 1L, 1);
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Grade")
@@ -404,10 +403,10 @@ namespace SchoolManagement.Database.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("DepartmentId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Email")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Ethnic")
@@ -442,7 +441,7 @@ namespace SchoolManagement.Database.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("TimeEnd")
+                    b.Property<DateTime?>("TimeEnd")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("TimeStart")
@@ -587,9 +586,7 @@ namespace SchoolManagement.Database.Migrations
 
                     b.HasOne("SchoolManagement.Entity.DepartmentEntity", "Department")
                         .WithMany("Teachers")
-                        .HasForeignKey("DepartmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("DepartmentId");
 
                     b.Navigation("Account");
 

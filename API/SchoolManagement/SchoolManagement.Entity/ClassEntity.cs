@@ -12,7 +12,7 @@ namespace SchoolManagement.Entity
         public string AcademicYear { get; set; } = string.Empty;
         public int Grade { get; set; } // khối
         public DateTime CreatedAt { get; set; }
-        public DateTime ModifiedAt { get; set; }
+        public DateTime? ModifiedAt { get; set; }
 
         // Foreign key 
         public string HomeroomTeacherId { get; set; } = string.Empty; // GVCN

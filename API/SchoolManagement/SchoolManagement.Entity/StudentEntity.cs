@@ -17,7 +17,7 @@ namespace SchoolManagement.Entity
         public string Ethnic { get; set; } = string.Empty;
         public string PhoneNumber { get; set; } = string.Empty;
         public string? Avatar { get; set; }
-        public string? Email { get; set; }
+        public string Email { get; set; } = string.Empty;
         public StudentStatusType Status { get; set; } // tình trạng học tập (đang học - đình chỉ - thôi học)
 
         // Parent information

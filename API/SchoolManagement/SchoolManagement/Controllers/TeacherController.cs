@@ -5,32 +5,31 @@ using SchoolManagement.Model;
 using SchoolManagement.Service.Intention;
 using SchoolManagement.Service.Intention.Data;
 
-namespace SchoolManagement.Controllers
+namespace SchoolManagement.Web.Controllers
 {
-    [ApiController, Route("api/student")]
-    //[Authorize]
-    public class StudentController : ControllerBase
+    [ApiController, Route("api/teacher")]
+    public class TeacherController : ControllerBase
     {
-        private readonly IStudentService _service;
+        private readonly ITeacherService _service;
         private readonly ICloudinaryService _cloudinary;
 
-        public StudentController(IStudentService service, ICloudinaryService cloudinary)
+        public TeacherController(ITeacherService service, ICloudinaryService cloudinary)
         {
             _service = service;
             _cloudinary = cloudinary;
         }
 
         /// <summary>
-        /// Get list of all student (not full information)
+        /// Get list of all teachers (not full information)
         /// </summary>
         /// <param name="queryModel"></param>
         /// <returns></returns>
         [HttpPost, Route("all")]
-        public async ValueTask<IActionResult> GetAllStudents([FromBody] StudentQueryModel queryModel)
+        public async ValueTask<IActionResult> GetAllStudents([FromBody] TeacherQueryModel queryModel)
         {
             try
             {
-                var result = await _service.GetAllStudents(queryModel);
+                var result = await _service.GetAllTeachers(queryModel);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -46,29 +45,27 @@ namespace SchoolManagement.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        public async ValueTask<ActionResult<StudentFullDetailModel>> GetStudentById(string id)
+        public async ValueTask<ActionResult<TeacherFullDisplayModel>> GetTeacherById(string id)
         {
             try
             {
-                // Gọi service để lấy thông tin học sinh bằng ID
-                var student = await _service.GetStudentById(id);
-                if (student == null)
+                var teacher = await _service.GetTeacherById(id);
+                if (teacher == null)
                 {
-                    return NotFound($"Student with ID {id} not found.");
+                    return NotFound($"Teacher with ID {id} not found.");
                 }
 
-                // Trả về thông tin học sinh nếu tìm thấy
                 return Ok(new
                 {
                     result = true,
-                    data = student,
+                    data = teacher,
                     messageType = 0
                 });
             }
             catch (NotFoundException)
             {
                 // Xử lý ngoại lệ và trả về lỗi nếu có
-                return NotFound(new { result = false, messageType = MessageType.Error, message = $"Không tìm thấy học sinh với ID {id} này!" });
+                return NotFound(new { result = false, messageType = MessageType.Error, message = $"Không tìm thấy giáo viên với ID {id} này!" });
             }
             catch (Exception ex)
             {
@@ -77,34 +74,30 @@ namespace SchoolManagement.Controllers
         }
 
         /// <summary>
-        /// Get student by account ID (use for Account service, full information of 1 student)
+        /// Get teacher by account ID (use for Account service, full information of 1 teacher)
         /// </summary>
         /// <param name="accountId"></param>
         /// <returns></returns>
-        [HttpGet("student/{accountId}")]
-        public async ValueTask<ActionResult<StudentFullDetailModel>> GetStudentByAccountId(Guid accountId)
+        [HttpGet("teacher/{accountId}")]
+        public async ValueTask<ActionResult<StudentFullDetailModel>> GetTeacherByAccountId(Guid accountId)
         {
             try
             {
-                // Gọi service để lấy thông tin học sinh bằng ID
-                var student = await _service.GetStudentByAccountId(accountId);
-                if (student == null)
+                var teacher = await _service.GetTeacherByAccountId(accountId);
+                if (teacher == null)
                 {
-                    return NotFound($"Student with account ID {accountId} not found.");
+                    return NotFound($"Teacher with account ID {accountId} not found.");
                 }
-
-                // Trả về thông tin học sinh nếu tìm thấy
                 return Ok(new
                 {
                     result = true,
-                    data = student,
+                    data = teacher,
                     messageType = 0
                 });
             }
             catch (NotFoundException)
             {
-                // Xử lý ngoại lệ và trả về lỗi nếu có
-                return NotFound(new { result = false, messageType = MessageType.Error, message = $"Không tìm thấy học sinh với ID tài khoản này!" });
+                return NotFound(new { result = false, messageType = MessageType.Error, message = $"Không tìm thấy giáo viên với ID tài khoản này!" });
             }
             catch (Exception ex)
             {
@@ -114,16 +107,16 @@ namespace SchoolManagement.Controllers
         #endregion
 
         /// <summary>
-        /// Create a new student
+        /// Create a new teacher
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost, Route("create")]
-        public async ValueTask<IActionResult> CreateStudent([FromForm] StudentAddModel model)
+        public async ValueTask<IActionResult> CreateTeacher([FromForm] TeacherAddModel model)
         {
             try
             {
-                await _service.CreateStudent(model);
+                await _service.CreateTeacher(model);
                 return Ok(new { result = true, messageType = 0 });
             }
             catch (ExistRecordException)
@@ -138,18 +131,18 @@ namespace SchoolManagement.Controllers
         }
 
         /// <summary>
-        /// Update student's information by his/her ID.
+        /// Update teacher's information by his/her ID.
         /// Status: 1 (Active), 2 (Suspended), 3 (Inactive)
         /// </summary>
         /// <param name="id"></param>
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPut("{id}")]
-        public async ValueTask<ActionResult> UpdateStudent(string id, [FromForm] StudentUpdateModel model)
+        public async ValueTask<ActionResult> UpdateTeacher(string id, [FromForm] TeacherUpdateModel model)
         {
             try
             {
-                await _service.UpdateStudent(id, model);
+                await _service.UpdateTeacher(id, model);
                 return Ok(new
                 {
                     result = true,
@@ -158,7 +151,7 @@ namespace SchoolManagement.Controllers
             }
             catch (NotFoundException)
             {
-                return NotFound(new { result = false, messageType = MessageType.Error, message = $"Không tìm thấy học sinh với ID {id} này!" });
+                return NotFound(new { result = false, messageType = MessageType.Error, message = $"Không tìm thấy giáo viên với ID {id} này!" });
             }
             catch (Exception ex)
             {
@@ -167,11 +160,11 @@ namespace SchoolManagement.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteStudent(string id)
+        public async Task<IActionResult> DeleteTeacher(string id)
         {
             try
             {
-                await _service.DeleteStudent(id);
+                await _service.DeleteTeacher(id);
                 return Ok(new
                 {
                     result = true,
@@ -184,7 +177,7 @@ namespace SchoolManagement.Controllers
                 {
                     result = false,
                     messageType = MessageType.Error,
-                    message = $"Không tìm thấy học sinh với ID {id} này!"
+                    message = $"Không tìm thấy giáo viên với ID {id} này!"
                 });
             }
             catch (Exception ex)
@@ -193,43 +186,9 @@ namespace SchoolManagement.Controllers
                 {
                     result = false,
                     messageType = MessageType.Error,
-                    message = $"An error occurred while deleting student: {ex.Message}"
+                    message = $"An error occurred while deleting giáo viên: {ex.Message}"
                 });
             }
-        }
-
-        /// <summary>
-        /// Status: 1 (Active), 2 (Suspended), 3 (Inactive)
-        /// </summary>
-        /// <param name="queryModel"></param>
-        /// <returns></returns>
-        [HttpPost("export")]
-        public async Task<IActionResult> ExportToExcel([FromBody] ExportQueryModel queryModel)
-        {
-            try
-            {
-                byte[] fileContents = await _service.ExportToExcelAsync(queryModel);
-
-                // Trả về tệp Excel đã xuất
-                string fileName = $"Quản lý học sinh_{DateTime.Now:ddMMyyyyHHmmss}.xlsx";
-                return File(fileContents, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Lỗi khi xuất dữ liệu: {ex.Message}");
-            }
-        }
-
-        [HttpPost("upload-avatar")]
-        public async Task<IActionResult> UploadAvatar([FromForm] IFormFile file)
-        {
-            if (file == null || file.Length == 0)
-            {
-                return BadRequest("No file uploaded.");
-            }
-
-            var uploadResult = await _cloudinary.UploadImageAsync(file);
-            return Ok(new { Url = uploadResult });
         }
     }
 }

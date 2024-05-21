@@ -10,6 +10,7 @@ using SchoolManagement.Startup.BuilderExtensions;
 using System;
 using System.Reflection;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace Microsoft.Extensions.DependencyInjection;
 public static class BuilderSetupExtension
@@ -18,7 +19,12 @@ public static class BuilderSetupExtension
     {
         builder.AddServices();
         // Add services to the container.
-        builder.Services.AddControllersWithViews();
+        //builder.Services.AddControllersWithViews();
+        builder.Services.AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+            });
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen(c => {

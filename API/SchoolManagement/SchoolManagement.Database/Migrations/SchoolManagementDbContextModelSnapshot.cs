@@ -77,7 +77,7 @@ namespace SchoolManagement.Database.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("ModifiedAt")
+                    b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Score")
@@ -184,7 +184,7 @@ namespace SchoolManagement.Database.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<DateTime>("ModifiedAt")
+                    b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("ClassId");
@@ -292,6 +292,7 @@ namespace SchoolManagement.Database.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Ethnic")
@@ -400,10 +401,10 @@ namespace SchoolManagement.Database.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("DepartmentId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Email")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Ethnic")
@@ -438,7 +439,7 @@ namespace SchoolManagement.Database.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("TimeEnd")
+                    b.Property<DateTime?>("TimeEnd")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("TimeStart")
@@ -460,19 +461,19 @@ namespace SchoolManagement.Database.Migrations
                     b.HasOne("SchoolManagement.Entity.ClassDetailEntity", "ClassDetail")
                         .WithMany("Assessments")
                         .HasForeignKey("ClassDetailId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("SchoolManagement.Entity.SemesterEntity", "Semester")
                         .WithMany("Assessments")
                         .HasForeignKey("SemesterId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("SchoolManagement.Entity.SubjectEntity", "Subject")
                         .WithMany("Assessments")
                         .HasForeignKey("SubjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("ClassDetail");
@@ -487,25 +488,25 @@ namespace SchoolManagement.Database.Migrations
                     b.HasOne("SchoolManagement.Entity.ClassEntity", "Class")
                         .WithMany("Assignments")
                         .HasForeignKey("ClassId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("SchoolManagement.Entity.SemesterEntity", "Semester")
                         .WithMany("Assignments")
                         .HasForeignKey("SemesterId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("SchoolManagement.Entity.SubjectEntity", "Subject")
                         .WithMany("Assignments")
                         .HasForeignKey("SubjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("SchoolManagement.Entity.TeacherEntity", "Teacher")
                         .WithMany("Assignments")
                         .HasForeignKey("TeacherId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Class");
@@ -522,13 +523,13 @@ namespace SchoolManagement.Database.Migrations
                     b.HasOne("SchoolManagement.Entity.ClassEntity", "Class")
                         .WithMany("ClassDetails")
                         .HasForeignKey("ClassId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("SchoolManagement.Entity.StudentEntity", "Student")
                         .WithMany("ClassDetails")
                         .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Class");
@@ -583,9 +584,7 @@ namespace SchoolManagement.Database.Migrations
 
                     b.HasOne("SchoolManagement.Entity.DepartmentEntity", "Department")
                         .WithMany("Teachers")
-                        .HasForeignKey("DepartmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("DepartmentId");
 
                     b.Navigation("Account");
 

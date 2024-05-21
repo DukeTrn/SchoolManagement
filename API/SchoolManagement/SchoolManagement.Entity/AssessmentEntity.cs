@@ -12,7 +12,7 @@ namespace SchoolManagement.Entity
         public int Weight { get; set; } // trọng số điểm
         public string Feedback { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
-        public DateTime ModifiedAt { get; set; }
+        public DateTime? ModifiedAt { get; set; }
 
         // Foreign key
         public string SemesterId { get; set; } = string.Empty;

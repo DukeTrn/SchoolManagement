@@ -14,13 +14,13 @@ namespace SchoolManagement.Service
 {
     public class TeacherService : ITeacherService
     {
-        private readonly ILogger<StudentService> _logger;
+        private readonly ILogger<TeacherService> _logger;
         private readonly SchoolManagementDbContext _context;
         private readonly IEntityFilterService<TeacherEntity> _filterBuilder;
         private readonly ICloudinaryService _cloudinary;
         private readonly IAccountService _account;
 
-        public TeacherService(ILogger<StudentService> logger,
+        public TeacherService(ILogger<TeacherService> logger,
             IEntityFilterService<TeacherEntity> filterBuilder,
             SchoolManagementDbContext context,
             ICloudinaryService cloudinary,
@@ -155,71 +155,145 @@ namespace SchoolManagement.Service
         #endregion
 
         #region Create
-        //public async ValueTask CreateTeacher(StudentAddModel model)
-        //{
-        //    try
-        //    {
-        //        _logger.LogInformation("Start to create new student.");
-        //        // create Student ID: Current Year + ID
-        //        var studentId = DateTime.Now.Year.ToString() + model.StudentId;
-        //        var existingStudent = await _context.StudentEntities.FirstOrDefaultAsync(s => s.StudentId == studentId);
 
-        //        if (existingStudent != null)
-        //        {
-        //            _logger.LogInformation("Record has already existed");
-        //            throw ExistRecordException.ExistsRecord("Student ID already exists");
-        //        }
+        public async ValueTask CreateTeacher(TeacherAddModel model)
+        {
+            try
+            {
+                _logger.LogInformation("Start to create new teacher.");
+                var existingTeacher = await _context.TeacherEntities.FirstOrDefaultAsync(s => s.TeacherId == model.TeacherId);
 
-        //        // automatically create account when creating new student
-        //        AccountAutomaticallyAddModel addAccount = new()
-        //        {
-        //            UserName = StringExtensions.GenerateEmailBasedFullName(model.FullName, studentId),
-        //            Role = RoleType.Student
-        //        };
-        //        var newAccount = await _account.CreateAccountAutomatically(addAccount);
+                if (existingTeacher != null)
+                {
+                    _logger.LogInformation("Record has already existed");
+                    throw ExistRecordException.ExistsRecord("Teacher ID already exists");
+                }
 
-        //        // Upload avatar to Cloudinary if provided
-        //        string? avatarUrl = null;
-        //        if (model.Avatar != null)
-        //        {
-        //            avatarUrl = await _cloudinary.UploadImageAsync(model.Avatar);
-        //        }
+                // automatically create account when creating new teacher
+                AccountAutomaticallyAddModel addAccount = new()
+                {
+                    UserName = GenerateUniqueEmail(model.FullName),
+                    Role = RoleType.Teacher
+                };
+                var newAccount = await _account.CreateAccountAutomatically(addAccount);
 
-        //        var newStudent = new StudentEntity()
-        //        {
-        //            StudentId = studentId,
-        //            FullName = model.FullName,
-        //            DOB = model.DOB,
-        //            IdentificationNumber = model.IdentificationNumber,
-        //            Gender = model.Gender,
-        //            Address = model.Address,
-        //            Ethnic = model.Ethnic,
-        //            PhoneNumber = model.PhoneNumber,
-        //            Avatar = avatarUrl,
-        //            Email = model.Email,
-        //            Status = StudentStatusType.Active,
-        //            FatherName = model.FatherName,
-        //            FatherJob = model.FatherJob,
-        //            FatherPhoneNumber = model.FatherPhoneNumber,
-        //            FatherEmail = model.FatherEmail,
-        //            MotherName = model.MotherName,
-        //            MotherJob = model.MotherJob,
-        //            MotherPhoneNumber = model.MotherPhoneNumber,
-        //            MotherEmail = model.MotherEmail,
-        //            AcademicYear = DateTime.Now.Year.ToString() + " - " + DateTime.Now.AddYears(3).Year.ToString(),
-        //            AccountId = newAccount.AccountId
-        //        };
+                // Upload avatar to Cloudinary if provided
+                string? avatarUrl = null;
+                if (model.Avatar != null)
+                {
+                    avatarUrl = await _cloudinary.UploadImageAsync(model.Avatar);
+                }
 
-        //        _context.StudentEntities.Add(newStudent);
-        //        await _context.SaveChangesAsync();
+                var newTeacher = new TeacherEntity()
+                {
+                    TeacherId = model.TeacherId,
+                    FullName = model.FullName,
+                    DOB = model.DOB,
+                    IdentificationNumber = model.IdentificationNumber,
+                    Gender = model.Gender,
+                    Address = model.Address,
+                    Ethnic = model.Ethnic,
+                    PhoneNumber = model.PhoneNumber,
+                    Avatar = avatarUrl,
+                    Email = model.Email,
+                    TimeStart = model.TimeStart,
+                    TimeEnd = model.TimeEnd,
+                    Level = model.Level,
+                    IsLeader = false,
+                    IsViceLeader = false,
+                    AccountId = newAccount.AccountId,
+                    Status = TeacherStatusType.Active,
+                    DepartmentId = null,
+                };
 
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError("An error occured while creating new student. Error: {ex}", ex);
-        //        throw;
-        //    }
-        //}
+                _context.TeacherEntities.Add(newTeacher);
+                await _context.SaveChangesAsync();
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occured while creating new teacher. Error: {ex}", ex);
+                throw;
+            }
+        }
+        #endregion
+
+        #region Update
+        /// <summary>
+        /// Update a teacher by his/her ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public async ValueTask UpdateTeacher(string id, TeacherUpdateModel model)
+        {
+            try
+            {
+                _logger.LogInformation("Start to update a teacher.");
+                var teacher = await _context.TeacherEntities.FirstOrDefaultAsync(s => s.TeacherId == id);
+                if (teacher == null)
+                {
+                    throw new NotFoundException($"Teacher with ID {id} not found.");
+                }
+                string? avatarUrl = null;
+                if (model.Avatar != null)
+                {
+                    avatarUrl = await _cloudinary.UploadImageAsync(model.Avatar);
+                }
+                teacher.FullName = model.FullName;
+                teacher.DOB = model.DOB;
+                teacher.IdentificationNumber = model.IdentificationNumber;
+                teacher.Gender = model.Gender;
+                teacher.Address = model.Address;
+                teacher.Ethnic = model.Ethnic;
+                teacher.PhoneNumber = model.PhoneNumber;
+                teacher.Avatar = avatarUrl;
+                teacher.Email = model.Email;
+                teacher.TimeEnd = model.TimeEnd;
+                teacher.Level = model.Level;
+                teacher.Status = model.Status;
+
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occured while updating a teacher. Error: {ex}", ex);
+                throw;
+            }
+        }
+        #endregion
+
+        #region Delete
+        /// <summary>
+        /// Delete teacher by his/her ID (for testing)
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        /// <exception cref="NotFoundException"></exception>
+        public async ValueTask DeleteTeacher(string id)
+        {
+            try
+            {
+                _logger.LogInformation("Start deleting teacher with ID {id}", id);
+
+                var teacher = await _context.TeacherEntities.FirstOrDefaultAsync(s => s.TeacherId == id);
+
+                if (teacher == null)
+                {
+                    throw new NotFoundException($"Teacher with ID {id} not found.");
+                }
+
+                _context.TeacherEntities.Remove(teacher);
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Teacher with ID {id} deleted successfully.", id);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occurred while deleting Teacher with ID {id}. Error: {ex}", id, ex);
+                throw;
+            }
+        }
         #endregion
 
         /// <summary>
@@ -243,5 +317,32 @@ namespace SchoolManagement.Service
             }
             return filters;
         }
+
+        /// <summary>
+        /// Use to check if user name is duplicated or not, if duplicated => add number behind email
+        /// For example: abc1@mail.com
+        /// </summary>
+        /// <param name="fullName"></param>
+        /// <returns></returns>
+        private string GenerateUniqueEmail(string fullName)
+        {
+            string emailBase = StringExtensions.RemoveAccents(fullName).ToLowerInvariant().Replace(" ", "");
+            string email = emailBase + "@thptquangtrung.edu";
+
+            // Kiểm tra nếu email gốc đã tồn tại
+            if (_context.AccountEntities.Any(a => a.UserName == email))
+            {
+                int count = 1;
+                // Nếu email gốc tồn tại, thì tìm số tiếp theo để thêm vào email mới
+                while (_context.AccountEntities.Any(a => a.UserName == email))
+                {
+                    email = $"{emailBase}{count}@thptquangtrung.edu";
+                    count++;
+                }
+            }
+
+            return email;
+        }
+
     }
 }

@@ -10,7 +10,7 @@ namespace SchoolManagement.Share
         {
             TeacherId = entity.TeacherId,
             FullName = entity.FullName,
-            DOB = entity.DOB,
+            DOB = entity.DOB.ToString("dd/MM/yyyy"),
             Gender = entity.Gender,
             PhoneNumber = entity.PhoneNumber,
             Email = entity.Email,
@@ -22,7 +22,7 @@ namespace SchoolManagement.Share
         {
             TeacherId = entity.TeacherId,
             FullName = entity.FullName,
-            DOB = entity.DOB,
+            DOB = entity.DOB.ToString("dd/MM/yyyy"),
             IdentificationNumber = entity.IdentificationNumber,
             Gender = entity.Gender,
             Address = entity.Address,
@@ -31,8 +31,8 @@ namespace SchoolManagement.Share
             Avatar = entity.Avatar,
             Email = entity.Email,
             Level = entity.Level,
-            TimeStart = entity.TimeStart,
-            TimeEnd = entity.TimeEnd,
+            TimeStart = entity.TimeStart.ToString("dd/MM/yyyy"),
+            TimeEnd = entity.TimeEnd == null ? "" : entity.TimeEnd.Value.ToString("dd/MM/yyyy"),
             Status = TranslateStatus(entity.Status),
 
         };

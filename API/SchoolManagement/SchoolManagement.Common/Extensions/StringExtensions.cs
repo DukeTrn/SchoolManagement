@@ -206,7 +206,7 @@ namespace SchoolManagement.Common.Extensions
         {
             return str.Split(separator, stringSplitOptions);
         }
-        public static string GenerateEmailBasedFullName(string fullName, string id)
+        public static string GenerateStudentEmail(string fullName, string id)
         {
             // Tách họ, tên đệm và tên
             string[] nameParts = fullName.Split(' ');
@@ -224,6 +224,21 @@ namespace SchoolManagement.Common.Extensions
 
             // Kết hợp các kí tự vừa lấy được với id
             return $"{initials}{idSuffix}@thptquangtrung.edu";
+        }
+
+        public static string RemoveAccents(string text)
+        {
+            // Bảng chữ cái có dấu và không dấu
+            string withAccentChars = "àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ";
+            string withoutAccentChars = "aaaaaaaaaaaaaaaaaeeeeeeeeeeeiiiiiooooooooooooooooouuuuuuuuuuuyyyyyd";
+
+            // Loại bỏ dấu từ text
+            for (int i = 0; i < withAccentChars.Length; i++)
+            {
+                text = text.Replace(withAccentChars[i], withoutAccentChars[i]);
+            }
+
+            return text;
         }
     }
 }

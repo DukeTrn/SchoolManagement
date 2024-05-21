@@ -183,7 +183,7 @@ namespace SchoolManagement.Service
                 // automatically create account when creating new student
                 AccountAutomaticallyAddModel addAccount = new()
                 {
-                    UserName = StringExtensions.GenerateEmailBasedFullName(model.FullName, studentId),
+                    UserName = StringExtensions.GenerateStudentEmail(model.FullName, studentId),
                     Role = RoleType.Student
                 };
                 var newAccount = await _account.CreateAccountAutomatically(addAccount);

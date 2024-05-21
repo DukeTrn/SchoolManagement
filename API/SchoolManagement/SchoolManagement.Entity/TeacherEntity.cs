@@ -17,9 +17,9 @@ namespace SchoolManagement.Entity
         public string Ethnic { get; set; } = string.Empty;
         public string PhoneNumber { get; set; } = string.Empty;
         public string? Avatar { get; set; }
-        public string? Email { get; set; }
+        public string Email { get; set; } = string.Empty;
         public DateTime TimeStart { get; set; } // Thoi gian bat dau lam viec
-        public DateTime TimeEnd { get; set; }
+        public DateTime? TimeEnd { get; set; }
         public string Level { get; set; } = string.Empty; // bằng cấp
         public bool IsLeader { get; set; } // tổ trưởng
         public bool IsViceLeader { get; set; } // tổ phó
@@ -32,7 +32,7 @@ namespace SchoolManagement.Entity
 
         // 1-N Department-Teacher
         public string? DepartmentId { get; set; } = string.Empty;
-        public DepartmentEntity Department { get; set; } = null!;
+        public DepartmentEntity? Department { get; set; }
 
         // 1-1 HomeroomTeacher-Class
         public string? ClassId { get; set; } = null;
