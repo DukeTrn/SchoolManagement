@@ -1,4 +1,6 @@
-﻿namespace SchoolManagement.Model
+﻿using SchoolManagement.Common.Enum;
+
+namespace SchoolManagement.Model
 {
     public class TeacherDisplayModel
     {
@@ -29,6 +31,11 @@
     {
         public string TeacherId { get; set; } = string.Empty; // Khóa chính
         public string FullName { get; set; } = string.Empty;
+    }
+
+    public class TeacherHeadsModel : TeacherFilterModel
+    {
+        public TeacherRole Role { get; set; }
     }
 
 }

@@ -276,6 +276,12 @@ namespace SchoolManagement.Service
         }
         #endregion
 
+        #region Promote
+        /// <summary>
+        /// Promote teachers by Ids (will enhance logic: choose 1 teacher for head and deputy)
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         public async ValueTask PromoteTeachersAsync(PromoteTeacherModel model)
         {
             try
@@ -347,7 +353,7 @@ namespace SchoolManagement.Service
             }
         }
 
-
+        #endregion
 
     }
 }

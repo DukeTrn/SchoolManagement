@@ -163,11 +163,48 @@ namespace SchoolManagement.Service
 
         public async ValueTask<IEnumerable<TeacherFilterModel>> GetAllTeachersFilter()
         {
-            return await _context.TeacherEntities.Select(t => new TeacherFilterModel
+            try
             {
-                TeacherId = t.TeacherId,
-                FullName = t.FullName
-            }).ToListAsync();
+                return await _context.TeacherEntities.Select(t => new TeacherFilterModel
+                {
+                    TeacherId = t.TeacherId,
+                    FullName = t.FullName
+                }).ToListAsync();
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occured while getting list of all teachers. Error: {ex}", ex);
+                throw;
+            }
+        }
+
+        public async ValueTask<IEnumerable<TeacherHeadsModel>> GetDepartmentHeadsAndDeputies(string departmentId)
+        {
+            try
+            {
+                var department = await _context.DepartmentEntities.FirstOrDefaultAsync(d => d.DepartmentId == departmentId);
+                if (department == null)
+                {
+                    throw new NotFoundException($"Department with ID {departmentId} not found.");
+                }
+                var headsAndDeputies = await _context.TeacherEntities
+                    .Where(t => (t.Role == TeacherRole.Head || t.Role == TeacherRole.DeputyHead) && t.DepartmentId == departmentId)
+                    .Select(t => new TeacherHeadsModel
+                    {
+                        TeacherId = t.TeacherId,
+                        FullName = t.FullName,
+                        Role = t.Role
+                    })
+                    .ToListAsync();
+
+                return headsAndDeputies;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occured while getting list of all heads teachers. Error: {ex}", ex);
+                throw;
+            }
         }
         #endregion
 

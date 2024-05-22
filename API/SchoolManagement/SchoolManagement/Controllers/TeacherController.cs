@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using DocumentFormat.OpenXml.Office2010.Excel;
+using Microsoft.AspNetCore.Mvc;
 using SchoolManagement.Common.Enum;
 using SchoolManagement.Common.Exceptions;
 using SchoolManagement.Model;
@@ -20,6 +21,7 @@ namespace SchoolManagement.Web.Controllers
             _cloudinary = cloudinary;
         }
 
+        #region Get lists teachers
         /// <summary>
         /// Get list of all teachers (not full information)
         /// </summary>
@@ -69,13 +71,54 @@ namespace SchoolManagement.Web.Controllers
             try
             {
                 var teachers = await _service.GetAllTeachersFilter();
-                return Ok(teachers);
+                return Ok(new
+                {
+                    result = true,
+                    data = teachers,
+                    messageType = 0
+                });
             }
             catch (Exception ex)
             {
                 return StatusCode(200, new { result = false, messageType = MessageType.Error, message = ex });
             }
         }
+
+        /// <summary>
+        /// Get heads and deputies in 1 department
+        /// Role: 1 (regular), 2 (deputy - phó bộ môn), 3 (head - trưởng bộ môn)
+        /// </summary>
+        /// <param name="departmentId"></param>
+        /// <returns></returns>
+        [HttpGet, Route("heads/{departmentId}")]
+        public async Task<IActionResult> GetDepartmentHeadsAndDeputies(string departmentId)
+        {
+            try
+            {
+                var headsAndDeputies = await _service.GetDepartmentHeadsAndDeputies(departmentId);
+                if (headsAndDeputies == null)
+                {
+                    return NotFound($"Department with ID {departmentId} not found.");
+                }
+                //return Ok(headsAndDeputies);
+                return Ok(new
+                {
+                    result = true,
+                    data = headsAndDeputies,
+                    messageType = 0
+                });
+            }
+            catch (NotFoundException)
+            {
+                // Xử lý ngoại lệ và trả về lỗi nếu có
+                return NotFound(new { result = false, messageType = MessageType.Error, message = $"Không tìm thấy tổ bộ môn với ID {departmentId} này!" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(200, new { result = false, messageType = MessageType.Error, message = ex });
+            }
+        }
+        #endregion
 
         #region Add to department
 
