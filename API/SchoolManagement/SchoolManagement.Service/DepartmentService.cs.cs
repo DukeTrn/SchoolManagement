@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using SchoolManagement.Common.Enum;
 using SchoolManagement.Common.Exceptions;
 using SchoolManagement.Database;
 using SchoolManagement.Entity;
@@ -162,6 +161,193 @@ namespace SchoolManagement.Service
             }
         }
         #endregion
-        
+
+        #region Update department ID of teachers (add to 1 dept or delete from 1 dept)
+        public async ValueTask AddTeachersToDepartment(UpdateTeachersToDeptModel model)
+        {
+            try
+            {
+                _logger.LogInformation("Start to add teachers to department.");
+
+                // Kiểm tra xem tổ bộ môn có tồn tại không
+                var department = await _context.DepartmentEntities
+                    .Include(d => d.Teachers)
+                    .FirstOrDefaultAsync(d => d.DepartmentId == model.DepartmentId);
+
+                if (department == null)
+                {
+                    _logger.LogInformation("Department not found.");
+                    throw new KeyNotFoundException("Department not found.");
+                }
+
+                // Tìm các giáo viên có mã trong danh sách TeacherIds
+                var teachers = await _context.TeacherEntities
+                    .Where(t => model.TeacherIds.Contains(t.TeacherId))
+                    .ToListAsync();
+
+                if (!teachers.Any())
+                {
+                    _logger.LogInformation("No teachers found for the given IDs.");
+                    throw new KeyNotFoundException("No teachers found for the given IDs.");
+                }
+
+                var existingTeachers = new List<string>();
+                var addedTeachers = new List<string>();
+
+                // Thêm giáo viên vào tổ bộ môn
+                foreach (var teacher in teachers)
+                {
+                    // Kiểm tra xem giáo viên đã thuộc tổ bộ môn nào chưa
+                    if (teacher.DepartmentId != null && teacher.DepartmentId != model.DepartmentId)
+                    {
+                        existingTeachers.Add(teacher.TeacherId);
+                    }
+                    else
+                    {
+                        if (teacher.DepartmentId != model.DepartmentId)
+                        {
+                            teacher.DepartmentId = model.DepartmentId;
+                            department.Teachers.Add(teacher);
+                            addedTeachers.Add(teacher.TeacherId);
+                        }
+                    }
+                }
+
+                if (existingTeachers.Any())
+                {
+                    var errorMsg = $"The following teachers are already in a different department: {string.Join(", ", existingTeachers)}";
+                    _logger.LogInformation(errorMsg);
+                    throw new InvalidOperationException(errorMsg);
+                }
+
+                await _context.SaveChangesAsync();
+                _logger.LogInformation($"Successfully added teachers to department. Added Teachers: {string.Join(", ", addedTeachers)}");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occurred while adding teachers to department. Error: {ex}", ex);
+                throw;
+            }
+        }
+
+        public async ValueTask RemoveTeachersFromDepartment(UpdateTeachersToDeptModel model)
+        {
+            try
+            {
+                _logger.LogInformation("Start to remove teachers from department.");
+
+                // Kiểm tra xem tổ bộ môn có tồn tại không
+                var department = await _context.DepartmentEntities
+                    .Include(d => d.Teachers)
+                    .FirstOrDefaultAsync(d => d.DepartmentId == model.DepartmentId);
+
+                if (department == null)
+                {
+                    _logger.LogInformation("Department not found.");
+                    throw new KeyNotFoundException("Department not found.");
+                }
+
+                // Tìm các giáo viên có mã trong danh sách TeacherIds
+                var teachers = await _context.TeacherEntities
+                    .Where(t => model.TeacherIds.Contains(t.TeacherId) && t.DepartmentId == model.DepartmentId)
+                    .ToListAsync();
+
+                if (!teachers.Any())
+                {
+                    _logger.LogInformation("No teachers found in this department.");
+                    throw new KeyNotFoundException("No teachers found in this department.");
+                }
+
+                // Xóa giáo viên khỏi tổ bộ môn
+                foreach (var teacher in teachers)
+                {
+                    teacher.DepartmentId = null;
+                }
+
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation($"Successfully removed {teachers.Count} teachers from department {model.DepartmentId}.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occurred while removing teachers from department. Error: {ex}", ex);
+                throw;
+            }
+        }
+        #endregion
+
+        public async ValueTask PromoteTeachersAsync(PromoteTeacherModel model)
+        {
+            try
+            {
+                _logger.LogInformation("Start to promote teachers.");
+
+                // Lấy tất cả giáo viên trong bộ môn
+                var departmentTeachers = await _context.TeacherEntities
+                    .Where(t => t.DepartmentId == model.DepartmentId)
+                    .ToListAsync();
+
+                // Lấy giáo viên hiện đang nắm giữ các vai trò
+                var currentHead = departmentTeachers.Find(t => t.Role == Common.Enum.TeacherRole.Head);
+                var currentDeputies = departmentTeachers.Where(t => t.Role == Common.Enum.TeacherRole.DeputyHead).ToList();
+
+                // Giáng chức tất cả giáo viên trong bộ môn về vai trò "Giáo viên"
+                foreach (var teacher in departmentTeachers)
+                {
+                    teacher.Role = Common.Enum.TeacherRole.Regular;
+                }
+
+                // Thăng chức giáo viên thành "Trưởng bộ môn"
+                if (!string.IsNullOrEmpty(model.HeadId))
+                {
+                    var headTeacher = departmentTeachers.Find(t => t.TeacherId == model.HeadId);
+                    if (headTeacher != null)
+                    {
+                        headTeacher.Role = Common.Enum.TeacherRole.Head;
+                    }
+                }
+
+                // Thăng chức giáo viên thành "Phó bộ môn 1"
+                if (!string.IsNullOrEmpty(model.FirstDeputyId))
+                {
+                    var deputy1Teacher = departmentTeachers.Find(t => t.TeacherId == model.FirstDeputyId);
+                    if (deputy1Teacher != null)
+                    {
+                        deputy1Teacher.Role = Common.Enum.TeacherRole.DeputyHead;
+                    }
+                }
+
+                // Thăng chức giáo viên thành "Phó bộ môn 2"
+                if (!string.IsNullOrEmpty(model.SecondDeputyId))
+                {
+                    var deputy2Teacher = departmentTeachers.Find(t => t.TeacherId == model.SecondDeputyId);
+                    if (deputy2Teacher != null)
+                    {
+                        deputy2Teacher.Role = Common.Enum.TeacherRole.DeputyHead;
+                    }
+                }
+
+                // Kiểm tra và giáng chức các giáo viên hiện đang là phó bộ môn nhưng không được chọn
+                foreach (var deputy in currentDeputies)
+                {
+                    if (deputy.TeacherId != model.FirstDeputyId && deputy.TeacherId != model.SecondDeputyId)
+                    {
+                        deputy.Role = Common.Enum.TeacherRole.Regular;
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Successfully promoted teachers.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occurred while promoting teachers. Error: {ex}", ex);
+                throw;
+            }
+        }
+
+
+
     }
 }

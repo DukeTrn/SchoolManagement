@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SchoolManagement.Common.Enum;
@@ -51,6 +52,68 @@ namespace SchoolManagement.Service
 
                 FilterModel filter = new();
                 var query = _context.TeacherEntities.AsQueryable();
+
+                #region Search
+                if (!string.IsNullOrEmpty(queryModel.SearchValue))
+                {
+                    _logger.LogInformation("Add Search Value: {SearchValue}", queryModel.SearchValue);
+                    var searchFilter = BuildSearchFilter(queryModel.SearchValue,
+                        nameof(TeacherEntity.TeacherId),
+                        nameof(TeacherEntity.FullName),
+                        nameof(TeacherEntity.Gender),
+                        nameof(TeacherEntity.Email),
+                        nameof(TeacherEntity.Level),
+                        nameof(TeacherEntity.PhoneNumber));
+                    filter.Or.AddRange(searchFilter);
+                }
+                #endregion
+
+                #region Status Filter
+                if (queryModel.Status.Count > 0)
+                {
+                    _logger.LogInformation("Add Status condition: {Status}", queryModel.Status.ToString());
+                    filter.AddAnd((TeacherEntity entity) => entity.Status, queryModel.Status);
+                }
+                #endregion
+
+                query = _filterBuilder.BuildFilterQuery(query, filter);
+
+                var paginatedData = await query
+                            .Skip((pageNumber - 1) * pageSize)
+                            .Take(pageSize)
+                            .ToListAsync();
+                return new PaginationModel<TeacherDisplayModel>
+                {
+                    TotalCount = query.Count(),
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    DataList = from item in paginatedData
+                               select item.ToModel()
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occured while getting list of all teachers. Error: {ex}", ex);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Get list of all teachers in 1 department with pagination
+        /// </summary>
+        /// <param name="queryModel"></param>
+        /// <returns></returns>
+        public async ValueTask<PaginationModel<TeacherDisplayModel>> GetAllTeachers(string departmentId, TeacherQueryModel queryModel)
+        {
+            try
+            {
+                _logger.LogInformation("Start to get list teachers.");
+                int pageNumber = queryModel.PageNumber != null && queryModel.PageNumber.Value > 0 ? queryModel.PageNumber.Value : 1;
+                int pageSize = queryModel.PageSize != null && queryModel.PageSize.Value > 0 ? queryModel.PageSize.Value : 10;
+
+                FilterModel filter = new();
+                var query = _context.TeacherEntities.AsQueryable();
+                query = query.Where(e => e.DepartmentId == departmentId);
 
                 #region Search
                 if (!string.IsNullOrEmpty(queryModel.SearchValue))
@@ -157,7 +220,11 @@ namespace SchoolManagement.Service
         #endregion
 
         #region Create
-
+        /// <summary>
+        /// Create a new teacher
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         public async ValueTask CreateTeacher(TeacherAddModel model)
         {
             try
@@ -201,8 +268,7 @@ namespace SchoolManagement.Service
                     TimeStart = model.TimeStart,
                     TimeEnd = model.TimeEnd,
                     Level = model.Level,
-                    IsLeader = false,
-                    IsViceLeader = false,
+                    Role = TeacherRole.Regular,
                     AccountId = newAccount.AccountId,
                     Status = TeacherStatusType.Active,
                     DepartmentId = null,
@@ -262,7 +328,7 @@ namespace SchoolManagement.Service
                 _logger.LogError("An error occured while updating a teacher. Error: {ex}", ex);
                 throw;
             }
-        }
+        }    
         #endregion
 
         #region Delete

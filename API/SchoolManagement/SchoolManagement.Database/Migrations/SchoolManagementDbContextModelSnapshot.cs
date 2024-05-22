@@ -422,12 +422,6 @@ namespace SchoolManagement.Database.Migrations
                     b.Property<string>("IdentificationNumber")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsLeader")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsViceLeader")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Level")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -435,6 +429,9 @@ namespace SchoolManagement.Database.Migrations
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Role")
+                        .HasColumnType("int");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");

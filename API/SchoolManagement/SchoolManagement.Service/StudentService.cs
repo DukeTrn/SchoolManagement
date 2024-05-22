@@ -262,7 +262,7 @@ namespace SchoolManagement.Service
                 student.Ethnic = model.Ethnic;
                 student.PhoneNumber = model.PhoneNumber;
                 student.Avatar = avatarUrl;
-                student.Email = model.Email;
+                student.Email = model.Email ?? "";
                 student.Status = model.Status;
                 // Parent info
                 student.FatherName = model.FatherName;

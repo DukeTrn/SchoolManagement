@@ -38,6 +38,32 @@ namespace SchoolManagement.Web.Controllers
             }
         }
 
+        /// <summary>
+        /// Get list of teachers in 1 department
+        /// </summary>
+        /// <param name="departmentId"></param>
+        /// <param name="queryModel"></param>
+        /// <returns></returns>
+        [HttpPost, Route("all/{departmentId}")]
+        public async ValueTask<IActionResult> GetAllStudents(string departmentId, [FromBody] TeacherQueryModel queryModel)
+        {
+            try
+            {
+                var result = await _service.GetAllTeachers(departmentId, queryModel);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(200, new { result = false, messageType = MessageType.Error, message = ex });
+            }
+        }
+
+        #region Add to department
+
+        //public async 
+
+        #endregion
+
         #region Get a record
         /// <summary>
         /// Get student by ID (full information of 1 student)

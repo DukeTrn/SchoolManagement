@@ -2,6 +2,7 @@
 using SchoolManagement.Common.Enum;
 using SchoolManagement.Common.Exceptions;
 using SchoolManagement.Model;
+using SchoolManagement.Service;
 using SchoolManagement.Service.Intention;
 
 namespace SchoolManagement.Web.Controllers
@@ -115,6 +116,63 @@ namespace SchoolManagement.Web.Controllers
                     messageType = MessageType.Error,
                     message = $"An error occurred while deleting student: {ex.Message}"
                 });
+            }
+        }
+
+        /// <summary>
+        /// Add teachers (by id) into 1 department
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost("add-teachers")]
+        public async Task<IActionResult> AddTeachersToDepartment([FromBody] UpdateTeachersToDeptModel model)
+        {
+            try
+            {
+                await _service.AddTeachersToDepartment(model);
+                return Ok(new { result = true, messageType = MessageType.Information, message = "Thêm thành công giáo viên vào bộ môn!" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { result = false, messageType = MessageType.Error, message = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Remove teachers (by id) from 1 department
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost("remove-teachers")]
+        public async Task<IActionResult> RemoveTeachersFromDepartment(UpdateTeachersToDeptModel model)
+        {
+            try
+            {
+                await _service.RemoveTeachersFromDepartment(model);
+                return Ok(new { result = true, messageType = MessageType.Information, message = "Xóa thành công giáo viên khỏi bộ môn!" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { result = false, messageType = MessageType.Error, message = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Role: 1 (regular), 2 (deputy head), 3 (head)
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost("promote-teachers")]
+        public async Task<IActionResult> PromoteTeachers(PromoteTeacherModel model)
+        {
+            try
+            {
+                await _service.PromoteTeachersAsync(model);
+                return Ok(new { result = true, messageType = MessageType.Information, message = "Cập nhật chức vụ thành công" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { result = false, messageType = MessageType.Error, message = ex.Message });
             }
         }
     }
