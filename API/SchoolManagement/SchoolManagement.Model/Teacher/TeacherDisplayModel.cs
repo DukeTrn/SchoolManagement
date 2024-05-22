@@ -24,4 +24,11 @@
         public bool IsViceLeader { get; set; } // tổ phó
         //public bool NotificationIsSeen { get; set; } // đã xem
     }
+
+    public class TeacherFilterModel
+    {
+        public string TeacherId { get; set; } = string.Empty; // Khóa chính
+        public string FullName { get; set; } = string.Empty;
+    }
+
 }

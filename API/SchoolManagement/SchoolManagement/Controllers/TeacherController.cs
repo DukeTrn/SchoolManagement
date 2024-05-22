@@ -2,6 +2,7 @@
 using SchoolManagement.Common.Enum;
 using SchoolManagement.Common.Exceptions;
 using SchoolManagement.Model;
+using SchoolManagement.Service;
 using SchoolManagement.Service.Intention;
 using SchoolManagement.Service.Intention.Data;
 
@@ -51,6 +52,24 @@ namespace SchoolManagement.Web.Controllers
             {
                 var result = await _service.GetAllTeachers(departmentId, queryModel);
                 return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(200, new { result = false, messageType = MessageType.Error, message = ex });
+            }
+        }
+
+        /// <summary>
+        /// Use for filter
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet, Route("filter")]
+        public async Task<IActionResult> GetAllTeachersFilter()
+        {
+            try
+            {
+                var teachers = await _service.GetAllTeachersFilter();
+                return Ok(teachers);
             }
             catch (Exception ex)
             {

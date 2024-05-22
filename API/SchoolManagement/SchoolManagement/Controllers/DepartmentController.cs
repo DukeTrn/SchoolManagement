@@ -158,7 +158,7 @@ namespace SchoolManagement.Web.Controllers
         }
 
         /// <summary>
-        /// Role: 1 (regular), 2 (deputy head), 3 (head)
+        /// 
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>

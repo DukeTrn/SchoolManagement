@@ -1,5 +1,6 @@
 ﻿using ClosedXML.Excel;
 using DocumentFormat.OpenXml.Office2010.Excel;
+using DocumentFormat.OpenXml.Office2010.ExcelAc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SchoolManagement.Common.Enum;
@@ -158,6 +159,15 @@ namespace SchoolManagement.Service
                 _logger.LogError("An error occured while getting list of all teachers. Error: {ex}", ex);
                 throw;
             }
+        }
+
+        public async ValueTask<IEnumerable<TeacherFilterModel>> GetAllTeachersFilter()
+        {
+            return await _context.TeacherEntities.Select(t => new TeacherFilterModel
+            {
+                TeacherId = t.TeacherId,
+                FullName = t.FullName
+            }).ToListAsync();
         }
         #endregion
 
