@@ -37,7 +37,7 @@ namespace SchoolManagement.Web.Controllers
         }
 
         /// <summary>
-        /// Create a new semester
+        /// Create a new semester. Format of semester id: 20242
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>

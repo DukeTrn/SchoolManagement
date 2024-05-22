@@ -7,6 +7,7 @@ namespace SchoolManagement.Service.Intention
     public interface IStudentService
     {
         ValueTask<PaginationModel<StudentDisplayModel>> GetAllStudents(StudentQueryModel queryModel);
+        ValueTask<IEnumerable<StudentFilterModel>> GetAllStudentsFilter();
         ValueTask<StudentFullDetailModel> GetStudentById(string studentId);
         ValueTask<StudentFullDetailModel> GetStudentByAccountId(Guid accountId);
         ValueTask CreateStudent(StudentAddModel model);

@@ -96,6 +96,24 @@ namespace SchoolManagement.Service
                 throw;
             }
         }
+
+        public async ValueTask<IEnumerable<StudentFilterModel>> GetAllStudentsFilter()
+        {
+            try
+            {
+                return await _context.StudentEntities.Select(t => new StudentFilterModel
+                {
+                    StudentId = t.StudentId,
+                    FullName = t.FullName
+                }).ToListAsync();
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occured while getting list of all students. Error: {ex}", ex);
+                throw;
+            }
+        }
         #endregion
 
         #region Get a record

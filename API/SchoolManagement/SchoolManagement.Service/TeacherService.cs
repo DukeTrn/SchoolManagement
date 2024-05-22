@@ -1,6 +1,4 @@
 ﻿using ClosedXML.Excel;
-using DocumentFormat.OpenXml.Office2010.Excel;
-using DocumentFormat.OpenXml.Office2010.ExcelAc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SchoolManagement.Common.Enum;
@@ -504,6 +502,9 @@ namespace SchoolManagement.Service
             }
         }
         #endregion
+
+        // Check data??
+
 
         /// <summary>
         /// Translate StatusType enum

@@ -39,6 +39,29 @@ namespace SchoolManagement.Controllers
             }
         }
 
+        /// <summary>
+        /// Use for filter
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet, Route("filter")]
+        public async Task<IActionResult> GetAllStudentsFilter()
+        {
+            try
+            {
+                var students = await _service.GetAllStudentsFilter();
+                return Ok(new
+                {
+                    result = true,
+                    data = students,
+                    messageType = 0
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(200, new { result = false, messageType = MessageType.Error, message = ex });
+            }
+        }
+
         #region Get a record
         /// <summary>
         /// Get student by ID (full information of 1 student)

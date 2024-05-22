@@ -27,4 +27,10 @@
         public string? MotherEmail { get; set; }
         public string AcademicYear { get; set; } = string.Empty; // niên khóa (2023-2026)
     }
+
+    public class StudentFilterModel
+    {
+        public string StudentId { get; set; } = string.Empty; // Khóa chính
+        public string FullName { get; set; } = string.Empty;
+    }
 }
