@@ -7,6 +7,7 @@ using SchoolManagement.Entity;
 using SchoolManagement.Model;
 using SchoolManagement.Service.Intention;
 using SchoolManagement.Service.Intention.Data;
+using SchoolManagement.Share;
 
 namespace SchoolManagement.Service
 {
@@ -22,59 +23,6 @@ namespace SchoolManagement.Service
             _context = context;
             _filterBuilder = filterBuilder;
         }
-
-        #region will delete
-        //public async ValueTask<PaginationModel<ClassDisplayModel>> GetAllClasses(int grade, PageQueryModel queryModel)
-        //{
-        //    try
-        //    {
-        //        _logger.LogInformation("Start to get list classes of each grade.");
-        //        int pageNumber = queryModel.PageNumber != null && queryModel.PageNumber.Value > 0 ? queryModel.PageNumber.Value : 1;
-        //        int pageSize = queryModel.PageSize != null && queryModel.PageSize.Value > 0 ? queryModel.PageSize.Value : 10;
-
-        //        FilterModel filter = new();
-
-        //        var query = _context.ClassEntities
-        //            .Where(c => c.Grade == grade)
-        //            .Include(c => c.HomeroomTeacher) // Include the related teacher entity
-        //            .AsQueryable();
-
-        //        #region Search
-        //        if (!string.IsNullOrEmpty(queryModel.SearchValue))
-        //        {
-        //            _logger.LogInformation("Add Search Value: {SearchValue}", queryModel.SearchValue);
-        //            var searchFilter = BuildSearchFilter(queryModel.SearchValue,
-        //                nameof(ClassEntity.ClassId),
-        //                nameof(ClassEntity.ClassName),
-        //                nameof(ClassEntity.AcademicYear),
-        //                //$"{nameof(ClassEntity.HomeroomTeacher)}.{nameof(TeacherEntity.FullName)}");
-        //                nameof(ClassEntity.HomeroomTeacher.FullName));
-        //            filter.Or.AddRange(searchFilter);
-        //        }
-        //        #endregion
-
-        //        query = _filterBuilder.BuildFilterQuery(query, filter);
-
-        //        var paginatedData = await query
-        //                    .Skip((pageNumber - 1) * pageSize)
-        //                    .Take(pageSize)
-        //                    .ToListAsync();
-        //        return new PaginationModel<ClassDisplayModel>
-        //        {
-        //            TotalCount = query.Count(),
-        //            PageNumber = pageNumber,
-        //            PageSize = pageSize,
-        //            DataList = from item in paginatedData
-        //                       select item.ToModel()
-        //        };
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError("An error occured while getting list of all classes in grade {grade}. Error: {ex}", grade, ex);
-        //        throw;
-        //    }
-        //}
-        #endregion
 
         /// <summary>
         /// Get lists of class by grade
@@ -151,7 +99,6 @@ namespace SchoolManagement.Service
                 throw;
             }
         }
-
 
 
         #region Create
