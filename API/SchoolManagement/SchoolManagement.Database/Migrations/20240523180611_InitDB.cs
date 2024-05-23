@@ -240,6 +240,7 @@ namespace SchoolManagement.Database.Migrations
                 columns: table => new
                 {
                     ClassDetailId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Number = table.Column<int>(type: "int", nullable: false),
                     ClassId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     StudentId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },

@@ -15,6 +15,7 @@ namespace SchoolManagement.Database
                 .Build();
 
             // Get connection string from configuration
+            //string connectionString = configuration.GetConnectionString("ConnectDatabase");
             string connectionString = configuration.GetConnectionString("ConnectDatabase");
 
             // Create options for DbContext

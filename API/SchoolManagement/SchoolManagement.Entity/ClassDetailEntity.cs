@@ -8,12 +8,13 @@ namespace SchoolManagement.Entity
     {
         [Key]
         public string ClassDetailId { get; set; } = string.Empty;
-        public string ClassId { get; set; } = string.Empty;
-        public string StudentId { get; set; } = string.Empty;
+        public int Number { get; set; }
+        public string? ClassId { get; set; } = string.Empty;
+        public string? StudentId { get; set; } = string.Empty;
 
         // Navigation properties 
-        public ClassEntity Class { get; set; } = null!;
-        public StudentEntity Student { get; set; } = null!;
+        public ClassEntity? Class { get; set; } = null!;
+        public StudentEntity? Student { get; set; } = null!;
 
         // 1-N ClassDetail-Assessments
         public ICollection<AssessmentEntity> Assessments { get; set; } = null!;

@@ -8,6 +8,11 @@
     "secrets1": {
       "type": "secrets",
       "connectionId": null
+    },
+    "mssql2": {
+      "type": "mssql",
+      "connectionId": "ConnectionStrings",
+      "dynamicId": null
     }
   }
 }

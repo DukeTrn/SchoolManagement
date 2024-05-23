@@ -17,6 +17,10 @@ public static class AppSetupExtension
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();
+            //app.UseSwaggerUI(c =>
+            //{
+            //    c.SwaggerEndpoint("./v1/swagger.json", "School Management V1"); //originally "./swagger/v1/swagger.json"
+            //});
             app.UseSwaggerUI();
         }
 
@@ -27,6 +31,8 @@ public static class AppSetupExtension
         app.MapControllers();
         app.UseAuthentication();
         app.UseAuthorization();
+
+        app.UseCors("AllowAllHeaders");
         //app.UseStaticFiles(new StaticFileOptions
         //{
         //    //Map virtual folder to physical folder. Used for UseSwaggerUI.InjectStylesheet function.

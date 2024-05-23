@@ -31,12 +31,22 @@ public static class BuilderSetupExtension
             //c.OperationFilter<SwaggerExtension>();
             c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetEntryAssembly()?.GetName().Name}.xml"));
         });
-        builder.Services.AddCors(opt =>
+        //builder.Services.AddCors(opt =>
+        //{
+        //    opt.AddDefaultPolicy(builder =>
+        //    {
+        //        builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+        //    });
+        //});
+        builder.Services.AddCors(options =>
         {
-            opt.AddDefaultPolicy(builder =>
-            {
-                builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
-            });
+            options.AddPolicy("AllowAllHeaders",
+                builder =>
+                {
+                    builder.AllowAnyOrigin()
+                           .AllowAnyHeader()
+                           .AllowAnyMethod();
+                });
         });
         builder.Services.AddDbContext<SchoolManagementDbContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("ConnectDatabase")));
         // Cấu hình FileProvider để xử lý các tệp từ thư mục gốc

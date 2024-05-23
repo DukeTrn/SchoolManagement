@@ -11,6 +11,12 @@
       "resourceId": null,
       "type": "secrets.user",
       "connectionId": null
+    },
+    "mssql2": {
+      "secretStore": "LocalSecretsFile",
+      "type": "mssql.onprem",
+      "connectionId": "ConnectionStrings",
+      "dynamicId": null
     }
   }
 }
