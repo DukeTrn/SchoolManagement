@@ -20,7 +20,7 @@ namespace SchoolManagement.Startup.BuilderExtensions
 
         private static WebApplicationBuilder AddLogicServices(this WebApplicationBuilder builder)
         {
-            // Services
+            // Services (scope)
             builder.Services.AddScoped<IStudentService, StudentService>();
             builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<ITeacherService, TeacherService>();
@@ -29,6 +29,7 @@ namespace SchoolManagement.Startup.BuilderExtensions
             builder.Services.AddScoped<ISubjectService, SubjectService>();
             builder.Services.AddScoped<IClassService, ClassService>();
             builder.Services.AddScoped<IClassDetailService, ClassDetailService>();
+            builder.Services.AddScoped<IConductService, ConductService>();
             
             // Authentication and authorization
             builder.Services.AddScoped<ITokenService, TokenService>();

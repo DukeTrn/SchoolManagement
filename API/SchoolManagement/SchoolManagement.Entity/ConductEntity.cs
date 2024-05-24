@@ -6,9 +6,10 @@ namespace SchoolManagement.Entity
     [Table("Conducts")]
     public class ConductEntity
     {
+        // Hạnh kiểm
         [Key]
         public Guid ConductId { get; set; }
-        public int ConductName { get; set; } // Enum: very good, good, average, weak
+        public int ConductName { get; set; } // Enum: very good (tốt), good (khá), average (TB), weak (yếu)
         public string Feedback { get; set; } = string.Empty;
 
         // Khóa ngoại cho mối quan hệ 1-N với StudentEntity
