@@ -175,5 +175,28 @@ namespace SchoolManagement.Web.Controllers
                 return BadRequest(new { result = false, messageType = MessageType.Error, message = ex.Message });
             }
         }
+
+        /// <summary>
+        /// Filter (of teachers) to add teachers into department
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet, Route("teacher-filter")]
+        public async Task<IActionResult> GetFilterTeachersNotInAnyDepartment()
+        {
+            try
+            {
+                var teachers = await _service.GetFilterTeachersNotInAnyDepartment();
+                return Ok(new
+                {
+                    result = true,
+                    data = teachers,
+                    messageType = 0
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(200, new { result = false, messageType = MessageType.Error, message = ex.Message });
+            }
+        }
     }
 }

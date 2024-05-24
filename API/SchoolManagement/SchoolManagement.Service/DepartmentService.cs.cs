@@ -163,10 +163,16 @@ namespace SchoolManagement.Service
         #endregion
 
         #region Update department ID of teachers (add to 1 dept or delete from 1 dept)
+
         public async ValueTask AddTeachersToDepartment(UpdateTeachersToDeptModel model)
         {
             try
             {
+                // There will be a bug:
+                // if a teacher is already in 1 department, then add again into the same department
+                // => the result is still true (supposed to be false)
+                // this bug will be handled by UI (related to filter)
+
                 _logger.LogInformation("Start to add teachers to department.");
 
                 // Kiểm tra xem tổ bộ môn có tồn tại không
@@ -177,7 +183,7 @@ namespace SchoolManagement.Service
                 if (department == null)
                 {
                     _logger.LogInformation("Department not found.");
-                    throw new KeyNotFoundException("Department not found.");
+                    throw new KeyNotFoundException("Không tìm thấy tổ bộ môn này!");
                 }
 
                 // Tìm các giáo viên có mã trong danh sách TeacherIds
@@ -188,7 +194,7 @@ namespace SchoolManagement.Service
                 if (!teachers.Any())
                 {
                     _logger.LogInformation("No teachers found for the given IDs.");
-                    throw new KeyNotFoundException("No teachers found for the given IDs.");
+                    throw new KeyNotFoundException("Không tìm thấy giáo viên này!");
                 }
 
                 var existingTeachers = new List<string>();
@@ -215,7 +221,7 @@ namespace SchoolManagement.Service
 
                 if (existingTeachers.Any())
                 {
-                    var errorMsg = $"The following teachers are already in a different department: {string.Join(", ", existingTeachers)}";
+                    var errorMsg = $"The following teachers are already in a department: {string.Join(", ", existingTeachers)}";
                     _logger.LogInformation(errorMsg);
                     throw new InvalidOperationException(errorMsg);
                 }
@@ -271,6 +277,32 @@ namespace SchoolManagement.Service
             catch (Exception ex)
             {
                 _logger.LogError("An error occurred while removing teachers from department. Error: {ex}", ex);
+                throw;
+            }
+        }
+
+        public async ValueTask<IEnumerable<TeacherFilterModel>> GetFilterTeachersNotInAnyDepartment()
+        {
+            try
+            {
+                // Lấy danh sách tất cả giáo viên
+                var allTeachers = await _context.TeacherEntities.ToListAsync();
+
+                // Lọc danh sách giáo viên: chỉ lấy những giáo viên chưa thuộc bộ môn nào
+                var teachersNotInAnyDepartment = allTeachers.Where(t => t.DepartmentId == null);
+
+                // Chuyển đổi danh sách giáo viên thành danh sách TeacherFilterModel
+                var teacherFilterModels = teachersNotInAnyDepartment.Select(t => new TeacherFilterModel
+                {
+                    TeacherId = t.TeacherId,
+                    FullName = t.FullName
+                }).ToList();
+
+                return teacherFilterModels;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occurred while getting teachers not in any department for filter. Error: {ex}", ex);
                 throw;
             }
         }

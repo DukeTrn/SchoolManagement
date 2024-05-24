@@ -11,5 +11,6 @@ namespace SchoolManagement.Service.Intention
         ValueTask AddTeachersToDepartment(UpdateTeachersToDeptModel model);
         ValueTask RemoveTeachersFromDepartment(UpdateTeachersToDeptModel model);
         ValueTask PromoteTeachersAsync(PromoteTeacherModel model);
+        ValueTask<IEnumerable<TeacherFilterModel>> GetFilterTeachersNotInAnyDepartment();
     }
 }

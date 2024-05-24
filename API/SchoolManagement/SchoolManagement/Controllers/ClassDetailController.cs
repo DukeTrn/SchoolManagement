@@ -42,7 +42,7 @@ namespace SchoolManagement.Web.Controllers
         }
 
         /// <summary>
-        /// Filter to add students into class
+        /// Filter (of students) to add students into class
         /// </summary>
         /// <param name="grade"></param>
         /// <returns></returns>
@@ -52,7 +52,12 @@ namespace SchoolManagement.Web.Controllers
             try
             {
                 var filteredStudents = await _service.FilterStudentsByClassGrade(grade);
-                return Ok(filteredStudents);
+                return Ok(new
+                {
+                    result = true,
+                    data = filteredStudents,
+                    messageType = MessageType.Information
+                });
             }
             catch (Exception ex)
             {
