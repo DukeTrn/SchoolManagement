@@ -8,9 +8,9 @@ namespace SchoolManagement.Entity
     {
         [Key]
         public string ClassDetailId { get; set; } = string.Empty;
-        public int Number { get; set; }
         public string? ClassId { get; set; } = string.Empty;
         public string? StudentId { get; set; } = string.Empty;
+        public DateTime? ModifiedAt { get; set; }
 
         // Navigation properties 
         public ClassEntity? Class { get; set; } = null!;

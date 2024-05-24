@@ -12,7 +12,7 @@ using SchoolManagement.Database;
 namespace SchoolManagement.Database.Migrations
 {
     [DbContext(typeof(SchoolManagementDbContext))]
-    [Migration("20240523180611_InitDB")]
+    [Migration("20240524025227_InitDB")]
     partial class InitDB
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -147,14 +147,12 @@ namespace SchoolManagement.Database.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ClassId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("Number")
                         .HasColumnType("int");
 
                     b.Property<string>("StudentId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("ClassDetailId");
@@ -524,15 +522,11 @@ namespace SchoolManagement.Database.Migrations
                 {
                     b.HasOne("SchoolManagement.Entity.ClassEntity", "Class")
                         .WithMany("ClassDetails")
-                        .HasForeignKey("ClassId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ClassId");
 
                     b.HasOne("SchoolManagement.Entity.StudentEntity", "Student")
                         .WithMany("ClassDetails")
-                        .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("StudentId");
 
                     b.Navigation("Class");
 

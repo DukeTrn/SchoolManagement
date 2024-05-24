@@ -12,8 +12,8 @@ using SchoolManagement.Database;
 namespace SchoolManagement.Database.Migrations
 {
     [DbContext(typeof(SchoolManagementDbContext))]
-    [Migration("20240523184902_AddNull")]
-    partial class AddNull
+    [Migration("20240524035536_RemoveColumn")]
+    partial class RemoveColumn
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -148,9 +148,6 @@ namespace SchoolManagement.Database.Migrations
 
                     b.Property<string>("ClassId")
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("Number")
-                        .HasColumnType("int");
 
                     b.Property<string>("StudentId")
                         .HasColumnType("nvarchar(450)");

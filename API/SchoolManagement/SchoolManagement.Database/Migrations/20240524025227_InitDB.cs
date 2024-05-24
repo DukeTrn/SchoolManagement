@@ -241,8 +241,8 @@ namespace SchoolManagement.Database.Migrations
                 {
                     ClassDetailId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Number = table.Column<int>(type: "int", nullable: false),
-                    ClassId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    StudentId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    ClassId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    StudentId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -251,14 +251,12 @@ namespace SchoolManagement.Database.Migrations
                         name: "FK_ClassDetails_Classes_ClassId",
                         column: x => x.ClassId,
                         principalTable: "Classes",
-                        principalColumn: "ClassId",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "ClassId");
                     table.ForeignKey(
                         name: "FK_ClassDetails_Students_StudentId",
                         column: x => x.StudentId,
                         principalTable: "Students",
-                        principalColumn: "StudentId",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "StudentId");
                 });
 
             migrationBuilder.CreateTable(

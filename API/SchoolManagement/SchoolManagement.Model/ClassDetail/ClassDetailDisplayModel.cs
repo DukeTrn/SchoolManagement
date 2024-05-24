@@ -4,7 +4,8 @@ namespace SchoolManagement.Model
 {
     public class ClassDetailDisplayModel
     {
-        public string StudentId { get; set; } = string.Empty;
+        public string ClassDetailId { get; set; } = string.Empty;
+        public int Number { get; set; }
         public string FullName { get; set; } = string.Empty;
         public StudentStatusType Status { get; set; }
     }

@@ -7,7 +7,6 @@ using SchoolManagement.Entity;
 using SchoolManagement.Model;
 using SchoolManagement.Service.Intention;
 using SchoolManagement.Service.Intention.Data;
-using SchoolManagement.Share;
 
 namespace SchoolManagement.Service
 {
@@ -100,6 +99,19 @@ namespace SchoolManagement.Service
             }
         }
 
+        public async ValueTask<string> GetClassNameById(string classId)
+        {
+            var classInfo = await _context.ClassEntities
+                    .Where(c => c.ClassId == classId)
+                    .Select(c => new { c.ClassName })
+                    .FirstOrDefaultAsync();
+            if (classInfo == null)
+            {
+                throw new ArgumentException($"Class with ID {classId} not found.");
+            }
+            var className = classInfo.ClassName;
+            return className;
+        }
 
         #region Create
         /// <summary>

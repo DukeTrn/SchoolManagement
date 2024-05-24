@@ -4,7 +4,7 @@
 
 namespace SchoolManagement.Database.Migrations
 {
-    public partial class AddNull : Migration
+    public partial class RemoveColumn : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -36,29 +36,9 @@ namespace SchoolManagement.Database.Migrations
                 name: "FK_Assignments_Teachers_TeacherId",
                 table: "Assignments");
 
-            migrationBuilder.DropForeignKey(
-                name: "FK_ClassDetails_Classes_ClassId",
+            migrationBuilder.DropColumn(
+                name: "Number",
                 table: "ClassDetails");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_ClassDetails_Students_StudentId",
-                table: "ClassDetails");
-
-            migrationBuilder.AlterColumn<string>(
-                name: "StudentId",
-                table: "ClassDetails",
-                type: "nvarchar(450)",
-                nullable: true,
-                oldClrType: typeof(string),
-                oldType: "nvarchar(450)");
-
-            migrationBuilder.AlterColumn<string>(
-                name: "ClassId",
-                table: "ClassDetails",
-                type: "nvarchar(450)",
-                nullable: true,
-                oldClrType: typeof(string),
-                oldType: "nvarchar(450)");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Assessments_ClassDetails_ClassDetailId",
@@ -66,7 +46,7 @@ namespace SchoolManagement.Database.Migrations
                 column: "ClassDetailId",
                 principalTable: "ClassDetails",
                 principalColumn: "ClassDetailId",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Assessments_Semesters_SemesterId",
@@ -74,7 +54,7 @@ namespace SchoolManagement.Database.Migrations
                 column: "SemesterId",
                 principalTable: "Semesters",
                 principalColumn: "SemesterId",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Assessments_Subjects_SubjectId",
@@ -82,7 +62,7 @@ namespace SchoolManagement.Database.Migrations
                 column: "SubjectId",
                 principalTable: "Subjects",
                 principalColumn: "SubjectId",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Assignments_Classes_ClassId",
@@ -90,7 +70,7 @@ namespace SchoolManagement.Database.Migrations
                 column: "ClassId",
                 principalTable: "Classes",
                 principalColumn: "ClassId",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Assignments_Semesters_SemesterId",
@@ -115,20 +95,6 @@ namespace SchoolManagement.Database.Migrations
                 principalTable: "Teachers",
                 principalColumn: "TeacherId",
                 onDelete: ReferentialAction.Restrict);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_ClassDetails_Classes_ClassId",
-                table: "ClassDetails",
-                column: "ClassId",
-                principalTable: "Classes",
-                principalColumn: "ClassId");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_ClassDetails_Students_StudentId",
-                table: "ClassDetails",
-                column: "StudentId",
-                principalTable: "Students",
-                principalColumn: "StudentId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -161,33 +127,12 @@ namespace SchoolManagement.Database.Migrations
                 name: "FK_Assignments_Teachers_TeacherId",
                 table: "Assignments");
 
-            migrationBuilder.DropForeignKey(
-                name: "FK_ClassDetails_Classes_ClassId",
-                table: "ClassDetails");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_ClassDetails_Students_StudentId",
-                table: "ClassDetails");
-
-            migrationBuilder.AlterColumn<string>(
-                name: "StudentId",
+            migrationBuilder.AddColumn<int>(
+                name: "Number",
                 table: "ClassDetails",
-                type: "nvarchar(450)",
+                type: "int",
                 nullable: false,
-                defaultValue: "",
-                oldClrType: typeof(string),
-                oldType: "nvarchar(450)",
-                oldNullable: true);
-
-            migrationBuilder.AlterColumn<string>(
-                name: "ClassId",
-                table: "ClassDetails",
-                type: "nvarchar(450)",
-                nullable: false,
-                defaultValue: "",
-                oldClrType: typeof(string),
-                oldType: "nvarchar(450)",
-                oldNullable: true);
+                defaultValue: 0);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Assessments_ClassDetails_ClassDetailId",
@@ -243,22 +188,6 @@ namespace SchoolManagement.Database.Migrations
                 column: "TeacherId",
                 principalTable: "Teachers",
                 principalColumn: "TeacherId",
-                onDelete: ReferentialAction.Restrict);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_ClassDetails_Classes_ClassId",
-                table: "ClassDetails",
-                column: "ClassId",
-                principalTable: "Classes",
-                principalColumn: "ClassId",
-                onDelete: ReferentialAction.Restrict);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_ClassDetails_Students_StudentId",
-                table: "ClassDetails",
-                column: "StudentId",
-                principalTable: "Students",
-                principalColumn: "StudentId",
                 onDelete: ReferentialAction.Restrict);
         }
     }
