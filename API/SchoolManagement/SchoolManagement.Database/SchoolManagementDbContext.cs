@@ -21,7 +21,7 @@ namespace SchoolManagement.Database
         public DbSet<AssessmentEntity> AssessmentEntities { get; set; } = null!;
         public DbSet<SubjectEntity> SubjectEntities { get; set; } = null!;
         public DbSet<AssignmentEntity> AssignmentEntities { get; set; } = null!;
-
+        public DbSet<SemesterClassEntity> SemesterClassEntities { get; set; } = null!;
         
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -119,6 +119,18 @@ namespace SchoolManagement.Database
                 .HasOne(a => a.Semester)
                 .WithMany(s => s.Assignments)
                 .HasForeignKey(a => a.SemesterId);
+            // Mối quan hệ N-1 giữa SemesterClass và Class
+            modelBuilder.Entity<SemesterClassEntity>()
+                .HasOne(cd => cd.Class)
+                .WithMany(s => s.SemClassIds)
+                .HasForeignKey(cd => cd.ClassId);
+
+            // Mối quan hệ N-1 giữa SemesterClass và Semester
+            modelBuilder.Entity<SemesterClassEntity>()
+                .HasOne(cd => cd.Semester)
+                .WithMany(c => c.SemClassIds)
+                .HasForeignKey(cd => cd.SemesterId);
+
         }
     }
 }

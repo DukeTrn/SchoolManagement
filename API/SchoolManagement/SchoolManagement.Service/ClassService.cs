@@ -121,7 +121,12 @@ namespace SchoolManagement.Service
             }
         }
 
-
+        /// <summary>
+        /// Not used for api
+        /// </summary>
+        /// <param name="classId"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
         public async ValueTask<string> GetClassNameById(string classId)
         {
             var classInfo = await _context.ClassEntities
@@ -138,7 +143,7 @@ namespace SchoolManagement.Service
 
         #region Create
         /// <summary>
-        /// Add new class in 1 grade
+        /// Add new class in 1 grade (will change class id format)
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
