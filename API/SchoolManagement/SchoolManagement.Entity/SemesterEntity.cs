@@ -7,7 +7,7 @@ namespace SchoolManagement.Entity
     public class SemesterEntity
     {
         [Key]
-        public string SemesterId { get; set; } = string.Empty;
+        public string SemesterId { get; set; } = string.Empty; // 20242
         public string SemesterName { get; set; } = string.Empty; // nam hoc 2024
         public string AcademicYear { get; set; } = string.Empty; // nien khoa 2024-2025
         public DateTime TimeStart { get; set; }

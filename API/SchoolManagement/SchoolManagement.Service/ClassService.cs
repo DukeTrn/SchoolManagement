@@ -99,6 +99,29 @@ namespace SchoolManagement.Service
             }
         }
 
+        public async ValueTask<IEnumerable<ClassFilterModel>> GetClassesByGradeFilter(int grade)
+        {
+            try
+            {
+                var classes = await _context.ClassEntities
+                    .Where(c => c.Grade == grade)
+                    .Select(c => new ClassFilterModel
+                    {
+                        ClassId = c.ClassId,
+                        ClassName = c.ClassName
+                    })
+                    .ToListAsync();
+
+                return classes;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occurred while getting classes by grade. Error: {ex}", ex);
+                throw;
+            }
+        }
+
+
         public async ValueTask<string> GetClassNameById(string classId)
         {
             var classInfo = await _context.ClassEntities

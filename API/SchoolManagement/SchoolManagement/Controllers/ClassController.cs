@@ -38,6 +38,30 @@ namespace SchoolManagement.Web.Controllers
         }
 
         /// <summary>
+        /// Use for filter 
+        /// </summary>
+        /// <param name="grade"></param>
+        /// <returns></returns>
+        [HttpPost, Route("filter/{grade}")]
+        public async ValueTask<IActionResult> GetClassesByGrade(int grade)
+        {
+            try
+            {
+                var classes = await _service.GetClassesByGradeFilter(grade);
+                return Ok(new
+                {
+                    result = true,
+                    data = classes,
+                    messageType = MessageType.Information
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(200, new { result = false, messageType = MessageType.Error, message = ex });
+            }
+        }
+
+        /// <summary>
         /// Create a new class. Format of year: 2024
         /// </summary>
         /// <param name="model"></param>

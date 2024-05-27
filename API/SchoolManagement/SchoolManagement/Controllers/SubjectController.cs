@@ -26,8 +26,13 @@ namespace SchoolManagement.Web.Controllers
         {
             try
             {
-                var result = await _service.GetSubjectsByGrade(grade);
-                return Ok(result);
+                var subject = await _service.GetSubjectsByGrade(grade);
+                return Ok(new
+                {
+                    result = true,
+                    data = subject,
+                    messageType = MessageType.Information
+                });
             }
             catch (Exception ex)
             {

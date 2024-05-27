@@ -6,7 +6,7 @@ namespace SchoolManagement.Entity
     [Table("Assignments")]
     public class AssignmentEntity
     {
-        // Phan cong giang day
+        // Phân công giảng dạy
         [Key]
         public Guid AssignmentId { get; set; }
         
