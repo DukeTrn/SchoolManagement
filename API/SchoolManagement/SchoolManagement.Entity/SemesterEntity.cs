@@ -22,6 +22,6 @@ namespace SchoolManagement.Entity
         // 1-N Semester-Assessments
         public ICollection<AssessmentEntity> Assessments { get; set; } = null!;
         // 1-N Class-SemClass
-        public ICollection<SemesterClassEntity> SemClassIds { get; set; } = null!;
+        public ICollection<SemesterDetailEntity> SemClassIds { get; set; } = null!;
     }
 }

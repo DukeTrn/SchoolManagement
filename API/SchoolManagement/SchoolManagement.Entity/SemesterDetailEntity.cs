@@ -3,8 +3,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SchoolManagement.Entity
 {
-    [Table("SemesterClasses")]
-    public class SemesterClassEntity
+    [Table("SemesterDetails")]
+    public class SemesterDetailEntity
     {
         [Key]
         public Guid Id { get; set; }

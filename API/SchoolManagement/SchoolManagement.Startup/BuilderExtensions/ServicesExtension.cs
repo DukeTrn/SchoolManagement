@@ -31,6 +31,7 @@ namespace SchoolManagement.Startup.BuilderExtensions
             builder.Services.AddScoped<IClassDetailService, ClassDetailService>();
             builder.Services.AddScoped<IConductService, ConductService>();
             builder.Services.AddScoped<IAssignmentService, AssignmentService>();
+            builder.Services.AddScoped<ISemesterDetailService, SemesterDetailService>();
             
             // Authentication and authorization
             builder.Services.AddScoped<ITokenService, TokenService>();
