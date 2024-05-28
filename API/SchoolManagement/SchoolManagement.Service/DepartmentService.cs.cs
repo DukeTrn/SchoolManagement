@@ -57,6 +57,24 @@ namespace SchoolManagement.Service
                 throw;
             }
         }
+
+        public async ValueTask<IEnumerable<DepartmentFilterModel>> DepartmentFilter()
+        {
+            try
+            {
+                return await _context.DepartmentEntities
+                    .Select(c => new DepartmentFilterModel
+                    {
+                        DepartmentId = c.DepartmentId,
+                        SubjectName = c.SubjectName
+                    }).ToListAsync();
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError("An error occured while getting list of all depts. Error: {ex}", ex);
+                throw;
+            }
+        }
         #endregion
 
         #region Create

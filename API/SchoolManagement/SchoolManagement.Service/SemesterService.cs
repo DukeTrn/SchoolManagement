@@ -59,6 +59,24 @@ namespace SchoolManagement.Service
         }
         #endregion
 
+        public async ValueTask<IEnumerable<SemesterFilterModel>> GetFilter()
+        {
+            try
+            {
+                return await _context.SemesterEntities.Select(t => new SemesterFilterModel
+                {
+                    SemesterId = t.SemesterId,
+                    SemesterName = t.SemesterName
+                }).ToListAsync();
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occured while getting list of all Semesters. Error: {ex}", ex);
+                throw;
+            }
+        }
+
         #region Create
         /// <summary>
         /// Add new semester

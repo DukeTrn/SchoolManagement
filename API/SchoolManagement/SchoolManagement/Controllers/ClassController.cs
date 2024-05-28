@@ -38,11 +38,35 @@ namespace SchoolManagement.Web.Controllers
         }
 
         /// <summary>
-        /// Use for filter 
+        /// Filter to get available HR teacher (GVCN)
         /// </summary>
         /// <param name="grade"></param>
         /// <returns></returns>
-        [HttpPost, Route("filter/{grade}")]
+        [HttpGet, Route("teacherfilter/{grade}")]
+        public async ValueTask<IActionResult> GetAvailableTeachersByGradeAsync(int grade)
+        {
+            try
+            {
+                var teachers = await _service.GetAvailableTeachersByGradeAsync(grade);
+                return Ok(new
+                {
+                    result = true,
+                    data = teachers,
+                    messageType = MessageType.Information
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(200, new { result = false, messageType = MessageType.Error, message = ex });
+            }
+        }
+
+        /// <summary>
+        /// Use for class filter 
+        /// </summary>
+        /// <param name="grade"></param>
+        /// <returns></returns>
+        [HttpGet, Route("classfilter/{grade}")]
         public async ValueTask<IActionResult> GetClassesByGrade(int grade)
         {
             try

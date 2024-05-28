@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using SchoolManagement.Common.Enum;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SchoolManagement.Entity
@@ -9,7 +10,7 @@ namespace SchoolManagement.Entity
         // Hạnh kiểm
         [Key]
         public Guid ConductId { get; set; }
-        public int ConductName { get; set; } // Enum: very good (tốt), good (khá), average (TB), weak (yếu)
+        public ConductType ConductName { get; set; } // Enum: very good (tốt), good (khá), average (TB), weak (yếu)
         public string Feedback { get; set; } = string.Empty;
 
         // Khóa ngoại cho mối quan hệ 1-N với StudentEntity

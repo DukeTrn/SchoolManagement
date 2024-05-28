@@ -51,8 +51,8 @@ namespace SchoolManagement.Database
             // Mối quan hệ N-1 giữa Class và Teacher
             modelBuilder.Entity<ClassEntity>()
                 .HasOne(c => c.HomeroomTeacher) // Mỗi lớp có một giáo viên chủ nhiệm
-                .WithOne(t => t.Class) // Một giáo viên có thể làm chủ nhiệm của nhiều lớp
-                .HasForeignKey<ClassEntity>(c => c.HomeroomTeacherId); // Khóa ngoại trong bảng ClassEntity là HomeroomTeacherId
+                .WithMany(t => t.Classes) // Một giáo viên có thể làm chủ nhiệm của nhiều lớp
+                .HasForeignKey(c => c.HomeroomTeacherId); // Khóa ngoại trong bảng ClassEntity là HomeroomTeacherId
 
             // Mối quan hệ N-1 giữa ClassDetail và Student
             modelBuilder.Entity<ClassDetailEntity>()

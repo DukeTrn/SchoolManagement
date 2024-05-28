@@ -17,16 +17,25 @@ namespace SchoolManagement.Service
         private readonly ILogger<ClassDetailService> _logger;
         private readonly SchoolManagementDbContext _context;
         private readonly IClassService _classService;
+        private readonly IConductService _conductService;
 
         public ClassDetailService(ILogger<ClassDetailService> logger, 
             SchoolManagementDbContext context,
-            IClassService classService)
+            IClassService classService,
+            IConductService conductService)
         {
             _logger = logger;
             _context = context;
             _classService = classService;
+            _conductService = conductService;
         }
 
+        /// <summary>
+        /// Get all students in 1 class
+        /// </summary>
+        /// <param name="classId"></param>
+        /// <param name="queryModel"></param>
+        /// <returns></returns>
         public async Task<PaginationModel<ClassDetailDisplayModel>> GetAllClassDetail(string classId, ClassDetailQueryModel queryModel)
         {
             try

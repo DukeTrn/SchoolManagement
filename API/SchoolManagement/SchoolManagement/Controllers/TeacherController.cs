@@ -26,7 +26,7 @@ namespace SchoolManagement.Web.Controllers
         /// <param name="queryModel"></param>
         /// <returns></returns>
         [HttpPost, Route("all")]
-        public async ValueTask<IActionResult> GetAllStudents([FromBody] TeacherQueryModel queryModel)
+        public async ValueTask<IActionResult> GetAllTeachers([FromBody] TeacherQueryModel queryModel)
         {
             try
             {
@@ -46,7 +46,7 @@ namespace SchoolManagement.Web.Controllers
         /// <param name="queryModel"></param>
         /// <returns></returns>
         [HttpPost, Route("all/{departmentId}")]
-        public async ValueTask<IActionResult> GetAllStudents(string departmentId, [FromBody] TeacherQueryModel queryModel)
+        public async ValueTask<IActionResult> GetAllTeachers(string departmentId, [FromBody] TeacherQueryModel queryModel)
         {
             try
             {
@@ -126,7 +126,7 @@ namespace SchoolManagement.Web.Controllers
 
         #region Get a record
         /// <summary>
-        /// Get student by ID (full information of 1 student)
+        /// Get teacher by ID (full information of 1 teacher)
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -165,7 +165,7 @@ namespace SchoolManagement.Web.Controllers
         /// <param name="accountId"></param>
         /// <returns></returns>
         [HttpGet("teacher/{accountId}")]
-        public async ValueTask<ActionResult<StudentFullDetailModel>> GetTeacherByAccountId(Guid accountId)
+        public async ValueTask<ActionResult<TeacherFullDisplayModel>> GetTeacherByAccountId(Guid accountId)
         {
             try
             {

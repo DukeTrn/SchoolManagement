@@ -10,6 +10,7 @@ namespace SchoolManagement.Service.Intention
         ValueTask CreateClass(ClassAddModel model);
         ValueTask UpdateClass(string classId, ClassUpdateModel model);
         ValueTask DeleteClass(string classId);
+        ValueTask<IEnumerable<TeacherFilterModel>> GetAvailableTeachersByGradeAsync(int grade);
 
     }
 }

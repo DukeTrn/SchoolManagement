@@ -36,6 +36,25 @@ namespace SchoolManagement.Web.Controllers
             }
         }
 
+        [HttpGet, Route("filter")]
+        public async Task<IActionResult> GetDepartmentFilter()
+        {
+            try
+            {
+                var depts = await _service.DepartmentFilter();
+                return Ok(new
+                {
+                    result = true,
+                    data = depts,
+                    messageType = 0
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(200, new { result = false, messageType = MessageType.Error, message = ex });
+            }
+        }
+
         /// <summary>
         /// Create a new department
         /// </summary>

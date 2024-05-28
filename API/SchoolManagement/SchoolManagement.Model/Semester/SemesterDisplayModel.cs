@@ -8,4 +8,10 @@
         public string TimeStart { get; set; } = string.Empty;
         public string? TimeEnd { get; set; } = string.Empty;
     }
+
+    public class SemesterFilterModel
+    {
+        public string SemesterId { get; set; } = string.Empty;
+        public string SemesterName { get; set; } = string.Empty;
+    }
 }

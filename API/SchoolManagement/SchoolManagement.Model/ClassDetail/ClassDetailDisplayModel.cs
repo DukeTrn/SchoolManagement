@@ -5,7 +5,7 @@ namespace SchoolManagement.Model
     public class ClassDetailDisplayModel
     {
         public string ClassDetailId { get; set; } = string.Empty;
-        public int Number { get; set; }
+        public int Number { get; set; } //STT
         public string FullName { get; set; } = string.Empty;
         public StudentStatusType Status { get; set; }
     }

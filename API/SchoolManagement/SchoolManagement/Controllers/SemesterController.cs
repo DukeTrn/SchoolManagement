@@ -37,6 +37,29 @@ namespace SchoolManagement.Web.Controllers
         }
 
         /// <summary>
+        /// Use for filter
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet, Route("filter")]
+        public async Task<IActionResult> GetFilter()
+        {
+            try
+            {
+                var sems = await _service.GetFilter();
+                return Ok(new
+                {
+                    result = true,
+                    data = sems,
+                    messageType = 0
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(200, new { result = false, messageType = MessageType.Error, message = ex });
+            }
+        }
+
+        /// <summary>
         /// Create a new semester. Format of semester id: 20242
         /// </summary>
         /// <param name="model"></param>

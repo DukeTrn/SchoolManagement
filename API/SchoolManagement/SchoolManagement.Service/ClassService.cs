@@ -99,6 +99,35 @@ namespace SchoolManagement.Service
             }
         }
 
+        /// <summary>
+        ///  filter: get HR teacher
+        /// </summary>
+        /// <param name="grade"></param>
+        /// <returns></returns>
+        public async ValueTask<IEnumerable<TeacherFilterModel>> GetAvailableTeachersByGradeAsync(int grade)
+        {
+            try
+            {
+                // Lấy danh sách giáo viên chưa chủ nhiệm lớp nào trong khối chỉ định
+                var availableTeachers = await _context.TeacherEntities
+                    .Where(t => !t.Classes.Any(c => c.Grade == grade))
+                    .Select(t => new TeacherFilterModel
+                    {
+                        TeacherId = t.TeacherId,
+                        FullName = t.FullName
+                    })
+                    .ToListAsync();
+
+                return availableTeachers;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occurred while filtering teachers. Error: {ex}", ex.Message);
+                throw;
+            }
+        }
+
+
         public async ValueTask<IEnumerable<ClassFilterModel>> GetClassesByGradeFilter(int grade)
         {
             try
@@ -163,7 +192,7 @@ namespace SchoolManagement.Service
 
                 // Kiểm tra xem HomeroomTeacherId đã được sử dụng ở lớp khác chưa
                 var isHomeroomTeacherInUse = await _context.ClassEntities
-                    .AnyAsync(c => c.HomeroomTeacherId == model.HomeroomTeacherId);
+                    .AnyAsync(c => c.HomeroomTeacherId == model.HomeroomTeacherId && c.Grade == model.Grade);
 
                 if (isHomeroomTeacherInUse)
                 {

@@ -33,9 +33,8 @@ namespace SchoolManagement.Entity
         public string? DepartmentId { get; set; } = string.Empty;
         public DepartmentEntity? Department { get; set; }
 
-        // 1-1 HomeroomTeacher-Class
-        public string? ClassId { get; set; } = null;
-        public ClassEntity Class { get; set; } = null!;
+        // 1-N HomeroomTeacher-Class
+        public ICollection<ClassEntity> Classes { get; set; } = new List<ClassEntity>();
 
         // 1-N Teacher-Assignments
         public ICollection<AssignmentEntity> Assignments { get; set; } = null!;
