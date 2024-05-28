@@ -100,6 +100,49 @@ namespace SchoolManagement.Service
         }
 
         /// <summary>
+        /// Get list classes in 1 semester. This dto is for 1st conduct and assessment display
+        /// </summary>
+        /// <param name="grade"></param>
+        /// <param name="semesterId"></param>
+        /// <param name="queryModel"></param>
+        /// <returns></returns>
+        public async ValueTask<IEnumerable<ClassInSemesterModel>> GetListClassesInSemester(int grade, string semesterId)
+        {
+            try
+            {
+                // Kiểm tra xem semesterId có tồn tại trong cơ sở dữ liệu không
+                var semesterExists = await _context.SemesterEntities.AnyAsync(s => s.SemesterId == semesterId);
+
+                // Nếu semesterId không tồn tại, trả về danh sách rỗng
+                if (!semesterExists)
+                    return Enumerable.Empty<ClassInSemesterModel>();
+
+                var classesInSemester = await _context.ClassEntities
+                    .Where(c => c.Grade == grade)
+                    .Where(c => _context.SemesterDetailEntities
+                        .Any(sd => sd.ClassId == c.ClassId && sd.SemesterId == semesterId))
+                    .Select(c => new ClassInSemesterModel
+                    {
+                        ClassName = c.ClassName,
+                        AcademicYear = c.AcademicYear,
+                        TotalStudents = _context.ClassDetailEntities.Count(cd => cd.ClassId == c.ClassId),
+                        HomeroomTeacherName = c.HomeroomTeacher.FullName
+                        // Thêm các trường khác cần thiết vào đây nếu cần
+                    })
+                    .ToListAsync();
+
+                // Thêm logic filter ở đây nếu cần
+
+                return classesInSemester;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occurred while fetching classes in semester. Error: {Error}", ex.Message);
+                throw;
+            }
+        }
+
+        /// <summary>
         ///  filter: get HR teacher
         /// </summary>
         /// <param name="grade"></param>

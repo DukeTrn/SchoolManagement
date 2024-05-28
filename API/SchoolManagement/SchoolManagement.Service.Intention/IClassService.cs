@@ -5,6 +5,7 @@ namespace SchoolManagement.Service.Intention
     public interface IClassService
     {
         ValueTask<PaginationModel<ClassDisplayModel>> GetAllClasses(int grade, PageQueryModel queryModel);
+        ValueTask<IEnumerable<ClassInSemesterModel>> GetListClassesInSemester(int grade, string semesterId);
         ValueTask<IEnumerable<ClassFilterModel>> GetClassesByGradeFilter(int grade);
         ValueTask<string> GetClassNameById(string classId);
         ValueTask CreateClass(ClassAddModel model);

@@ -16,8 +16,4 @@
     <ProjectReference Include="..\SchoolManagement.Common\SchoolManagement.Common.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Assessment\" />
-  </ItemGroup>
-
 </Project>

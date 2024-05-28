@@ -6,16 +6,16 @@ using SchoolManagement.Service.Intention;
 
 namespace SchoolManagement.Web.Controllers
 {
-    [ApiController, Route("api/conduct")]
-    public class ConductController : ControllerBase
+    [ApiController, Route("api/assessment")]
+    public class AssessmentController : ControllerBase
     {
-        private readonly IConductService _service;
+        private readonly IAssessmentService _assessmentService;
         private readonly IClassService _classService;
 
-        public ConductController(IConductService service, 
+        public AssessmentController(IAssessmentService assessmentService, 
             IClassService classService)
         {
-            _service = service;
+            _assessmentService = assessmentService;
             _classService = classService;
         }
 
@@ -57,7 +57,7 @@ namespace SchoolManagement.Web.Controllers
         {
             try
             {
-                var result = await _service.GetClassStudentsWithConducts(grade, semesterId, classId, queryModel);
+                var result = await _assessmentService.GetListStudentsInAssessment(grade, semesterId, classId, queryModel);
                 return Ok(new
                 {
                     result = true,
@@ -71,12 +71,27 @@ namespace SchoolManagement.Web.Controllers
             }
         }
 
-        [HttpPut("{id}")]
-        public async ValueTask<ActionResult> UpdateConduct(Guid id, [FromForm] ConductUpdateModel model)
+        [HttpPost, Route("create")]
+        public async ValueTask<IActionResult> CreateAssessments([FromForm] List<AssessmentAddModel> models)
         {
             try
             {
-                await _service.UpdateConduct(id, model);
+                await _assessmentService.CreateAssessments(models);
+                return Ok(new { result = true, messageType = 0 });
+            }
+            catch (Exception ex)
+            {
+                // Log other exceptions if needed
+                return StatusCode(500, new { result = false, messageType = MessageType.Error, message = ex });
+            }
+        }
+
+        [HttpPut("{id}")]
+        public async ValueTask<ActionResult> UpdateConduct(Guid id, [FromForm] AssessmentUpdateModel model)
+        {
+            try
+            {
+                await _assessmentService.UpdateAssessment(id, model);
                 return Ok(new
                 {
                     result = true,
@@ -85,7 +100,7 @@ namespace SchoolManagement.Web.Controllers
             }
             catch (NotFoundException)
             {
-                return NotFound(new { result = false, messageType = MessageType.Error, message = $"Không tìm thấy hạnh kiểm với ID {id} này!" });
+                return NotFound(new { result = false, messageType = MessageType.Error, message = $"Không tìm thấy bài kiểm tra với ID {id} này!" });
             }
             catch (Exception ex)
             {
@@ -94,11 +109,11 @@ namespace SchoolManagement.Web.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteConduct(Guid id)
+        public async Task<IActionResult> DeleteAssessment(Guid id)
         {
             try
             {
-                await _service.DeleteConduct(id);
+                await _assessmentService.DeleteAssessment(id);
                 return Ok(new
                 {
                     result = true,
@@ -111,7 +126,7 @@ namespace SchoolManagement.Web.Controllers
                 {
                     result = false,
                     messageType = MessageType.Error,
-                    message = $"Không tìm thấy học sinh có ID hạnh kiểm {id} này!"
+                    message = $"Không tìm thấy bài kiểm tra có ID {id} này!"
                 });
             }
             catch (Exception ex)
@@ -120,45 +135,8 @@ namespace SchoolManagement.Web.Controllers
                 {
                     result = false,
                     messageType = MessageType.Error,
-                    message = $"An error occurred while deleting conduct: {ex.Message}"
+                    message = $"An error occurred while deleting assessment: {ex.Message}"
                 });
-            }
-        }
-
-        [HttpPost, Route("{grade}/{semesterId}/{classId}/statistic")]
-        public async ValueTask<IActionResult> GetConductClassStatistic(int grade, string semesterId, string classId)
-        {
-            try
-            {
-                var result = await _service.GetConductClassStatistic(grade, semesterId, classId);
-                return Ok(new
-                {
-                    result = true,
-                    data = result,
-                    messageType = 0
-                });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(200, new { result = false, messageType = MessageType.Error, message = ex });
-            }
-        }
-        [HttpPost, Route("{grade}/{semesterId}/statistic")]
-        public async ValueTask<IActionResult> GetConductSemesterStatistic(int grade, string semesterId)
-        {
-            try
-            {
-                var result = await _service.GetConductSemesterStatistic(grade, semesterId);
-                return Ok(new
-                {
-                    result = true,
-                    data = result,
-                    messageType = 0
-                });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(200, new { result = false, messageType = MessageType.Error, message = ex });
             }
         }
     }

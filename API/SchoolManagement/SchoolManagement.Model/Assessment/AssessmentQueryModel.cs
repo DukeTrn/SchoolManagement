@@ -1,6 +1,6 @@
 ﻿namespace SchoolManagement.Model
 {
-    public class ConductQueryModel
+    public class AssessmentQueryModel
     {
         public string? SearchValue { get; set; }
     }

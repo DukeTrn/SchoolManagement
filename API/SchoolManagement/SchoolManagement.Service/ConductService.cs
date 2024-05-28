@@ -21,49 +21,7 @@ namespace SchoolManagement.Service
             this._context = _context;
         }
 
-        /// <summary>
-        /// First display 
-        /// </summary>
-        /// <param name="grade"></param>
-        /// <param name="semesterId"></param>
-        /// <param name="queryModel"></param>
-        /// <returns></returns>
-        public async ValueTask<IEnumerable<ConductDisplayModel>> GetListClassesInSemester(int grade, string semesterId, ConductQueryModel queryModel)
-        {
-            try
-            {
-                // Kiểm tra xem semesterId có tồn tại trong cơ sở dữ liệu không
-                var semesterExists = await _context.SemesterEntities.AnyAsync(s => s.SemesterId == semesterId);
-
-                // Nếu semesterId không tồn tại, trả về danh sách rỗng
-                if (!semesterExists)
-                    return Enumerable.Empty<ConductDisplayModel>();
-
-                var classesInSemester = await _context.ClassEntities
-                    .Where(c => c.Grade == grade)
-                    .Where(c => _context.SemesterDetailEntities
-                        .Any(sd => sd.ClassId == c.ClassId && sd.SemesterId == semesterId))
-                    .Select(c => new ConductDisplayModel
-                    {
-                        ClassName = c.ClassName,
-                        AcademicYear = c.AcademicYear,
-                        TotalStudents = _context.ClassDetailEntities.Count(cd => cd.ClassId == c.ClassId),
-                        HomeroomTeacherName = c.HomeroomTeacher.FullName
-                        // Thêm các trường khác cần thiết vào đây nếu cần
-                    })
-                    .ToListAsync();
-
-                // Thêm logic filter ở đây nếu cần
-
-                return classesInSemester;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("An error occurred while fetching classes in semester. Error: {Error}", ex.Message);
-                throw;
-            }
-        }
-
+        
         /// <summary>
         /// Second displays
         /// </summary>
