@@ -23,7 +23,7 @@ namespace SchoolManagement.Web.Controllers
         /// <param name="semesterId"></param>
         /// <param name="queryModel"></param>
         /// <returns></returns>
-        [HttpPost, Route("all/{grade}/{semesterId}")]
+        [HttpPost, Route("{grade}/{semesterId}/all")]
         public async ValueTask<IActionResult> GetListClassesInSemester(int grade, string semesterId, [FromBody] ConductQueryModel queryModel)
         {
             try
@@ -50,7 +50,7 @@ namespace SchoolManagement.Web.Controllers
         /// <param name="classId"></param>
         /// <param name="queryModel"></param>
         /// <returns></returns>
-        [HttpPost, Route("all/{grade}/{semesterId}/{classId}")]
+        [HttpPost, Route("{grade}/{semesterId}/{classId}/all")]
         public async ValueTask<IActionResult> GetClassStudentsWithConducts(int grade, string semesterId, string classId, [FromBody] PageQueryModel queryModel)
         {
             try
@@ -88,6 +88,75 @@ namespace SchoolManagement.Web.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, new { result = false, messageType = MessageType.Error, message = ex });
+            }
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteConduct(Guid id)
+        {
+            try
+            {
+                await _service.DeleteConduct(id);
+                return Ok(new
+                {
+                    result = true,
+                    messageType = MessageType.Information
+                });
+            }
+            catch (NotFoundException)
+            {
+                return NotFound(new
+                {
+                    result = false,
+                    messageType = MessageType.Error,
+                    message = $"Không tìm thấy học sinh có ID hạnh kiểm {id} này!"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    result = false,
+                    messageType = MessageType.Error,
+                    message = $"An error occurred while deleting conduct: {ex.Message}"
+                });
+            }
+        }
+
+        [HttpPost, Route("{grade}/{semesterId}/{classId}/statistic")]
+        public async ValueTask<IActionResult> GetConductClassStatistic(int grade, string semesterId, string classId)
+        {
+            try
+            {
+                var result = await _service.GetConductClassStatistic(grade, semesterId, classId);
+                return Ok(new
+                {
+                    result = true,
+                    data = result,
+                    messageType = 0
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(200, new { result = false, messageType = MessageType.Error, message = ex });
+            }
+        }
+        [HttpPost, Route("{grade}/{semesterId}/statistic")]
+        public async ValueTask<IActionResult> GetConductSemesterStatistic(int grade, string semesterId)
+        {
+            try
+            {
+                var result = await _service.GetConductSemesterStatistic(grade, semesterId);
+                return Ok(new
+                {
+                    result = true,
+                    data = result,
+                    messageType = 0
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(200, new { result = false, messageType = MessageType.Error, message = ex });
             }
         }
     }

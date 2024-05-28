@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SchoolManagement.Common.Enum;
+using SchoolManagement.Common.Exceptions;
 using SchoolManagement.Database;
 using SchoolManagement.Entity;
 using SchoolManagement.Model;
@@ -20,7 +21,13 @@ namespace SchoolManagement.Service
             this._context = _context;
         }
 
-        
+        /// <summary>
+        /// First display 
+        /// </summary>
+        /// <param name="grade"></param>
+        /// <param name="semesterId"></param>
+        /// <param name="queryModel"></param>
+        /// <returns></returns>
         public async ValueTask<IEnumerable<ConductDisplayModel>> GetListClassesInSemester(int grade, string semesterId, ConductQueryModel queryModel)
         {
             try
@@ -57,6 +64,14 @@ namespace SchoolManagement.Service
             }
         }
 
+        /// <summary>
+        /// Second displays
+        /// </summary>
+        /// <param name="grade"></param>
+        /// <param name="semesterId"></param>
+        /// <param name="classId"></param>
+        /// <param name="queryModel"></param>
+        /// <returns></returns>
         public async ValueTask<PaginationModel<ConductFullDetailModel>> GetClassStudentsWithConducts(int grade, string semesterId, string classId, PageQueryModel queryModel)
         {
             try
@@ -124,7 +139,7 @@ namespace SchoolManagement.Service
 
 
         /// <summary>
-        /// Auto create conduct for a student
+        /// Auto create conduct for a student (currently not used for api)
         /// </summary>
         /// <param name="studentId"></param>
         /// <param name="semesterId"></param>
@@ -200,6 +215,154 @@ namespace SchoolManagement.Service
                 throw;
             }
         }
+
+        public async ValueTask DeleteConduct(Guid conductId)
+        {
+            try
+            {
+                _logger.LogInformation("Start deleting conduct with ID {id}", conductId);
+                var conduct = await _context.ConductEntities.FindAsync(conductId);
+                if (conduct == null)
+                {
+                    throw new NotFoundException($"Conduct with ID {conductId} not found.");
+                }
+                _context.ConductEntities.Remove(conduct);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occurred while deleting Conduct with ID {id}. Error: {ex}", conductId, ex);
+                throw;
+            }
+        }
+
+        public async ValueTask<ConductForClassStatisticModel> GetConductClassStatistic(int grade, string semesterId, string classId)
+        {
+            try
+            {
+                // Lấy tổng số học sinh trong lớp
+                var totalStudents = await _context.ClassDetailEntities
+                    .CountAsync(cd => cd.ClassId == classId && cd.Class.Grade == grade);
+
+                if (totalStudents == 0)
+                {
+                    return new ConductForClassStatisticModel
+                    {
+                        VeryGoodCount = 0,
+                        VeryGoodPercentage = "0%",
+                        GoodCount = 0,
+                        GoodPercentage = "0%",
+                        AverageCount = 0,
+                        AveragePercentage = "0%",
+                        WeakCount = 0,
+                        WeakPercentage = "0%"
+                    };
+                }
+
+                // Lấy danh sách học sinh trong lớp
+                var studentIds = await _context.ClassDetailEntities
+                    .Where(cd => cd.ClassId == classId && cd.Class.Grade == grade)
+                    .Select(cd => cd.StudentId)
+                    .ToListAsync();
+
+                // Lấy thống kê số lượng học sinh có từng loại hạnh kiểm
+                var statistics = await _context.ConductEntities
+                    .Where(c => studentIds.Contains(c.StudentId) && c.SemesterId == semesterId)
+                    .GroupBy(c => c.ConductName)
+                    .Select(g => new
+                    {
+                        ConductName = g.Key,
+                        Count = g.Count()
+                    })
+                    .ToListAsync();
+
+                var veryGoodCount = statistics.FirstOrDefault(s => s.ConductName == ConductType.VeryGood)?.Count ?? 0;
+                var goodCount = statistics.FirstOrDefault(s => s.ConductName == ConductType.Good)?.Count ?? 0;
+                var averageCount = statistics.FirstOrDefault(s => s.ConductName == ConductType.Average)?.Count ?? 0;
+                var weakCount = statistics.FirstOrDefault(s => s.ConductName == ConductType.Weak)?.Count ?? 0;
+
+                // Tính tỷ lệ phần trăm
+                var result = new ConductForClassStatisticModel
+                {
+                    TotalStudent = totalStudents,
+                    VeryGoodCount = veryGoodCount,
+                    VeryGoodPercentage = $"{(veryGoodCount / (decimal)totalStudents * 100):F2}%",
+                    GoodCount = goodCount,
+                    GoodPercentage = $"{(goodCount / (decimal)totalStudents * 100):F2}%",
+                    AverageCount = averageCount,
+                    AveragePercentage = $"{(averageCount / (decimal)totalStudents * 100):F2}%",
+                    WeakCount = weakCount,
+                    WeakPercentage = $"{(weakCount / (decimal)totalStudents * 100):F2}%"
+                };
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occurred while getting conduct statistics. Error: {ex}", ex.Message);
+                throw;
+            }
+        }
+
+        public async ValueTask<ConductForSemesterStatisticModel> GetConductSemesterStatistic(int grade, string semesterId)
+        {
+            try
+            {
+                // Lấy tổng số học sinh trong khối và học kỳ cụ thể
+                var totalStudents = await _context.ClassDetailEntities
+                    .CountAsync(cd => cd.Class.Grade == grade);
+
+                if (totalStudents == 0)
+                {
+                    return new ConductForSemesterStatisticModel
+                    {
+                        VeryGoodPercentage = "0%",
+                        GoodPercentage = "0%",
+                        AveragePercentage = "0%",
+                        WeakPercentage = "0%"
+                    };
+                }
+
+                // Lấy danh sách StudentId của học sinh trong khối và học kỳ cụ thể
+                var studentIds = await _context.ClassDetailEntities
+                    .Where(cd => cd.Class.Grade == grade)
+                    .Select(cd => cd.StudentId)
+                    .ToListAsync();
+
+                // Lấy thống kê số lượng học sinh có từng loại hạnh kiểm trong học kỳ cụ thể
+                var conductStatistics = await _context.ConductEntities
+                    .Where(c => studentIds.Contains(c.StudentId) && c.SemesterId == semesterId)
+                    .GroupBy(c => c.ConductName)
+                    .Select(g => new
+                    {
+                        ConductName = g.Key,
+                        Count = g.Count()
+                    })
+                    .ToListAsync();
+
+                // Tính tỷ lệ phần trăm của từng loại hạnh kiểm
+                var veryGoodCount = conductStatistics.FirstOrDefault(s => s.ConductName == ConductType.VeryGood)?.Count ?? 0;
+                var goodCount = conductStatistics.FirstOrDefault(s => s.ConductName == ConductType.Good)?.Count ?? 0;
+                var averageCount = conductStatistics.FirstOrDefault(s => s.ConductName == ConductType.Average)?.Count ?? 0;
+                var weakCount = conductStatistics.FirstOrDefault(s => s.ConductName == ConductType.Weak)?.Count ?? 0;
+
+                var result = new ConductForSemesterStatisticModel
+                {
+                    VeryGoodPercentage = $"{(veryGoodCount / (decimal)totalStudents * 100):F2}%",
+                    GoodPercentage = $"{(goodCount / (decimal)totalStudents * 100):F2}%",
+                    AveragePercentage = $"{(averageCount / (decimal)totalStudents * 100):F2}%",
+                    WeakPercentage = $"{(weakCount / (decimal)totalStudents * 100):F2}%"
+                };
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occurred while getting conduct statistics for semester. Error: {ex}", ex.Message);
+                throw;
+            }
+        }
+
 
 
         private static string TranslateStatus(ConductType status)
