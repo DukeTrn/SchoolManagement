@@ -34,41 +34,51 @@ namespace SchoolManagement.Service
                 int pageNumber = queryModel.PageNumber != null && queryModel.PageNumber.Value > 0 ? queryModel.PageNumber.Value : 1;
                 int pageSize = queryModel.PageSize != null && queryModel.PageSize.Value > 0 ? queryModel.PageSize.Value : 10;
 
-                // Lấy danh sách sinh viên trong lớp cụ thể
-                var students = await _context.ClassDetailEntities
-                    .Where(cd => cd.ClassId == classId)
-                    .Select(cd => new AssessmentDetailModel
-                    {
-                        ClassDetailId = cd.ClassDetailId,
-                        StudentId = cd.StudentId,
-                        StudentName = cd.Student.FullName
-                    })
-                    .ToListAsync();
+                // Kiểm tra xem lớp có tồn tại không
+                var classExists = await _context.ClassEntities.AnyAsync(c => c.ClassId == classId && c.Grade == grade);
+                if (!classExists)
+                {
+                    throw new NotFoundException($"Class with ID {classId} in grade {grade} not found.");
+                }
 
-                // Áp dụng phân trang
-                var paginatedResults = students
+                // Lấy danh sách học sinh trong lớp và học kỳ cụ thể
+                var studentQuery = from cd in _context.ClassDetailEntities
+                                   join s in _context.StudentEntities on cd.StudentId equals s.StudentId
+                                   join c in _context.ClassEntities on cd.ClassId equals c.ClassId
+                                   where cd.ClassId == classId && c.Grade == grade
+                                   select new AssessmentDetailModel
+                                   {
+                                       ClassDetailId = cd.ClassDetailId,
+                                       StudentId = s.StudentId,
+                                       FullName = s.FullName,
+                                       ClassName = c.ClassName,
+                                       Grade = c.Grade
+                                   };
+
+                var totalStudents = await studentQuery.CountAsync();
+
+                var students = await studentQuery
                     .Skip((pageNumber - 1) * pageSize)
-                    .Take(pageSize);
-
-                // Tính tổng số lượng sinh viên trong lớp
-                var totalStudents = await _context.ClassDetailEntities
-                    .Where(cd => cd.ClassId == classId)
-                    .CountAsync();
+                    .Take(pageSize)
+                    .ToListAsync();
 
                 return new PaginationModel<AssessmentDetailModel>
                 {
                     TotalCount = totalStudents,
-                    PageNumber = queryModel.PageNumber,
-                    PageSize = queryModel.PageSize,
-                    DataList = paginatedResults,
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    DataList = students
                 };
             }
             catch (Exception ex)
             {
-                _logger.LogError("An error occurred while getting list of students in assessment. Error: {ex}", ex.Message);
+                _logger.LogError("An error occurred while getting the list of students in assessment. Error: {ex}", ex.Message);
                 throw;
             }
         }
+
+
+        //public async ValueTask<IEnumerable<>>
 
         public async ValueTask CreateAssessments(List<AssessmentAddModel> models)
         {
