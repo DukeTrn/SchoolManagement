@@ -2,7 +2,7 @@
 {
     public class AssessmentAddModel
     {
-        public string Score { get; set; } = string.Empty;
+        public decimal Score { get; set; }
         public int Weight { get; set; } // trọng số điểm
         public string? Feedback { get; set; } = string.Empty;
 
@@ -12,7 +12,7 @@
     }
     public class AssessmentUpdateModel
     {
-        public string Score { get; set; } = string.Empty;
+        public decimal Score { get; set; }
         public string? Feedback { get; set; } = string.Empty;
     }
 }

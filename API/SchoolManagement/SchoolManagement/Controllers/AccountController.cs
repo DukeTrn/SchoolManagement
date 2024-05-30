@@ -23,7 +23,7 @@ namespace SchoolManagement.Web.Controllers
         }
 
         /// <summary>
-        ///
+        /// Roles: 1 (admin), 2 (GVCN), 3 (GV), 4 (HS)
         /// </summary>
         /// <param name="queryModel"></param>
         /// <returns></returns>
@@ -63,7 +63,7 @@ namespace SchoolManagement.Web.Controllers
         }
 
         /// <summary>
-        /// Use for testing (delete student/teacher first, then delete account
+        /// Use for testing (delete student/teacher first, then delete account)
         /// </summary>
         /// <param name="accountId"></param>
         /// <returns></returns>

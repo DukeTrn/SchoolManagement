@@ -29,7 +29,7 @@ namespace SchoolManagement.Service
 
         #region Get datas
         /// <summary>
-        /// Get list of all accounts with pagination
+        /// Get list of all accounts with pagination (bug with pagination)
         /// </summary>
         /// <param name="queryModel"></param>
         /// <returns></returns>
@@ -37,6 +37,7 @@ namespace SchoolManagement.Service
         {
             try
             {
+                // bug pagination
                 _logger.LogInformation("Start to get list accounts.");
                 int pageNumber = queryModel.PageNumber != null && queryModel.PageNumber.Value > 0 ? queryModel.PageNumber.Value : 1;
                 int pageSize = queryModel.PageSize != null && queryModel.PageSize.Value > 0 ? queryModel.PageSize.Value : 10;
@@ -52,6 +53,14 @@ namespace SchoolManagement.Service
                     //query = query.Where(a => (a.Student != null && a.Student.FullName.Contains(queryModel.SearchValue)) ||
                     //                          (a.Teacher != null && a.Teacher.FullName.Contains(queryModel.SearchValue)));
                     filter.Or.AddRange(searchFilter);
+                }
+                #endregion
+
+                #region Role filter
+                if (queryModel.Roles.Count > 0)
+                {
+                    _logger.LogInformation("Add Roles condition: {Status}", queryModel.Roles.ToString());
+                    filter.AddAnd((AccountEntity entity) => entity.Role, queryModel.Roles);
                 }
                 #endregion
 

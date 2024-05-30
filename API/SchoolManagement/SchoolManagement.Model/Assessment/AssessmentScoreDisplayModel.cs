@@ -13,7 +13,7 @@
     public class ScoreModel
     {
         public Guid AssessmentId { get; set; }
-        public string Score { get; set; } = string.Empty;
+        public decimal Score { get; set; }
         public string? Feedback { get; set; }
     }
 

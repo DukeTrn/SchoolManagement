@@ -239,7 +239,7 @@ namespace SchoolManagement.Service
 
                 if (existingTeachers.Any())
                 {
-                    var errorMsg = $"The following teachers are already in a department: {string.Join(", ", existingTeachers)}";
+                    var errorMsg = $"Giáo viên này đã ở trong bộ môn khác: {string.Join(", ", existingTeachers)}";
                     _logger.LogInformation(errorMsg);
                     throw new InvalidOperationException(errorMsg);
                 }

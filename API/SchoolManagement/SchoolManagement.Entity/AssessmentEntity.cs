@@ -8,7 +8,7 @@ namespace SchoolManagement.Entity
     {
         [Key]
         public Guid AssessmentId { get; set; }
-        public string Score { get; set; } = string.Empty;
+        public decimal Score { get; set; }
         public int Weight { get; set; } // trọng số điểm
         public string Feedback { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }

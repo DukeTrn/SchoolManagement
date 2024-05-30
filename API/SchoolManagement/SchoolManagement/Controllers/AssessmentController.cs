@@ -71,8 +71,43 @@ namespace SchoolManagement.Web.Controllers
             }
         }
 
+        /// <summary>
+        /// List subjects and scores
+        /// </summary>
+        /// <param name="grade"></param>
+        /// <param name="semesterId"></param>
+        /// <param name="classDetailId"></param>
+        /// <returns></returns>
+        [HttpPost, Route("{grade}/{semesterId}/{classDetailId}")]
+        public async ValueTask<IActionResult> GetListSubjectAndScore(int grade, string semesterId, string classDetailId)
+        {
+            try
+            {
+                var result = await _assessmentService.GetListSubjectAndScore(grade, semesterId, classDetailId);
+                return Ok(new
+                {
+                    result = true,
+                    data = result,
+                    messageType = 0
+                });
+            }
+            catch (NotFoundException)
+            {
+                return NotFound(new
+                {
+                    result = false,
+                    messageType = MessageType.Error,
+                    message = $"Không tìm thấy học kì {semesterId} hoặc class detail id {classDetailId} này!"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(200, new { result = false, messageType = MessageType.Error, message = ex });
+            }
+        }
+
         [HttpPost, Route("create")]
-        public async ValueTask<IActionResult> CreateAssessments([FromForm] List<AssessmentAddModel> models)
+        public async ValueTask<IActionResult> CreateAssessments([FromBody] List<AssessmentAddModel> models)
         {
             try
             {
@@ -86,12 +121,12 @@ namespace SchoolManagement.Web.Controllers
             }
         }
 
-        [HttpPut("{id}")]
-        public async ValueTask<ActionResult> UpdateConduct(Guid id, [FromForm] AssessmentUpdateModel model)
+        [HttpPut("{assessmentId}")]
+        public async ValueTask<ActionResult> UpdateConduct(Guid assessmentId, [FromBody] AssessmentUpdateModel model)
         {
             try
             {
-                await _assessmentService.UpdateAssessment(id, model);
+                await _assessmentService.UpdateAssessment(assessmentId, model);
                 return Ok(new
                 {
                     result = true,
@@ -100,7 +135,7 @@ namespace SchoolManagement.Web.Controllers
             }
             catch (NotFoundException)
             {
-                return NotFound(new { result = false, messageType = MessageType.Error, message = $"Không tìm thấy bài kiểm tra với ID {id} này!" });
+                return NotFound(new { result = false, messageType = MessageType.Error, message = $"Không tìm thấy bài kiểm tra với ID {assessmentId} này!" });
             }
             catch (Exception ex)
             {

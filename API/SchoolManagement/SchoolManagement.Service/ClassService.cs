@@ -235,7 +235,7 @@ namespace SchoolManagement.Service
 
                 // Kiểm tra xem HomeroomTeacherId đã được sử dụng ở lớp khác chưa
                 var isHomeroomTeacherInUse = await _context.ClassEntities
-                    .AnyAsync(c => c.HomeroomTeacherId == model.HomeroomTeacherId && c.Grade == model.Grade);
+                    .AnyAsync(c => c.HomeroomTeacherId == model.HomeroomTeacherId && c.Grade == model.Grade && c.AcademicYear == model.Year);
 
                 if (isHomeroomTeacherInUse)
                 {

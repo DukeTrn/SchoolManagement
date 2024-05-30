@@ -4,6 +4,7 @@ using SchoolManagement.Common.Exceptions;
 using SchoolManagement.Database;
 using SchoolManagement.Entity;
 using SchoolManagement.Model;
+using SchoolManagement.Model.Assessment;
 using SchoolManagement.Service.Intention;
 
 namespace SchoolManagement.Service
@@ -77,8 +78,91 @@ namespace SchoolManagement.Service
             }
         }
 
+        /// <summary>
+        /// Get list subjects and scores of 1 student in 1 class in 1 semester
+        /// </summary>
+        /// <param name="grade"></param>
+        /// <param name="semesterId"></param>
+        /// <param name="classDetailId"></param>
+        /// <returns></returns>
+        /// <exception cref="NotFoundException"></exception>
+        public async ValueTask<IEnumerable<AssessmentScoreDisplayModel>> GetListSubjectAndScore(int grade, string semesterId, string classDetailId)
+        {
+            try
+            {
+                // Truy vấn tất cả các môn học trong khối
+                var subjects = await _context.SubjectEntities.Where(c => c.Grade == grade).ToListAsync();
 
-        //public async ValueTask<IEnumerable<>>
+                // Bắt lỗi nếu không tìm thấy
+                var classDetailExist = await _context.ClassDetailEntities.AnyAsync(s => s.ClassDetailId == classDetailId);
+                if (!classDetailExist)
+                {
+                    //return Enumerable.Empty<AssessmentScoreDisplayModel>();
+                    var errorMsg = $"Không tìm thấy Class Detail ID {classDetailId} này!";
+                    _logger.LogWarning(errorMsg);
+                    throw new NotFoundException(errorMsg);
+                }
+
+                var semesterExist = await _context.SemesterEntities.AnyAsync(s => s.SemesterId == semesterId);
+                if (!semesterExist)
+                {
+                    var errorMsg = $"Không tìm thấy mã học kì {semesterId} này!";
+                    _logger.LogWarning(errorMsg);
+                    throw new NotFoundException(errorMsg);
+                }
+
+
+                // Truy vấn tất cả các đánh giá có liên quan đến grade và semesterId
+                var assessments = await _context.AssessmentEntities
+                    .Where(a => a.ClassDetail.Class.Grade == grade && a.SemesterId == semesterId)
+                    .Include(a => a.Subject)
+                    .Include(a => a.ClassDetail)
+                    .ThenInclude(cd => cd.Class)
+                    .ToListAsync();
+
+                // Nhóm các đánh giá theo SubjectId
+                var assessmentGroups = assessments
+                    .GroupBy(a => a.SubjectId)
+                    .ToDictionary(g => g.Key, g => g.ToList());
+
+                // Tạo danh sách kết quả
+                var subjectGroups = subjects.Select(subject => new AssessmentScoreDisplayModel
+                {
+                    ClassDetailId = classDetailId,
+                    SubjectId = subject.SubjectId,
+                    SubjectName = subject.SubjectName,
+                    Weight1 = assessmentGroups.ContainsKey(subject.SubjectId) ?
+                        assessmentGroups[subject.SubjectId].Where(a => a.Weight == 1).Select(a => new ScoreModel
+                        {
+                            AssessmentId = a.AssessmentId,
+                            Score = Math.Round(a.Score,1),
+                            Feedback = a.Feedback
+                        }).ToList() : new List<ScoreModel>(),
+                    Weight2 = assessmentGroups.ContainsKey(subject.SubjectId) ?
+                        assessmentGroups[subject.SubjectId].Where(a => a.Weight == 2).Select(a => new ScoreModel
+                        {
+                            AssessmentId = a.AssessmentId,
+                            Score = Math.Round(a.Score, 1),
+                            Feedback = a.Feedback
+                        }).ToList() : new List<ScoreModel>(),
+                    Weight3 = assessmentGroups.ContainsKey(subject.SubjectId) ?
+                        assessmentGroups[subject.SubjectId].Where(a => a.Weight == 3).Select(a => new ScoreModel
+                        {
+                            AssessmentId = a.AssessmentId,
+                            Score = Math.Round(a.Score, 1),
+                            Feedback = a.Feedback
+                        }).ToList() : new List<ScoreModel>(),
+                }).ToList();
+
+                return subjectGroups;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occurred while getting the list of subjects and scores. Error: {ex}", ex.Message);
+                throw;
+            }
+        }
+
 
         public async ValueTask CreateAssessments(List<AssessmentAddModel> models)
         {
@@ -160,5 +244,7 @@ namespace SchoolManagement.Service
                 throw;
             }
         }
+
+
     }
 }
