@@ -4,7 +4,6 @@ using SchoolManagement.Common.Exceptions;
 using SchoolManagement.Database;
 using SchoolManagement.Entity;
 using SchoolManagement.Model;
-using SchoolManagement.Model.Assessment;
 using SchoolManagement.Service.Intention;
 
 namespace SchoolManagement.Service
@@ -159,6 +158,75 @@ namespace SchoolManagement.Service
             catch (Exception ex)
             {
                 _logger.LogError("An error occurred while getting the list of subjects and scores. Error: {ex}", ex.Message);
+                throw;
+            }
+        }
+
+        public async ValueTask<AverageScoreModel> GetAverageScores(int grade, string semesterId, string classDetailId)
+        {
+            try
+            {
+                // Kiểm tra tính hợp lệ của classDetailId và semesterId
+                var classDetailExist = await _context.ClassDetailEntities.AnyAsync(s => s.ClassDetailId == classDetailId);
+                if (!classDetailExist)
+                {
+                    var errorMsg = $"Không tìm thấy Class Detail ID {classDetailId} này!";
+                    _logger.LogWarning(errorMsg);
+                    throw new NotFoundException(errorMsg);
+                }
+
+                var semesterExist = await _context.SemesterEntities.AnyAsync(s => s.SemesterId == semesterId);
+                if (!semesterExist)
+                {
+                    var errorMsg = $"Không tìm thấy mã học kì {semesterId} này!";
+                    _logger.LogWarning(errorMsg);
+                    throw new NotFoundException(errorMsg);
+                }
+
+                // Truy vấn tất cả các đánh giá có liên quan đến grade, semesterId và classDetailId
+                var assessments = await _context.AssessmentEntities
+                    .Where(a => a.ClassDetail.Class.Grade == grade && a.SemesterId == semesterId && a.ClassDetailId == classDetailId)
+                    .ToListAsync();
+
+                // Tạo một từ điển để lưu trữ tổng điểm và tổng trọng số của mỗi môn
+                var subjectScores = new Dictionary<int, (decimal totalScore, int totalWeight)>();
+
+                // Duyệt qua từng đánh giá để tính tổng điểm và tổng trọng số cho mỗi môn
+                foreach (var assessment in assessments)
+                {
+                    if (!subjectScores.ContainsKey(assessment.SubjectId))
+                    {
+                        subjectScores[assessment.SubjectId] = (0, 0);
+                    }
+
+                    // Nhân điểm số với trọng số và cộng vào tổng điểm của môn đó
+                    subjectScores[assessment.SubjectId] = (
+                        subjectScores[assessment.SubjectId].totalScore + (assessment.Score * assessment.Weight),
+                        subjectScores[assessment.SubjectId].totalWeight + assessment.Weight
+                    );
+                }
+
+                // Tạo danh sách kết quả trung bình mỗi môn
+                var averageScores = subjectScores.Select(subjectScore => new AverageEachSubjectModel
+                {
+                    SubjectId = subjectScore.Key,
+                    SubjectName = _context.SubjectEntities.First(s => s.SubjectId == subjectScore.Key).SubjectName,
+                    Average = subjectScore.Value.totalWeight != 0 ? subjectScore.Value.totalScore / subjectScore.Value.totalWeight : 0
+                }).ToList();
+
+                // Tính điểm trung bình của lớp
+                var totalAverage = averageScores.Sum(score => score.Average) / averageScores.Count;
+
+                return new AverageScoreModel
+                {
+                    ClassDetailId = classDetailId,
+                    TotalAverage = totalAverage,
+                    Subjects = averageScores
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occurred while getting the average scores. Error: {ex}", ex.Message);
                 throw;
             }
         }

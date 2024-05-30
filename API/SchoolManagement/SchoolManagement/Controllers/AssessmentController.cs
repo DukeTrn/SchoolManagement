@@ -78,12 +78,40 @@ namespace SchoolManagement.Web.Controllers
         /// <param name="semesterId"></param>
         /// <param name="classDetailId"></param>
         /// <returns></returns>
-        [HttpPost, Route("{grade}/{semesterId}/{classDetailId}")]
+        [HttpPost, Route("{grade}/{semesterId}/{classDetailId}/scores")]
         public async ValueTask<IActionResult> GetListSubjectAndScore(int grade, string semesterId, string classDetailId)
         {
             try
             {
                 var result = await _assessmentService.GetListSubjectAndScore(grade, semesterId, classDetailId);
+                return Ok(new
+                {
+                    result = true,
+                    data = result,
+                    messageType = 0
+                });
+            }
+            catch (NotFoundException)
+            {
+                return NotFound(new
+                {
+                    result = false,
+                    messageType = MessageType.Error,
+                    message = $"Không tìm thấy học kì {semesterId} hoặc class detail id {classDetailId} này!"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(200, new { result = false, messageType = MessageType.Error, message = ex });
+            }
+        }
+
+        [HttpPost, Route("{grade}/{semesterId}/{classDetailId}/average")]
+        public async ValueTask<IActionResult> GetAverageScores(int grade, string semesterId, string classDetailId)
+        {
+            try
+            {
+                var result = await _assessmentService.GetAverageScores(grade, semesterId, classDetailId);
                 return Ok(new
                 {
                     result = true,

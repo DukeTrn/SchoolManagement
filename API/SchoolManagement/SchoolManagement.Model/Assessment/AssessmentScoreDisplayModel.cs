@@ -1,4 +1,4 @@
-﻿namespace SchoolManagement.Model.Assessment
+﻿namespace SchoolManagement.Model
 {
     public class AssessmentScoreDisplayModel
     {
