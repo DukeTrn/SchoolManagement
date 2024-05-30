@@ -20,7 +20,7 @@ namespace SchoolManagement.Service
         }
 
         /// <summary>
-        /// Get list students in assessment (Currently grade and semesterId in param are redundant)
+        /// Get list students in assessment (Currently semesterId in param are redundant)
         /// </summary>
         /// <param name="grade"></param>
         /// <param name="semesterId"></param>
@@ -52,7 +52,8 @@ namespace SchoolManagement.Service
                                        StudentId = s.StudentId,
                                        FullName = s.FullName,
                                        ClassName = c.ClassName,
-                                       Grade = c.Grade
+                                       Grade = c.Grade,
+                                       AcademicYear = c.AcademicYear,
                                    };
 
                 var totalStudents = await studentQuery.CountAsync();
@@ -162,7 +163,16 @@ namespace SchoolManagement.Service
             }
         }
 
-        public async ValueTask<AverageScoreModel> GetAverageScores(int grade, string semesterId, string classDetailId)
+
+        /// <summary>
+        /// Get average score for each semester
+        /// </summary>
+        /// <param name="grade"></param>
+        /// <param name="semesterId"></param>
+        /// <param name="classDetailId"></param>
+        /// <returns></returns>
+        /// <exception cref="NotFoundException"></exception>
+        public async ValueTask<AverageScoreModel> GetAverageScoresForSemester(int grade, string semesterId, string classDetailId)
         {
             try
             {
@@ -183,50 +193,143 @@ namespace SchoolManagement.Service
                     throw new NotFoundException(errorMsg);
                 }
 
-                // Truy vấn tất cả các đánh giá có liên quan đến grade, semesterId và classDetailId
-                var assessments = await _context.AssessmentEntities
-                    .Where(a => a.ClassDetail.Class.Grade == grade && a.SemesterId == semesterId && a.ClassDetailId == classDetailId)
-                    .ToListAsync();
+                // Truy vấn tất cả các môn học trong cùng một khối
+                var subjects = await _context.SubjectEntities.Where(s => s.Grade == grade).ToListAsync();
 
-                // Tạo một từ điển để lưu trữ tổng điểm và tổng trọng số của mỗi môn
-                var subjectScores = new Dictionary<int, (decimal totalScore, int totalWeight)>();
+                // Tạo một danh sách để lưu trữ điểm trung bình của từng môn
+                var averageScores = new List<AverageEachSubjectModel>();
 
-                // Duyệt qua từng đánh giá để tính tổng điểm và tổng trọng số cho mỗi môn
-                foreach (var assessment in assessments)
+                // Duyệt qua từng môn để tính điểm trung bình
+                foreach (var subject in subjects)
                 {
-                    if (!subjectScores.ContainsKey(assessment.SubjectId))
+                    // Truy vấn tất cả các đánh giá có liên quan đến môn học và classDetailId
+                    var assessments = await _context.AssessmentEntities
+                        .Where(a => a.SubjectId == subject.SubjectId && a.SemesterId == semesterId && a.ClassDetailId == classDetailId)
+                        .ToListAsync();
+
+                    // Tính điểm trung bình của môn học
+                    decimal subjectAverage;
+                    if (assessments.Any())
                     {
-                        subjectScores[assessment.SubjectId] = (0, 0);
+                        var totalScore = assessments.Sum(a => a.Score * a.Weight);
+                        var totalWeight = assessments.Sum(a => a.Weight);
+                        subjectAverage = totalWeight != 0 ? Math.Round(totalScore / totalWeight, 1) : 0;
+                    }
+                    else
+                    {
+                        // Nếu môn học chưa có điểm, điểm trung bình sẽ là 0
+                        subjectAverage = 0;
                     }
 
-                    // Nhân điểm số với trọng số và cộng vào tổng điểm của môn đó
-                    subjectScores[assessment.SubjectId] = (
-                        subjectScores[assessment.SubjectId].totalScore + (assessment.Score * assessment.Weight),
-                        subjectScores[assessment.SubjectId].totalWeight + assessment.Weight
-                    );
+                    averageScores.Add(new AverageEachSubjectModel
+                    {
+                        SubjectId = subject.SubjectId,
+                        SubjectName = subject.SubjectName,
+                        Average = subjectAverage
+                    });
                 }
 
-                // Tạo danh sách kết quả trung bình mỗi môn
-                var averageScores = subjectScores.Select(subjectScore => new AverageEachSubjectModel
-                {
-                    SubjectId = subjectScore.Key,
-                    SubjectName = _context.SubjectEntities.First(s => s.SubjectId == subjectScore.Key).SubjectName,
-                    Average = subjectScore.Value.totalWeight != 0 ? subjectScore.Value.totalScore / subjectScore.Value.totalWeight : 0
-                }).ToList();
-
                 // Tính điểm trung bình của lớp
-                var totalAverage = averageScores.Sum(score => score.Average) / averageScores.Count;
+                var totalAverage = averageScores.Any() ? averageScores.Average(score => score.Average) : 0;
 
                 return new AverageScoreModel
                 {
                     ClassDetailId = classDetailId,
-                    TotalAverage = totalAverage,
+                    TotalAverage = Math.Round(totalAverage,1),
                     Subjects = averageScores
                 };
             }
             catch (Exception ex)
             {
                 _logger.LogError("An error occurred while getting the average scores. Error: {ex}", ex.Message);
+                throw;
+            }
+        }
+
+        public async ValueTask<AverageScoreForAcademicYearModel> GetAverageScoreForAcademicYear(int grade, string classDetailId, string academicYear)
+        {
+            try
+            {
+                // Kiểm tra tính hợp lệ của classDetailId
+                var classDetailExist = await _context.ClassDetailEntities.AnyAsync(s => s.ClassDetailId == classDetailId);
+                if (!classDetailExist)
+                {
+                    var errorMsg = $"Không tìm thấy Class Detail ID {classDetailId} này!";
+                    _logger.LogWarning(errorMsg);
+                    throw new NotFoundException(errorMsg);
+                }
+
+                // Truy vấn tất cả các môn học trong cùng một khối
+                var subjects = await _context.SubjectEntities.Where(s => s.Grade == grade).ToListAsync();
+
+                // Truy vấn các học kỳ theo năm học
+                var semesters = await _context.SemesterEntities
+                    .Where(s => s.AcademicYear == academicYear)
+                    .OrderBy(s => s.TimeStart)
+                    .ToListAsync();
+
+                if (semesters.Count != 2)
+                {
+                    var errorMsg = $"Không tìm thấy hai học kỳ cho năm học {academicYear}!";
+                    _logger.LogWarning(errorMsg);
+                    throw new NotFoundException(errorMsg);
+                }
+
+                var firstSemesterId = semesters[0].SemesterId;
+                var secondSemesterId = semesters[1].SemesterId;
+
+                // Tạo danh sách để lưu trữ điểm trung bình của từng môn trong cả hai học kỳ
+                var subjectAverages = new List<AverageEachSemesterModel>();
+
+                foreach (var subject in subjects)
+                {
+                    // Truy vấn điểm số của từng môn trong học kỳ đầu tiên
+                    var firstSemesterAssessments = await _context.AssessmentEntities
+                        .Where(a => a.SubjectId == subject.SubjectId && a.SemesterId == firstSemesterId && a.ClassDetailId == classDetailId)
+                        .ToListAsync();
+
+                    var firstSemesterTotalScore = firstSemesterAssessments.Sum(a => a.Score * a.Weight);
+                    var firstSemesterTotalWeight = firstSemesterAssessments.Sum(a => a.Weight);
+                    var firstSemesterAverage = firstSemesterTotalWeight != 0 ? Math.Round(firstSemesterTotalScore / firstSemesterTotalWeight, 1) : 0;
+
+                    // Truy vấn điểm số của từng môn trong học kỳ thứ hai
+                    var secondSemesterAssessments = await _context.AssessmentEntities
+                        .Where(a => a.SubjectId == subject.SubjectId && a.SemesterId == secondSemesterId && a.ClassDetailId == classDetailId)
+                        .ToListAsync();
+
+                    var secondSemesterTotalScore = secondSemesterAssessments.Sum(a => a.Score * a.Weight);
+                    var secondSemesterTotalWeight = secondSemesterAssessments.Sum(a => a.Weight);
+                    var secondSemesterAverage = secondSemesterTotalWeight != 0 ? Math.Round(secondSemesterTotalScore / secondSemesterTotalWeight, 1) : 0;
+
+                    var average = Math.Round((firstSemesterAverage + secondSemesterAverage * 2) / 3, 1);
+
+                    subjectAverages.Add(new AverageEachSemesterModel
+                    {
+                        SubjectId = subject.SubjectId,
+                        SubjectName = subject.SubjectName,
+                        FirstSemester = firstSemesterAverage,
+                        SecondSemester = secondSemesterAverage,
+                        Average = average
+                    });
+                }
+
+                // Tính điểm trung bình của từng học kỳ và cả năm học
+                var totalFirstAverage = subjectAverages.Any() ? Math.Round(subjectAverages.Average(s => s.FirstSemester), 1) : 0;
+                var totalSecondAverage = subjectAverages.Any() ? Math.Round(subjectAverages.Average(s => s.SecondSemester), 1) : 0;
+                var totalAverage = subjectAverages.Any() ? Math.Round(subjectAverages.Average(s => s.Average), 1) : 0;
+
+                return new AverageScoreForAcademicYearModel
+                {
+                    ClassDetailId = classDetailId,
+                    TotalFirstAverage = totalFirstAverage,
+                    TotalSecondAverage = totalSecondAverage,
+                    TotalAverage = totalAverage,
+                    Subjects = subjectAverages
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occurred while getting the average score for the academic year. Error: {ex}", ex.Message);
                 throw;
             }
         }

@@ -24,7 +24,7 @@ namespace SchoolManagement.Service
         }
 
         /// <summary>
-        /// Get lists of class by grade
+        /// Get list of classes by grade
         /// </summary>
         /// <param name="grade"></param>
         /// <param name="queryModel"></param>
@@ -115,7 +115,10 @@ namespace SchoolManagement.Service
 
                 // Nếu semesterId không tồn tại, trả về danh sách rỗng
                 if (!semesterExists)
+                {
                     return Enumerable.Empty<ClassInSemesterModel>();
+
+                }
 
                 var classesInSemester = await _context.ClassEntities
                     .Where(c => c.Grade == grade)
@@ -143,7 +146,7 @@ namespace SchoolManagement.Service
         }
 
         /// <summary>
-        ///  filter: get HR teacher
+        ///  filter: get HR teacher (bug: need to add academicYear to sort out teachers who already chủ nhiệm in 1 niên khóa
         /// </summary>
         /// <param name="grade"></param>
         /// <returns></returns>
@@ -215,7 +218,7 @@ namespace SchoolManagement.Service
 
         #region Create
         /// <summary>
-        /// Add new class in 1 grade (will change class id format)
+        /// Add new class in 1 grade (will change class id format -done)
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
@@ -225,7 +228,7 @@ namespace SchoolManagement.Service
             {
                 _logger.LogInformation("Start to create new class in {grade}.",model.Grade);
                 // Logic for academic year
-                var prefixClassId = GenerateClassId(model.ClassName, model.Year);
+                var prefixClassId = GenerateClassId(model.ClassName, model.Semester, model.AcademicYear);
                 var existClass = await _context.ClassEntities.FirstOrDefaultAsync(s => s.ClassId == prefixClassId && s.Grade == model.Grade);
                 if (existClass != null)
                 {
@@ -235,7 +238,7 @@ namespace SchoolManagement.Service
 
                 // Kiểm tra xem HomeroomTeacherId đã được sử dụng ở lớp khác chưa
                 var isHomeroomTeacherInUse = await _context.ClassEntities
-                    .AnyAsync(c => c.HomeroomTeacherId == model.HomeroomTeacherId && c.Grade == model.Grade && c.AcademicYear == model.Year);
+                    .AnyAsync(c => c.HomeroomTeacherId == model.HomeroomTeacherId && c.Grade == model.Grade && c.AcademicYear == model.AcademicYear);
 
                 if (isHomeroomTeacherInUse)
                 {
@@ -247,7 +250,7 @@ namespace SchoolManagement.Service
                 {
                     ClassId = prefixClassId,
                     ClassName = model.ClassName,
-                    AcademicYear = model.Year,
+                    AcademicYear = model.AcademicYear,
                     Grade = model.Grade,
                     CreatedAt = DateTime.Now,
                     ModifiedAt = null,
@@ -364,15 +367,24 @@ namespace SchoolManagement.Service
             return filters;
         }
 
-        private string GenerateClassId(string className, string academicYear)
+        private string GenerateClassId(string className, string semester, string academicYear)
         {
-            // Loại bỏ các khoảng trắng từ tên lớp và chuyển đổi nó thành chữ in hoa
-            var formattedClassName = className.Trim().ToUpper();
+            // Tách năm học thành hai phần: năm bắt đầu và năm kết thúc
+            var years = academicYear.Split(" - ");
+            if (years.Length != 2)
+            {
+                throw new ArgumentException("Invalid academic year format. Expected format: 'YYYY - YYYY'.");
+            }
 
-            // Kết hợp năm học và tên lớp để tạo ClassId
-            var classId = $"{academicYear}{formattedClassName}";
+            var startYear = years[0];
+            var endYear = years[1];
 
-            return classId;
+            // Xác định năm dựa trên học kỳ
+            var year = semester == "1" ? startYear : semester == "2" ? endYear : throw new ArgumentException("Invalid semester. Expected '1' or '2'.");
+
+            // Tạo chuỗi kết quả
+            var result = $"{year}{className}";
+            return result;
         }
     }
 }

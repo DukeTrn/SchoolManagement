@@ -42,7 +42,7 @@ namespace SchoolManagement.Web.Controllers
         /// </summary>
         /// <param name="grade"></param>
         /// <returns></returns>
-        [HttpGet, Route("teacherfilter/{grade}")]
+        [HttpGet, Route("teacher-filter/{grade}")]
         public async ValueTask<IActionResult> GetAvailableTeachersByGradeAsync(int grade)
         {
             try
@@ -86,7 +86,7 @@ namespace SchoolManagement.Web.Controllers
         }
 
         /// <summary>
-        /// Create a new class. Format of year: 2024
+        /// Create a new class. Format of year: 2024 - 2025, semester: 1 or 2
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>

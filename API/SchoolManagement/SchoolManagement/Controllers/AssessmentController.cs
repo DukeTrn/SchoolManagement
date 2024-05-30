@@ -97,7 +97,7 @@ namespace SchoolManagement.Web.Controllers
                 {
                     result = false,
                     messageType = MessageType.Error,
-                    message = $"Không tìm thấy học kì {semesterId} hoặc class detail id {classDetailId} này!"
+                    message = $"Không tìm thấy học kì {semesterId} hoặc id {classDetailId} này!"
                 });
             }
             catch (Exception ex)
@@ -106,12 +106,19 @@ namespace SchoolManagement.Web.Controllers
             }
         }
 
+        /// <summary>
+        /// Average score for each semester (trung bình điểm các môn cho từng học kì)
+        /// </summary>
+        /// <param name="grade"></param>
+        /// <param name="semesterId"></param>
+        /// <param name="classDetailId"></param>
+        /// <returns></returns>
         [HttpPost, Route("{grade}/{semesterId}/{classDetailId}/average")]
-        public async ValueTask<IActionResult> GetAverageScores(int grade, string semesterId, string classDetailId)
+        public async ValueTask<IActionResult> GetAverageScoresForSemester(int grade, string semesterId, string classDetailId)
         {
             try
             {
-                var result = await _assessmentService.GetAverageScores(grade, semesterId, classDetailId);
+                var result = await _assessmentService.GetAverageScoresForSemester(grade, semesterId, classDetailId);
                 return Ok(new
                 {
                     result = true,
@@ -125,7 +132,43 @@ namespace SchoolManagement.Web.Controllers
                 {
                     result = false,
                     messageType = MessageType.Error,
-                    message = $"Không tìm thấy học kì {semesterId} hoặc class detail id {classDetailId} này!"
+                    message = $"Không tìm thấy học kì {semesterId} hoặc id {classDetailId} này!"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(200, new { result = false, messageType = MessageType.Error, message = ex });
+            }
+        }
+
+        /// <summary>
+        /// Average score for a year (trung bình điểm các môn và điểm trung bình của cả năm học)
+        /// Format of academicYear: 2023 - 2024
+        /// </summary>
+        /// <param name="grade"></param>
+        /// <param name="classDetailId"></param>
+        /// <param name="academicYear"></param>
+        /// <returns></returns>
+        [HttpPost, Route("{grade}/{academicYear}/{classDetailId}/average")]
+        public async ValueTask<IActionResult> GetAverageScoreForAcademicYear(int grade, string classDetailId, string academicYear)
+        {
+            try
+            {
+                var result = await _assessmentService.GetAverageScoreForAcademicYear(grade, classDetailId, academicYear);
+                return Ok(new
+                {
+                    result = true,
+                    data = result,
+                    messageType = 0
+                });
+            }
+            catch (NotFoundException)
+            {
+                return NotFound(new
+                {
+                    result = false,
+                    messageType = MessageType.Error,
+                    message = $"Không tìm thấy niên khóa {academicYear} hoặc id {classDetailId} này!"
                 });
             }
             catch (Exception ex)

@@ -6,8 +6,10 @@ namespace SchoolManagement.Model
     {
         [Required(ErrorMessage = "Class Name is required")]
         public string ClassName { get; set; } = string.Empty;
+        [Required(ErrorMessage = "Semester is required")]
+        public string Semester { get; set; } = string.Empty;
         [Required(ErrorMessage = "Year is required")]
-        public string Year { get; set; } = string.Empty;
+        public string AcademicYear { get; set; } = string.Empty;
         [Required(ErrorMessage = "Grade is required")]
         public int Grade { get; set; }
         [Required(ErrorMessage = "Teacher Id is required")]

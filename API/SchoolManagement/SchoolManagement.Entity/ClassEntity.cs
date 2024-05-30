@@ -9,7 +9,7 @@ namespace SchoolManagement.Entity
         [Key]
         public string ClassId { get; set; } = string.Empty;
         public string ClassName { get; set; } = string.Empty;
-        public string AcademicYear { get; set; } = string.Empty; // 2024
+        public string AcademicYear { get; set; } = string.Empty; // 2023 - 2024
         public int Grade { get; set; } // khối
         public DateTime CreatedAt { get; set; }
         public DateTime? ModifiedAt { get; set; }
