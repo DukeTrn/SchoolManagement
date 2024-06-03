@@ -14,5 +14,8 @@ namespace SchoolManagement.Service.Intention
         ValueTask UpdateStudent(string id, StudentUpdateModel model);
         ValueTask DeleteStudent(string id);
         Task<byte[]> ExportToExcelAsync(StudentExportQueryModel queryModel);
+
+        // will delete
+        ValueTask CreateDemoStudent(StudentAddModel model);
     }
 }

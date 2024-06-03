@@ -38,16 +38,17 @@ namespace SchoolManagement.Web.Controllers
         }
 
         /// <summary>
-        /// Filter to get available HR teacher (GVCN)
+        /// Filter to get available HR teacher (GVCN). Format of academicYear: 2023 - 2024
         /// </summary>
         /// <param name="grade"></param>
+        /// <param name="academicYear"></param>
         /// <returns></returns>
-        [HttpGet, Route("teacher-filter/{grade}")]
-        public async ValueTask<IActionResult> GetAvailableTeachersByGradeAsync(int grade)
+        [HttpGet, Route("teacher-filter/{academicYear}/{grade}")]
+        public async ValueTask<IActionResult> GetAvailableTeachersByGradeAsync(int grade, string academicYear)
         {
             try
             {
-                var teachers = await _service.GetAvailableTeachersByGradeAsync(grade);
+                var teachers = await _service.GetAvailableTeachersByGradeAsync(grade, academicYear);
                 return Ok(new
                 {
                     result = true,
@@ -65,13 +66,14 @@ namespace SchoolManagement.Web.Controllers
         /// Use for class filter 
         /// </summary>
         /// <param name="grade"></param>
+        /// <param name="academicYear"></param>
         /// <returns></returns>
-        [HttpGet, Route("classfilter/{grade}")]
-        public async ValueTask<IActionResult> GetClassesByGrade(int grade)
+        [HttpGet, Route("class-filter/{academicYear}/{grade}")]
+        public async ValueTask<IActionResult> GetClassesByGradeAndAcaYear(int grade, string academicYear)
         {
             try
             {
-                var classes = await _service.GetClassesByGradeFilter(grade);
+                var classes = await _service.GetClassesByGradeFilter(grade, academicYear);
                 return Ok(new
                 {
                     result = true,
@@ -86,7 +88,7 @@ namespace SchoolManagement.Web.Controllers
         }
 
         /// <summary>
-        /// Create a new class. Format of year: 2024 - 2025, semester: 1 or 2
+        /// Create a new class. Format of year: 2024 - 2025
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>

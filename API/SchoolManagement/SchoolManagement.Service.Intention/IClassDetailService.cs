@@ -6,7 +6,7 @@ namespace SchoolManagement.Service.Intention
     public interface IClassDetailService
     {
         Task<PaginationModel<ClassDetailDisplayModel>> GetAllClassDetail(string classId, ClassDetailQueryModel queryModel);
-        Task<List<StudentFilterModel>> FilterStudentsByClassGrade(int grade);
+        Task<List<StudentFilterModel>> FilterStudentsByGrade(string academicYear, int grade);
         Task AddClassDetails(List<ClassDetailAddModel> models);
         ValueTask UpdateClassDetailAsync(string classDetailId, string newClassId);
         ValueTask DeleteClassDetail(string id);

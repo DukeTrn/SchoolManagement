@@ -72,7 +72,7 @@ namespace SchoolManagement.Web.Controllers
         }
 
         /// <summary>
-        /// List subjects and scores
+        /// List subjects and scores of 1 student
         /// </summary>
         /// <param name="grade"></param>
         /// <param name="semesterId"></param>
@@ -107,13 +107,13 @@ namespace SchoolManagement.Web.Controllers
         }
 
         /// <summary>
-        /// Average score for each semester (trung bình điểm các môn cho từng học kì)
+        /// Average score for each semester of 1 student(trung bình điểm các môn cho từng học kì)
         /// </summary>
         /// <param name="grade"></param>
         /// <param name="semesterId"></param>
         /// <param name="classDetailId"></param>
         /// <returns></returns>
-        [HttpPost, Route("{grade}/{semesterId}/{classDetailId}/average")]
+        [HttpPost, Route("{grade}/{semesterId}/{classDetailId}/semester-average")]
         public async ValueTask<IActionResult> GetAverageScoresForSemester(int grade, string semesterId, string classDetailId)
         {
             try
@@ -142,14 +142,14 @@ namespace SchoolManagement.Web.Controllers
         }
 
         /// <summary>
-        /// Average score for a year (trung bình điểm các môn và điểm trung bình của cả năm học)
+        /// Average score for a year of 1 student(trung bình điểm các môn và điểm trung bình của cả năm học)
         /// Format of academicYear: 2023 - 2024
         /// </summary>
         /// <param name="grade"></param>
         /// <param name="classDetailId"></param>
         /// <param name="academicYear"></param>
         /// <returns></returns>
-        [HttpPost, Route("{grade}/{academicYear}/{classDetailId}/average")]
+        [HttpPost, Route("{grade}/{academicYear}/{classDetailId}/year-average")]
         public async ValueTask<IActionResult> GetAverageScoreForAcademicYear(int grade, string classDetailId, string academicYear)
         {
             try
@@ -243,6 +243,59 @@ namespace SchoolManagement.Web.Controllers
                     messageType = MessageType.Error,
                     message = $"An error occurred while deleting assessment: {ex.Message}"
                 });
+            }
+        }
+
+        /// <summary>
+        /// Thống kê điểm cuối kì theo môn học (1 lớp trong 1 học kì)
+        /// </summary>
+        /// <param name="grade"></param>
+        /// <param name="semesterId"></param>
+        /// <param name="classId"></param>
+        /// <param name="subjectId"></param>
+        /// <returns></returns>
+        [HttpPost, Route("{grade}/{semesterId}/{classId}/{subjectId}/class-statistic")]
+        public async ValueTask<IActionResult> GetAssessmentsStatistic(int grade, string semesterId, string classId, int subjectId)
+        {
+            try
+            {
+                var result = await _assessmentService.GetAssessmentsStatistic(grade, semesterId, classId, subjectId);
+                return Ok(new
+                {
+                    result = true,
+                    data = result,
+                    messageType = 0
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(200, new { result = false, messageType = MessageType.Error, message = ex });
+            }
+        }
+
+        /// <summary>
+        /// Thống kê điểm cuối kì theo môn học (tất cả các lớp trong 1 học kì)
+        /// </summary>
+        /// <param name="grade"></param>
+        /// <param name="semesterId"></param>
+        /// <param name="subjectId"></param>
+        /// <returns></returns>
+        [HttpPost, Route("{grade}/{semesterId}/{subjectId}/sem-statistic")]
+        public async ValueTask<IActionResult> GetAssessmentsStatisticForSem(int grade, string semesterId, int subjectId)
+        {
+            try
+            {
+                var result = await _assessmentService.GetAssessmentsStatisticForSem(grade, semesterId, subjectId);
+                return Ok(new
+                {
+                    result = true,
+                    data = result,
+                    messageType = 0
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(200, new { result = false, messageType = MessageType.Error, message = ex });
             }
         }
     }

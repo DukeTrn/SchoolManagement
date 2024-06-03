@@ -11,5 +11,7 @@ namespace SchoolManagement.Service.Intention
         ValueTask CreateAssessments(List<AssessmentAddModel> models);
         ValueTask UpdateAssessment(Guid id, AssessmentUpdateModel model);
         ValueTask DeleteAssessment(Guid id);
+        ValueTask<AssessmentForClassStatisticModel> GetAssessmentsStatistic(int grade, string semesterId, string classId, int subjectId);
+        ValueTask<AssessmentForSemStatisticModel> GetAssessmentsStatisticForSem(int grade, string semesterId, int subjectId);
     }
 }

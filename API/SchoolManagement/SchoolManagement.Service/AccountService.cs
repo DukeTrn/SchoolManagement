@@ -326,7 +326,7 @@ namespace SchoolManagement.Service
         {
             var account = await _context.AccountEntities.SingleOrDefaultAsync(a => a.UserName == username);
 
-            if (account == null || !BCrypt.Net.BCrypt.Verify(password, account.Password))
+            if (account == null || !BCrypt.Net.BCrypt.Verify(password, account.PasswordHashed))
             {
                 throw new UnauthorizedAccessException("Invalid username or password.");
             }

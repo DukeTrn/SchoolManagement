@@ -6,12 +6,12 @@ namespace SchoolManagement.Service.Intention
     {
         ValueTask<PaginationModel<ClassDisplayModel>> GetAllClasses(int grade, PageQueryModel queryModel);
         ValueTask<IEnumerable<ClassInSemesterModel>> GetListClassesInSemester(int grade, string semesterId);
-        ValueTask<IEnumerable<ClassFilterModel>> GetClassesByGradeFilter(int grade);
+        ValueTask<IEnumerable<ClassFilterModel>> GetClassesByGradeFilter(int grade, string academicYear);
         ValueTask<string> GetClassNameById(string classId);
         ValueTask CreateClass(ClassAddModel model);
         ValueTask UpdateClass(string classId, ClassUpdateModel model);
         ValueTask DeleteClass(string classId);
-        ValueTask<IEnumerable<TeacherFilterModel>> GetAvailableTeachersByGradeAsync(int grade);
+        ValueTask<IEnumerable<TeacherFilterModel>> GetAvailableTeachersByGradeAsync(int grade, string academicYear);
 
     }
 }

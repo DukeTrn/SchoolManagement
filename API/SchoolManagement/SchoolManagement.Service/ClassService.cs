@@ -82,6 +82,7 @@ namespace SchoolManagement.Service
                         HomeroomTeacherId = c.HomeroomTeacherId,
                         HomeroomTeacherName = c.HomeroomTeacher.FullName // Map the teacher's name
                     })
+                    .OrderByDescending(c => c.ClassId)
                     .ToListAsync();
 
                 return new PaginationModel<ClassDisplayModel>
@@ -126,6 +127,7 @@ namespace SchoolManagement.Service
                         .Any(sd => sd.ClassId == c.ClassId && sd.SemesterId == semesterId))
                     .Select(c => new ClassInSemesterModel
                     {
+                        ClassId = c.ClassId,
                         ClassName = c.ClassName,
                         AcademicYear = c.AcademicYear,
                         TotalStudents = _context.ClassDetailEntities.Count(cd => cd.ClassId == c.ClassId),
@@ -146,17 +148,19 @@ namespace SchoolManagement.Service
         }
 
         /// <summary>
-        ///  filter: get HR teacher (bug: need to add academicYear to sort out teachers who already chủ nhiệm in 1 niên khóa
+        ///  filter: get HR teacher (bug: need to add academicYear to sort out teachers who already chủ nhiệm in 1 niên khóa (done)
         /// </summary>
         /// <param name="grade"></param>
         /// <returns></returns>
-        public async ValueTask<IEnumerable<TeacherFilterModel>> GetAvailableTeachersByGradeAsync(int grade)
+        public async ValueTask<IEnumerable<TeacherFilterModel>> GetAvailableTeachersByGradeAsync(int grade, string academicYear)
         {
             try
             {
-                // Lấy danh sách giáo viên chưa chủ nhiệm lớp nào trong khối chỉ định
+                _logger.LogInformation($"Starting to filter available teachers for grade {grade} and academic year {academicYear}.");
+
+                // Lấy danh sách giáo viên chưa chủ nhiệm lớp nào trong khối chỉ định và niên khóa chỉ định
                 var availableTeachers = await _context.TeacherEntities
-                    .Where(t => !t.Classes.Any(c => c.Grade == grade))
+                    .Where(t => !t.Classes.Any(c => c.Grade == grade && c.AcademicYear == academicYear))
                     .Select(t => new TeacherFilterModel
                     {
                         TeacherId = t.TeacherId,
@@ -164,22 +168,24 @@ namespace SchoolManagement.Service
                     })
                     .ToListAsync();
 
+                _logger.LogInformation($"Found {availableTeachers.Count} available teachers for grade {grade} and academic year {academicYear}.");
+
                 return availableTeachers;
             }
             catch (Exception ex)
             {
-                _logger.LogError("An error occurred while filtering teachers. Error: {ex}", ex.Message);
+                _logger.LogError("An error occurred while filtering teachers. Error: {ex}", ex);
                 throw;
             }
         }
 
 
-        public async ValueTask<IEnumerable<ClassFilterModel>> GetClassesByGradeFilter(int grade)
+        public async ValueTask<IEnumerable<ClassFilterModel>> GetClassesByGradeFilter(int grade, string academicYear)
         {
             try
             {
                 var classes = await _context.ClassEntities
-                    .Where(c => c.Grade == grade)
+                    .Where(c => c.Grade == grade && c.AcademicYear == academicYear)
                     .Select(c => new ClassFilterModel
                     {
                         ClassId = c.ClassId,
@@ -228,11 +234,12 @@ namespace SchoolManagement.Service
             {
                 _logger.LogInformation("Start to create new class in {grade}.",model.Grade);
                 // Logic for academic year
-                var prefixClassId = GenerateClassId(model.ClassName, model.Semester, model.AcademicYear);
+                //var prefixClassId = GenerateClassId(model.ClassName, model.Semester, model.AcademicYear);
+                var prefixClassId = GenerateClassId(model.ClassName, model.AcademicYear);
                 var existClass = await _context.ClassEntities.FirstOrDefaultAsync(s => s.ClassId == prefixClassId && s.Grade == model.Grade);
                 if (existClass != null)
                 {
-                    _logger.LogInformation("Class has already existed");
+                    _logger.LogInformation("Class ID has already existed");
                     throw ExistRecordException.ExistsRecord("Class ID already exists");
                 }
 
@@ -367,9 +374,28 @@ namespace SchoolManagement.Service
             return filters;
         }
 
-        private string GenerateClassId(string className, string semester, string academicYear)
+        //private string GenerateClassId(string className, string semester, string academicYear)
+        //{
+        //    // Tách năm học thành hai phần: năm bắt đầu và năm kết thúc
+        //    var years = academicYear.Split(" - ");
+        //    if (years.Length != 2)
+        //    {
+        //        throw new ArgumentException("Invalid academic year format. Expected format: 'YYYY - YYYY'.");
+        //    }
+
+        //    var startYear = years[0];
+        //    var endYear = years[1];
+
+        //    // Xác định năm dựa trên học kỳ
+        //    var year = semester == "1" ? startYear : semester == "2" ? endYear : throw new ArgumentException("Invalid semester. Expected '1' or '2'.");
+
+        //    // Tạo chuỗi kết quả
+        //    var result = $"{year}{className}";
+        //    return result;
+        //}
+        private string GenerateClassId(string className, string academicYear)
         {
-            // Tách năm học thành hai phần: năm bắt đầu và năm kết thúc
+            // Tách năm bắt đầu và năm kết thúc từ niên khóa
             var years = academicYear.Split(" - ");
             if (years.Length != 2)
             {
@@ -379,12 +405,11 @@ namespace SchoolManagement.Service
             var startYear = years[0];
             var endYear = years[1];
 
-            // Xác định năm dựa trên học kỳ
-            var year = semester == "1" ? startYear : semester == "2" ? endYear : throw new ArgumentException("Invalid semester. Expected '1' or '2'.");
+            // Kết hợp các thành phần thành chuỗi kết quả
+            var result = $"{startYear}{endYear}{className}";
 
-            // Tạo chuỗi kết quả
-            var result = $"{year}{className}";
             return result;
         }
+
     }
 }

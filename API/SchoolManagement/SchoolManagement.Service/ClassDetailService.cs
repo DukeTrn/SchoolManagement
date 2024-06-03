@@ -102,24 +102,36 @@ namespace SchoolManagement.Service
             }
         }
 
-        public async Task<List<StudentFilterModel>> FilterStudentsByClassGrade(int grade)
+        public async Task<List<StudentFilterModel>> FilterStudentsByGrade(string academicYear, int grade)
         {
-            // Lấy danh sách các studentIds đã tồn tại trong lớp học của khối grade
-            var existingStudentIds = await _context.ClassDetailEntities
-                .Where(cd => cd.Class.Grade == grade)
-                .Select(cd => cd.StudentId)
-                .ToListAsync();
+            try
+            {
+                // Tạo chuỗi kiểm tra dựa trên năm bắt đầu của niên khóa
+                var startYear = academicYear.Split(" - ")[0];
 
-            var filteredStudents = await _context.StudentEntities
-                .Where(s => !existingStudentIds.Contains(s.StudentId))
-                .Select(s => new StudentFilterModel
-                {
-                    StudentId = s.StudentId,
-                    FullName = s.FullName
-                })
-                .ToListAsync();
+                // Lấy danh sách các studentIds đã tồn tại trong lớp học của khối grade và niên khóa chỉ định
+                var existingStudentIds = await _context.ClassDetailEntities
+                    .Where(cd => cd.Class.Grade == grade && cd.Class.AcademicYear == academicYear)
+                    .Select(cd => cd.StudentId)
+                    .ToListAsync();
 
-            return filteredStudents;
+                // Lọc danh sách học sinh không tồn tại trong các lớp đã lọc ở trên và bắt đầu bằng startYear
+                var filteredStudents = await _context.StudentEntities
+                    .Where(s => !existingStudentIds.Contains(s.StudentId) && s.StudentId.StartsWith(startYear))
+                    .Select(s => new StudentFilterModel
+                    {
+                        StudentId = s.StudentId,
+                        FullName = s.FullName
+                    })
+                    .ToListAsync();
+
+                return filteredStudents;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"An error occurred while filtering students by class grade. Error: {ex.Message}");
+                throw;
+            }
         }
         
         /// <summary>

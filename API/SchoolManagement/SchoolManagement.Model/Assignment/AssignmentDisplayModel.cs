@@ -2,6 +2,7 @@
 {
     public class AssignmentDisplayModel
     {
+        public Guid AssignmentId { get; set; }
         public string TeacherId { get; set; } = string.Empty;
         public string TeacherName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;

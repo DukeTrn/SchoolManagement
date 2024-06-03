@@ -161,6 +161,30 @@ namespace SchoolManagement.Controllers
         }
 
         /// <summary>
+        /// Will delete
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost, Route("createdemo")]
+        public async ValueTask<IActionResult> CreateDemoStudent([FromBody] StudentAddModel model)
+        {
+            try
+            {
+                await _service.CreateDemoStudent(model);
+                return Ok(new { result = true, messageType = 0 });
+            }
+            catch (ExistRecordException)
+            {
+                return Ok(new { result = false, messageType = MessageType.Duplicated, message = "ID này đã tồn tại" });
+            }
+            catch (Exception ex)
+            {
+                // Log other exceptions if needed
+                return StatusCode(500, new { result = false, messageType = MessageType.Error, message = ex });
+            }
+        }
+
+        /// <summary>
         /// Update student's information by his/her ID.
         /// Status: 1 (Active), 2 (Suspended), 3 (Inactive)
         /// </summary>

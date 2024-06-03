@@ -18,6 +18,8 @@ namespace SchoolManagement.Service
             _context = context;
         }
 
+
+
         /// <summary>
         /// Get list assignments by grade, subject id, semester id
         /// </summary>
@@ -62,6 +64,7 @@ namespace SchoolManagement.Service
 
                 var result = await query.Select(a => new AssignmentDisplayModel
                 {
+                    AssignmentId = a.AssignmentId,
                     TeacherId = a.TeacherId,
                     TeacherName = a.Teacher.FullName,
                     Email = a.Teacher.Email,
@@ -79,9 +82,9 @@ namespace SchoolManagement.Service
                 throw;
             }
         }
-
+    
         /// <summary>
-        /// Create assignment
+        /// Create assignment (thêm logic check xem giáo viên đã ở trong lớp khác chưa)
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
@@ -93,15 +96,44 @@ namespace SchoolManagement.Service
                 _logger.LogInformation("Start to create a new assignment.");
 
                 // Kiểm tra xem học kỳ, giáo viên, môn học và lớp học có tồn tại không
-                var semester = await _context.SemesterEntities.FindAsync(model.SemesterId);
-                var teacher = await _context.TeacherEntities.FindAsync(model.TeacherId);
-                var subject = await _context.SubjectEntities.FindAsync(model.SubjectId);
-                var classEntity = await _context.ClassEntities.FindAsync(model.ClassId);
+                var semester = await _context.SemesterEntities.AsNoTracking().FirstOrDefaultAsync(s => s.SemesterId == model.SemesterId);
+                var teacher = await _context.TeacherEntities.AsNoTracking().FirstOrDefaultAsync(t => t.TeacherId == model.TeacherId);
+                var subject = await _context.SubjectEntities.AsNoTracking().FirstOrDefaultAsync(s => s.SubjectId == model.SubjectId);
+                var classEntity = await _context.ClassEntities.AsNoTracking().FirstOrDefaultAsync(c => c.ClassId == model.ClassId);
 
-                if (semester == null || teacher == null || subject == null || classEntity == null)
+                if (semester == null)
                 {
-                    _logger.LogWarning("Semester, teacher, subject, or class not found.");
-                    throw new KeyNotFoundException("Semester, teacher, subject, or class not found.");
+                    _logger.LogWarning("Semester not found: {SemesterId}", model.SemesterId);
+                    throw new KeyNotFoundException($"Semester not found: {model.SemesterId}");
+                }
+                if (teacher == null)
+                {
+                    _logger.LogWarning("Teacher not found: {TeacherId}", model.TeacherId);
+                    throw new KeyNotFoundException($"Teacher not found: {model.TeacherId}");
+                }
+                if (subject == null)
+                {
+                    _logger.LogWarning("Subject not found: {SubjectId}", model.SubjectId);
+                    throw new KeyNotFoundException($"Subject not found: {model.SubjectId}");
+                }
+                if (classEntity == null)
+                {
+                    _logger.LogWarning("Class not found: {ClassId}", model.ClassId);
+                    throw new KeyNotFoundException($"Class not found: {model.ClassId}");
+                }
+
+                // Kiểm tra xem phân công giảng dạy đã tồn tại chưa
+                var existingAssignment = await _context.AssignmentEntities
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(a => a.SemesterId == model.SemesterId &&
+                                              a.TeacherId == model.TeacherId &&
+                                              a.SubjectId == model.SubjectId &&
+                                              a.ClassId == model.ClassId);
+                if (existingAssignment != null)
+                {
+                    _logger.LogWarning("Assignment already exists for SemesterId: {SemesterId}, TeacherId: {TeacherId}, SubjectId: {SubjectId}, ClassId: {ClassId}",
+                                        model.SemesterId, model.TeacherId, model.SubjectId, model.ClassId);
+                    throw new InvalidOperationException("Assignment already exists.");
                 }
 
                 // Tạo một phân công giảng dạy mới
@@ -121,10 +153,11 @@ namespace SchoolManagement.Service
             }
             catch (Exception ex)
             {
-                _logger.LogError("An error occurred while creating a new assignment. Error: {ex}", ex);
+                _logger.LogError(ex, "An error occurred while creating a new assignment.");
                 throw;
             }
         }
+
 
         /// <summary>
         /// Update assignment (phân công chuyển lớp cho giáo viên)

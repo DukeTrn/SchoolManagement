@@ -99,7 +99,7 @@ namespace SchoolManagement.Service
                         ClassId = c.ClassId,
                         ClassName = c.ClassName
                     })
-                    .ToListAsync();
+                    .OrderByDescending(p => p.ClassId).ToListAsync();
 
                 return classesNotInSemester;
             }

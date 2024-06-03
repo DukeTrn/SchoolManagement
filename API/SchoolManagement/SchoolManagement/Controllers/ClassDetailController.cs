@@ -42,16 +42,18 @@ namespace SchoolManagement.Web.Controllers
         }
 
         /// <summary>
-        /// Filter (of students) to add students into class
+        /// Filter (for students) to add students into class. 
+        /// Format of academicYear: 2023 - 2024
         /// </summary>
+        /// <param name="academicYear"></param>
         /// <param name="grade"></param>
         /// <returns></returns>
-        [HttpGet("filterByGrade/{grade}")]
-        public async Task<ActionResult> FilterStudentsByGrade(int grade)
+        [HttpGet("filter-students")]
+        public async Task<ActionResult> FilterStudentsByGrade(string academicYear, int grade)
         {
             try
             {
-                var filteredStudents = await _service.FilterStudentsByClassGrade(grade);
+                var filteredStudents = await _service.FilterStudentsByGrade(academicYear, grade);
                 return Ok(new
                 {
                     result = true,

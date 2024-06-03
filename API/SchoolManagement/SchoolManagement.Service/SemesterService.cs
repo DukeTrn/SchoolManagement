@@ -67,7 +67,7 @@ namespace SchoolManagement.Service
                 {
                     SemesterId = t.SemesterId,
                     SemesterName = t.SemesterName
-                }).ToListAsync();
+                }).OrderByDescending(p => p.SemesterId).ToListAsync();
 
             }
             catch (Exception ex)

@@ -248,6 +248,76 @@ namespace SchoolManagement.Service
                 throw;
             }
         }
+
+        /// <summary>
+        /// Will delete
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public async ValueTask CreateDemoStudent(StudentAddModel model)
+        {
+            try
+            {
+                _logger.LogInformation("Start to create new student.");
+                //var studentId = DateTime.Now.Year.ToString() + model.StudentId;
+                var existingStudent = await _context.StudentEntities.FirstOrDefaultAsync(s => s.StudentId == model.StudentId);
+
+                if (existingStudent != null)
+                {
+                    _logger.LogInformation("Record has already existed");
+                    throw ExistRecordException.ExistsRecord("Student ID already exists");
+                }
+
+                // automatically create account when creating new student
+                AccountAutomaticallyAddModel addAccount = new()
+                {
+                    UserName = StringExtensions.GenerateStudentEmail(model.FullName, model.StudentId),
+                    Role = RoleType.Student
+                };
+                var newAccount = await _account.CreateAccountAutomatically(addAccount);
+
+                // Upload avatar to Cloudinary if provided
+                //string? avatarUrl = null;
+                //if (model.Avatar != null)
+                //{
+                //    avatarUrl = await _cloudinary.UploadImageAsync(model.Avatar);
+                //}
+
+                var newStudent = new StudentEntity()
+                {
+                    StudentId = model.StudentId,
+                    FullName = model.FullName,
+                    DOB = model.DOB,
+                    IdentificationNumber = model.IdentificationNumber,
+                    Gender = model.Gender,
+                    Address = model.Address,
+                    Ethnic = model.Ethnic,
+                    PhoneNumber = model.PhoneNumber,
+                    //Avatar = avatarUrl,
+                    Email = model.Email,
+                    Status = StudentStatusType.Active,
+                    FatherName = model.FatherName,
+                    FatherJob = model.FatherJob,
+                    FatherPhoneNumber = model.FatherPhoneNumber,
+                    FatherEmail = model.FatherEmail,
+                    MotherName = model.MotherName,
+                    MotherJob = model.MotherJob,
+                    MotherPhoneNumber = model.MotherPhoneNumber,
+                    MotherEmail = model.MotherEmail,
+                    AcademicYear = DateTime.Now.Year.ToString() + " - " + DateTime.Now.AddYears(3).Year.ToString(),
+                    AccountId = newAccount.AccountId
+                };
+
+                _context.StudentEntities.Add(newStudent);
+                await _context.SaveChangesAsync();
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occured while creating new student. Error: {ex}", ex);
+                throw;
+            }
+        }
         #endregion
 
         #region Update

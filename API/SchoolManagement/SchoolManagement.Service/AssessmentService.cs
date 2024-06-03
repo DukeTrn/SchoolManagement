@@ -20,7 +20,7 @@ namespace SchoolManagement.Service
         }
 
         /// <summary>
-        /// Get list students in assessment (Currently semesterId in param are redundant)
+        /// Get list students in assessment (Currently semesterId in param are redundant) (2nd page)
         /// </summary>
         /// <param name="grade"></param>
         /// <param name="semesterId"></param>
@@ -114,7 +114,7 @@ namespace SchoolManagement.Service
 
                 // Truy vấn tất cả các đánh giá có liên quan đến grade và semesterId
                 var assessments = await _context.AssessmentEntities
-                    .Where(a => a.ClassDetail.Class.Grade == grade && a.SemesterId == semesterId)
+                    .Where(a => a.ClassDetail.Class.Grade == grade && a.SemesterId == semesterId && a.ClassDetailId == classDetailId)
                     .Include(a => a.Subject)
                     .Include(a => a.ClassDetail)
                     .ThenInclude(cd => cd.Class)
@@ -416,6 +416,173 @@ namespace SchoolManagement.Service
             }
         }
 
+        public async ValueTask<AssessmentForClassStatisticModel> GetAssessmentsStatistic(int grade, string semesterId, string classId, int subjectId)
+        {
+            try
+            {
+                _logger.LogInformation($"Getting assessment statistics for class {classId}, grade {grade}, semester {semesterId}, subject {subjectId}.");
+
+                // Lấy danh sách học sinh trong lớp và khối chỉ định
+                var studentsInClass = await _context.ClassDetailEntities
+                    .Where(cd => cd.ClassId == classId && cd.Class.Grade == grade)
+                    .Select(cd => cd.ClassDetailId)
+                    .ToListAsync();
+
+                // Tính tổng số học sinh
+                var totalStudentCount = studentsInClass.Count;
+
+                if (totalStudentCount == 0)
+                {
+                    _logger.LogWarning($"No students found in class {classId}, grade {grade}, semester {semesterId}, subject {subjectId}.");
+                    return new AssessmentForClassStatisticModel();
+                }
+
+                // Lấy danh sách điểm số của học sinh trong học kỳ chỉ định và môn học chỉ định
+                var assessments = await _context.AssessmentEntities
+                    .Where(a => a.SemesterId == semesterId && a.SubjectId == subjectId && a.Weight == 3 && studentsInClass.Contains(a.ClassDetailId))
+                    .ToListAsync();
+
+                // Khởi tạo các biến đếm
+                decimal veryGoodCount = 0, goodCount = 0, averageCount = 0, weakCount = 0, poorCount = 0;
+
+                // Phân loại điểm số vào các nhóm
+                foreach (var assessment in assessments)
+                {
+                    var score = assessment.Score;
+
+                    if (score >= 8 && score <= 10)
+                    {
+                        veryGoodCount++;
+                    }
+                    else if (score >= 6.5m && score < 8)
+                    {
+                        goodCount++;
+                    }
+                    else if (score >= 5 && score < 6.5m)
+                    {
+                        averageCount++;
+                    }
+                    else if (score >= 3.5m && score < 5)
+                    {
+                        weakCount++;
+                    }
+                    else if (score >= 0 && score < 3.5m)
+                    {
+                        poorCount++;
+                    }
+                }
+
+                // Tính tỷ lệ phần trăm
+                var veryGoodPercentage = (veryGoodCount / totalStudentCount * 100).ToString("0.00") + "%";
+                var goodPercentage = (goodCount / totalStudentCount * 100).ToString("0.00") + "%";
+                var averagePercentage = (averageCount / totalStudentCount * 100).ToString("0.00") + "%";
+                var weakPercentage = (weakCount / totalStudentCount * 100).ToString("0.00") + "%";
+                var poorPercentage = (poorCount / totalStudentCount * 100).ToString("0.00") + "%";
+
+                // Trả về kết quả
+                return new AssessmentForClassStatisticModel
+                {
+                    TotalStudent = totalStudentCount,
+                    VeryGoodCount = veryGoodCount,
+                    VeryGoodPercentage = veryGoodPercentage,
+                    GoodCount = goodCount,
+                    GoodPercentage = goodPercentage,
+                    AverageCount = averageCount,
+                    AveragePercentage = averagePercentage,
+                    WeakCount = weakCount,
+                    WeakPercentage = weakPercentage,
+                    PoorCount = poorCount,
+                    PoorPercentage = poorPercentage
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occurred while getting assessment statistics. Error: {ex}", ex);
+                throw;
+            }
+        }
+
+        public async ValueTask<AssessmentForSemStatisticModel> GetAssessmentsStatisticForSem(int grade, string semesterId, int subjectId)
+        {
+            try
+            {
+                _logger.LogInformation($"Getting assessment statistics for grade {grade}, semester {semesterId}, subject {subjectId}.");
+
+                // Lấy danh sách học sinh trong khối chỉ định
+                var studentsInGrade = await _context.ClassDetailEntities
+                    .Where(cd => cd.Class.Grade == grade && cd.Class.SemClassIds.Any(s => s.SemesterId == semesterId))
+                    .Select(cd => cd.ClassDetailId)
+                    .Distinct()
+                    .ToListAsync();
+
+                // Tính tổng số học sinh
+                var totalStudentCount = studentsInGrade.Count;
+
+                if (totalStudentCount == 0)
+                {
+                    _logger.LogWarning($"No students found in grade {grade}, semester {semesterId}, subject {subjectId}.");
+                    return new AssessmentForSemStatisticModel();
+                }
+
+                // Lấy danh sách điểm số có weight = 3 của học sinh trong học kỳ và môn học chỉ định
+                var assessments = await _context.AssessmentEntities
+                    .Where(a => a.SemesterId == semesterId && a.SubjectId == subjectId && a.Weight == 3 && studentsInGrade.Contains(a.ClassDetailId))
+                    .ToListAsync();
+
+                // Khởi tạo các biến đếm
+                decimal veryGoodCount = 0, goodCount = 0, averageCount = 0, weakCount = 0, poorCount = 0;
+
+                // Phân loại điểm số vào các nhóm
+                foreach (var assessment in assessments)
+                {
+                    var score = assessment.Score;
+
+                    if (score >= 8 && score <= 10)
+                    {
+                        veryGoodCount++;
+                    }
+                    else if (score >= 6.5m && score < 8)
+                    {
+                        goodCount++;
+                    }
+                    else if (score >= 5 && score < 6.5m)
+                    {
+                        averageCount++;
+                    }
+                    else if (score >= 3.5m && score < 5)
+                    {
+                        weakCount++;
+                    }
+                    else if (score >= 0 && score < 3.5m)
+                    {
+                        poorCount++;
+                    }
+                }
+
+                // Tính tỷ lệ phần trăm
+                var veryGoodPercentage = (veryGoodCount / totalStudentCount * 100).ToString("0.00") + "%";
+                var goodPercentage = (goodCount / totalStudentCount * 100).ToString("0.00") + "%";
+                var averagePercentage = (averageCount / totalStudentCount * 100).ToString("0.00") + "%";
+                var weakPercentage = (weakCount / totalStudentCount * 100).ToString("0.00") + "%";
+                var poorPercentage = (poorCount / totalStudentCount * 100).ToString("0.00") + "%";
+
+                // Trả về kết quả
+                return new AssessmentForSemStatisticModel
+                {
+                    TotalStudents = totalStudentCount,
+                    VeryGoodPercentage = veryGoodPercentage,
+                    GoodPercentage = goodPercentage,
+                    AveragePercentage = averagePercentage,
+                    WeakPercentage = weakPercentage,
+                    PoorPercentage = poorPercentage
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occurred while getting assessment statistics. Error: {ex}", ex);
+                throw;
+            }
+        }
 
     }
 }
