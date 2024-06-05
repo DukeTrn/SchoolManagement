@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using SchoolManagement.Database;
 using SchoolManagement.Model;
 using SchoolManagement.Service.Intention;
@@ -23,6 +25,7 @@ namespace SchoolManagement.Web.Controllers.Authentication
         }
         [HttpPost]
         [Route("login")]
+        [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
             // Validate the user credentials (this is just a mock, replace with real validation)
@@ -40,6 +43,16 @@ namespace SchoolManagement.Web.Controllers.Authentication
             catch (UnauthorizedAccessException ex)
             {
                 return Unauthorized(ex.Message);
+                //return Unauthorized(new { message = "Authentication failed: " + ex.Message });
+            }
+            catch (SecurityTokenException ex)
+            {
+                // Bắt và xử lý ngoại lệ khi tạo token không hợp lệ
+                return BadRequest(new
+                {
+                    result = false,
+                    message = "Token generation failed. " + ex.Message
+                });
             }
             catch (Exception ex)
             {

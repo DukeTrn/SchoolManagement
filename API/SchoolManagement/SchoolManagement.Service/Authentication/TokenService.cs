@@ -23,11 +23,11 @@ namespace SchoolManagement.Service.Authentication
                 new Claim(ClaimTypes.Email, entity.UserName),
                 new Claim("Id", entity.AccountId.ToString()),
                 new Claim("TokenId", Guid.NewGuid().ToString()),
-                //new Claim(JwtRegisteredClaimNames, Guid.NewGuid().ToString())
+                new Claim(ClaimTypes.Role, entity.Role.ToString())
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:SecretKeys"]));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
 
             var token = new JwtSecurityToken(
                 //issuer: _configuration["Jwt:Issuer"],
@@ -38,5 +38,6 @@ namespace SchoolManagement.Service.Authentication
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
     }
 }

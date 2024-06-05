@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using SchoolManagement.Common.Enum;
 using SchoolManagement.Database;
 using SchoolManagement.Model;
 using SchoolManagement.Startup.BuilderExtensions;
@@ -27,9 +29,35 @@ public static class BuilderSetupExtension
             });
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen(c => {
+        builder.Services.AddSwaggerGen(c =>
+        {
             //c.OperationFilter<SwaggerExtension>();
             c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetEntryAssembly()?.GetName().Name}.xml"));
+
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "School Management", Version = "v1" });
+            c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                Name = "Authorization",
+                Type = SecuritySchemeType.ApiKey,
+                Scheme = "Bearer",
+                BearerFormat = "JWT",
+                In = ParameterLocation.Header,
+                Description = "Enter 'Bearer' [space] and then your token in the text input below.\n\nExample: \"Bearer 12345abcdef\"",
+            });
+            c.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    },
+                    new string[] {}
+                }
+            });
         });
         //builder.Services.AddCors(opt =>
         //{
@@ -73,10 +101,26 @@ public static class BuilderSetupExtension
                 //ValidAudience = jwtSettings["Audience"],
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["SecretKeys"]))
             };
-        });      
+        //{
+        //    ValidateIssuer = true,
+        //    ValidateAudience = true,
+        //    ValidateLifetime = true,
+        //    ValidateIssuerSigningKey = true,
+        //    ValidIssuer = jwtSettings["Issuer"],
+        //    ValidAudience = jwtSettings["Audience"],
+        //    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["SecretKeys"]))
+        //};
+    });
 
         // Add Authorization
-        builder.Services.AddAuthorization();
+        // Configure Authorization
+        builder.Services.AddAuthorization(options =>
+        {
+            options.AddPolicy(RoleType.Admin.ToString(), policy => policy.RequireRole(RoleType.Admin.ToString()));
+            options.AddPolicy(RoleType.HomeroomTeacher.ToString(), policy => policy.RequireRole(RoleType.HomeroomTeacher.ToString()));
+            options.AddPolicy(RoleType.Teacher.ToString(), policy => policy.RequireRole(RoleType.Teacher.ToString()));
+            options.AddPolicy(RoleType.Student.ToString(), policy => policy.RequireRole(RoleType.Student.ToString()));
+        });
         return builder;
     }
 }

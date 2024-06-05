@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SchoolManagement.Common.Enum;
 using SchoolManagement.Common.Exceptions;
 using SchoolManagement.Model;
@@ -28,6 +29,7 @@ namespace SchoolManagement.Web.Controllers
         /// <param name="queryModel"></param>
         /// <returns></returns>
         [HttpPost, Route("all")]
+        [Authorize(Roles = nameof(RoleType.Admin))]
         public async ValueTask<IActionResult> GetAllAccounts([FromBody] AccountQueryModel queryModel)
         {
             try
