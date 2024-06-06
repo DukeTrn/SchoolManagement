@@ -38,26 +38,7 @@ namespace SchoolManagement.Web.Controllers
                 return StatusCode(200, new { result = false, messageType = MessageType.Error, message = ex });
             }
         }
-
-        /// <summary>
-        /// Get list of teachers in 1 department
-        /// </summary>
-        /// <param name="departmentId"></param>
-        /// <param name="queryModel"></param>
-        /// <returns></returns>
-        [HttpPost, Route("all/{departmentId}")]
-        public async ValueTask<IActionResult> GetAllTeachers(string departmentId, [FromBody] TeacherQueryModel queryModel)
-        {
-            try
-            {
-                var result = await _service.GetAllTeachers(departmentId, queryModel);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(200, new { result = false, messageType = MessageType.Error, message = ex });
-            }
-        }
+      
 
         /// <summary>
         /// Use for filter
@@ -82,40 +63,7 @@ namespace SchoolManagement.Web.Controllers
             }
         }
 
-        /// <summary>
-        /// Get heads and deputies in 1 department
-        /// Role: 1 (regular), 2 (deputy - phó bộ môn), 3 (head - trưởng bộ môn)
-        /// </summary>
-        /// <param name="departmentId"></param>
-        /// <returns></returns>
-        [HttpGet, Route("heads/{departmentId}")]
-        public async Task<IActionResult> GetDepartmentHeadsAndDeputies(string departmentId)
-        {
-            try
-            {
-                var headsAndDeputies = await _service.GetDepartmentHeadsAndDeputies(departmentId);
-                if (headsAndDeputies == null)
-                {
-                    return NotFound($"Department with ID {departmentId} not found.");
-                }
-                //return Ok(headsAndDeputies);
-                return Ok(new
-                {
-                    result = true,
-                    data = headsAndDeputies,
-                    messageType = 0
-                });
-            }
-            catch (NotFoundException)
-            {
-                // Xử lý ngoại lệ và trả về lỗi nếu có
-                return NotFound(new { result = false, messageType = MessageType.Error, message = $"Không tìm thấy tổ bộ môn với ID {departmentId} này!" });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(200, new { result = false, messageType = MessageType.Error, message = ex });
-            }
-        }
+        
         #endregion
 
         #region Add to department

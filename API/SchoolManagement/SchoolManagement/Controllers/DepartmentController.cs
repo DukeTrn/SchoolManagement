@@ -2,7 +2,6 @@
 using SchoolManagement.Common.Enum;
 using SchoolManagement.Common.Exceptions;
 using SchoolManagement.Model;
-using SchoolManagement.Service;
 using SchoolManagement.Service.Intention;
 
 namespace SchoolManagement.Web.Controllers
@@ -11,10 +10,13 @@ namespace SchoolManagement.Web.Controllers
     public class DepartmentController : ControllerBase
     {
         private readonly IDepartmentService _service;
+        private readonly ITeacherService _teacherService;
 
-        public DepartmentController(IDepartmentService service)
+        public DepartmentController(IDepartmentService service, 
+            ITeacherService teacherService)
         {
             _service = service;
+            _teacherService = teacherService;
         }
 
         /// <summary>
@@ -29,6 +31,61 @@ namespace SchoolManagement.Web.Controllers
             {
                 var result = await _service.GetAllDepartments(queryModel);
                 return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(200, new { result = false, messageType = MessageType.Error, message = ex });
+            }
+        }
+
+        /// <summary>
+        /// Get list of teachers in 1 department
+        /// </summary>
+        /// <param name="departmentId"></param>
+        /// <param name="queryModel"></param>
+        /// <returns></returns>
+        [HttpPost, Route("{departmentId}/teachers/all")]
+        public async ValueTask<IActionResult> GetAllTeachers(string departmentId, [FromBody] TeacherQueryModel queryModel)
+        {
+            try
+            {
+                var result = await _teacherService.GetAllTeachers(departmentId, queryModel);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(200, new { result = false, messageType = MessageType.Error, message = ex });
+            }
+        }
+
+        /// <summary>
+        /// Get heads and deputies in 1 department
+        /// Role: 1 (regular), 2 (deputy - phó bộ môn), 3 (head - trưởng bộ môn)
+        /// </summary>
+        /// <param name="departmentId"></param>
+        /// <returns></returns>
+        [HttpGet, Route("{departmentId}/teachers/heads")]
+        public async Task<IActionResult> GetDepartmentHeadsAndDeputies(string departmentId)
+        {
+            try
+            {
+                var headsAndDeputies = await _teacherService.GetDepartmentHeadsAndDeputies(departmentId);
+                if (headsAndDeputies == null)
+                {
+                    return NotFound($"Department with ID {departmentId} not found.");
+                }
+                //return Ok(headsAndDeputies);
+                return Ok(new
+                {
+                    result = true,
+                    data = headsAndDeputies,
+                    messageType = 0
+                });
+            }
+            catch (NotFoundException)
+            {
+                // Xử lý ngoại lệ và trả về lỗi nếu có
+                return NotFound(new { result = false, messageType = MessageType.Error, message = $"Không tìm thấy tổ bộ môn với ID {departmentId} này!" });
             }
             catch (Exception ex)
             {
