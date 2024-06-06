@@ -29,7 +29,7 @@ namespace SchoolManagement.Web.Controllers
         /// <param name="queryModel"></param>
         /// <returns></returns>
         [HttpPost, Route("all")]
-        [Authorize(Roles = nameof(RoleType.Admin))]
+        //[Authorize(Roles = nameof(RoleType.Admin))]
         public async ValueTask<IActionResult> GetAllAccounts([FromBody] AccountQueryModel queryModel)
         {
             try

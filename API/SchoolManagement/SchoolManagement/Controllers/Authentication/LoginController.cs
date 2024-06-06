@@ -37,7 +37,8 @@ namespace SchoolManagement.Web.Controllers.Authentication
                 {
                     result = true,
                     message = "Authentication success",
-                    Token = token
+                    token = token,
+                    role = account.Role.ToString()
                 });
             }
             catch (UnauthorizedAccessException ex)

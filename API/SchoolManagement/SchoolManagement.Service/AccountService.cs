@@ -83,7 +83,7 @@ namespace SchoolManagement.Service
                     ModifiedAt = a.ModifiedAt == null ? "" : a.ModifiedAt.Value.ToString("dd/MM/yyyy"),
                     IsActive = a.IsActive,
                     Role = TranslateStatus(a.Role)
-                }).ToList();
+                }).OrderBy(a => a.Role).ThenBy(a => a.FullName).ToList();
                 return new PaginationModel<AccountDisplayModel>
                 {
                     TotalCount = accountsQuery.Count,
