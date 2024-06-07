@@ -31,7 +31,7 @@ namespace SchoolManagement.Service
         }
 
         /// <summary>
-        /// Get all students in 1 class
+        /// Get all students in 1 class (need to translate status)
         /// </summary>
         /// <param name="classId"></param>
         /// <param name="queryModel"></param>
@@ -52,7 +52,9 @@ namespace SchoolManagement.Service
                     {
                         ClassDetailId = cd.ClassDetailId,
                         Number = 0, // Sẽ được gán sau khi áp dụng phân trang
+                        StudentId = cd.Student.StudentId,
                         FullName = cd.Student.FullName,
+                        PhoneNumber = cd.Student.PhoneNumber,
                         Status = cd.Student.Status // Assuming Student entity has a Status property
                     });
 

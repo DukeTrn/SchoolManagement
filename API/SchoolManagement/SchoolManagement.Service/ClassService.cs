@@ -395,21 +395,55 @@ namespace SchoolManagement.Service
         //}
         private string GenerateClassId(string className, string academicYear)
         {
-            // Tách năm bắt đầu và năm kết thúc từ niên khóa
-            var years = academicYear.Split(" - ");
-            if (years.Length != 2)
+            // Kiểm tra tham số đầu vào
+            if (string.IsNullOrWhiteSpace(className))
             {
-                throw new ArgumentException("Invalid academic year format. Expected format: 'YYYY - YYYY'.");
+                throw new ArgumentException("Class name cannot be empty or whitespace.");
             }
 
-            var startYear = years[0];
-            var endYear = years[1];
+            if (string.IsNullOrWhiteSpace(academicYear))
+            {
+                throw new ArgumentException("Academic year cannot be empty or whitespace.");
+            }
 
-            // Kết hợp các thành phần thành chuỗi kết quả
-            var result = $"{startYear}{endYear}{className}";
+            // Chuẩn hóa academicYear để hỗ trợ cả hai định dạng 'YYYY - YYYY' và 'YYYY-YYYY'
+            var normalizedAcademicYear = academicYear.Replace(" ", "").Trim();
+            var years = normalizedAcademicYear.Split('-');
+
+            if (years.Length != 2)
+            {
+                throw new ArgumentException("Invalid academic year format. Expected format: 'YYYY - YYYY' or 'YYYY-YYYY'.");
+            }
+
+            var startYear = years[0].Trim();
+            var endYear = years[1].Trim();
+
+            // Kiểm tra độ dài của các năm
+            if (startYear.Length != 4 || endYear.Length != 4)
+            {
+                throw new ArgumentException("Invalid year length. Expected format: 'YYYY'.");
+            }
+
+            // Kiểm tra nếu các giá trị năm là số nguyên và năm kết thúc lớn hơn năm bắt đầu
+            if (!int.TryParse(startYear, out int startYearInt) || !int.TryParse(endYear, out int endYearInt))
+            {
+                throw new ArgumentException("Invalid year format. Years must be numeric.");
+            }
+
+            if (endYearInt <= startYearInt)
+            {
+                throw new ArgumentException("End year must be greater than start year.");
+            }
+
+            // Chuẩn hóa tên lớp: Loại bỏ khoảng trắng thừa
+            var normalizedClassName = className.Trim();
+
+            // Tạo chuỗi kết quả
+            var result = $"{startYear}{endYear}{normalizedClassName}";
 
             return result;
         }
+
 
     }
 }
