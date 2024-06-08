@@ -11,7 +11,7 @@ import {
 	getSortedRowModel,
 	useReactTable,
 } from "@tanstack/react-table";
-
+import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 
 import {
@@ -27,9 +27,10 @@ interface IProps {
 	onChange?: (value: any) => void;
 	columns: ColumnDef<any>[];
 	data: any;
+	loading: boolean;
 }
 export function TableDetails(props: IProps) {
-	const { onChange, columns, data } = props;
+	const { onChange, columns, data, loading } = props;
 	const [sorting, setSorting] = React.useState<SortingState>([]);
 	const [columnFilters, setColumnFilters] =
 		React.useState<ColumnFiltersState>([]);
@@ -67,7 +68,7 @@ export function TableDetails(props: IProps) {
 	return (
 		<div className="w-full">
 			<div className="rounded-md border">
-				<Table>
+				<Table className="relative overflow-y-auto">
 					<TableHeader>
 						{table.getHeaderGroups().map((headerGroup) => (
 							<TableRow key={headerGroup.id}>
@@ -96,14 +97,20 @@ export function TableDetails(props: IProps) {
 										row.getIsSelected() && "selected"
 									}
 								>
-									{row.getVisibleCells().map((cell) => (
-										<TableCell key={cell.id}>
-											{flexRender(
-												cell.column.columnDef.cell,
-												cell.getContext()
-											)}
-										</TableCell>
-									))}
+									{row.getVisibleCells().map((cell) => {
+										return loading ? (
+											<TableCell key={cell.id}>
+												<Skeleton className="h-[15px] w-full rounded bg-gray-200" />
+											</TableCell>
+										) : (
+											<TableCell key={cell.id}>
+												{flexRender(
+													cell.column.columnDef.cell,
+													cell.getContext()
+												)}
+											</TableCell>
+										);
+									})}
 								</TableRow>
 							))
 						) : (

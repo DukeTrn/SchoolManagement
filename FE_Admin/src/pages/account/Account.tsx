@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { TableDetails } from "@/components/table/Table";
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Cat, Dog, Fish, Rabbit, Turtle } from "lucide-react";
 
 export type IAccount = {
 	id: string;
@@ -48,7 +49,7 @@ export const columns: ColumnDef<IAccount>[] = [
 	},
 	{
 		accessorKey: "status",
-		header: "Status",
+		header: "Tài khoản",
 		cell: ({ row }) => (
 			<div className="capitalize">{row.getValue("status")}</div>
 		),
@@ -56,7 +57,7 @@ export const columns: ColumnDef<IAccount>[] = [
 	{
 		accessorKey: "email",
 		header: () => {
-			return <div>Email</div>;
+			return <div>Họ tên</div>;
 		},
 		cell: ({ row }) => (
 			<div className="lowercase">{row.getValue("email")}</div>
@@ -65,7 +66,7 @@ export const columns: ColumnDef<IAccount>[] = [
 	{
 		accessorKey: "email1",
 		header: () => {
-			return <div>Email</div>;
+			return <div>Chức vụ</div>;
 		},
 		cell: ({ row }) => (
 			<div className="lowercase">{row.getValue("email")}</div>
@@ -73,36 +74,24 @@ export const columns: ColumnDef<IAccount>[] = [
 	},
 	{
 		accessorKey: "email2",
-		header: () => {
-			return <div>Email</div>;
-		},
+		header: "Email",
 		cell: ({ row }) => (
 			<div className="lowercase">{row.getValue("email")}</div>
 		),
 	},
 	{
 		accessorKey: "email3",
-		header: () => {
-			return <div>Email</div>;
-		},
+		header: "Ngày tạo",
 		cell: ({ row }) => (
 			<div className="lowercase">{row.getValue("email")}</div>
 		),
 	},
 	{
 		accessorKey: "amount",
-		header: () => <div>Amount</div>,
-		cell: ({ row }) => {
-			const amount = parseFloat(row.getValue("amount"));
-
-			// Format the amount as a dollar amount
-			const formatted = new Intl.NumberFormat("en-US", {
-				style: "currency",
-				currency: "USD",
-			}).format(amount);
-
-			return <div className="font-medium">{formatted}</div>;
-		},
+		header: "Ngày cập nhập",
+		cell: ({ row }) => (
+			<div className="lowercase">{row.getValue("amount")}</div>
+		),
 	},
 ];
 const data: IAccount[] = [
@@ -142,12 +131,11 @@ const Account = () => {
 	const [searchValue, setSearchValue] = useState("");
 	const [position, setPosition] = useState("");
 	const [selectedRows, setSelectedRows] = useState<IAccount[]>([]);
+	const [selectedFrameworks, setSelectedFrameworks] = useState<string[]>([]);
 
 	const handleChange = (value: IAccount[]) => {
 		setSelectedRows(value);
 	};
-
-	console.log("selectedRows", selectedRows);
 
 	return (
 		<>
@@ -180,7 +168,7 @@ const Account = () => {
 				</div>
 			</div>
 			<div className="mb-5 flex justify-between">
-				<div className="flex justify-between gap-5">
+				<div className="flex justify-between gap-2">
 					<Button variant="outline">Kích hoạt</Button>
 					<Button variant="outline">Ngừng hoạt động</Button>
 					<Button variant="outline">Xóa</Button>
@@ -194,6 +182,7 @@ const Account = () => {
 					data={data}
 					columns={columns}
 					onChange={handleChange}
+					loading={true}
 				/>
 			</div>
 		</>
