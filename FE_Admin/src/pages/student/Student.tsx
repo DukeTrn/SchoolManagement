@@ -7,22 +7,14 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { MultiSelect } from "@/components/multiselect/MultiSelect";
 import { StudentDetail } from "./StudentDetails";
+import { IStudent } from "@/types/student.type";
+import { Panel } from "./Create";
 
 const statusList = [
 	{ value: "0", label: "Đang học" },
 	{ value: "1", label: "Đình chỉ" },
 	{ value: "2", label: "Nghỉ  học" },
 ];
-
-export type IStudent = {
-	studentId: string;
-	fullName: string;
-	dob: string;
-	gender: string;
-	phoneNumber: string;
-	email?: string;
-	status: string;
-};
 
 export const columns: ColumnDef<IStudent>[] = [
 	{
@@ -126,7 +118,8 @@ const Student = () => {
 	const [selectedRows, setSelectedRows] = useState<IStudent[]>([]);
 	const [selectedFrameworks, setSelectedFrameworks] = useState<string[]>([]);
 
-	const isDisableButton = selectedRows?.length > 1;
+	const isDisableButton =
+		selectedRows?.length > 1 || selectedRows?.length === 0;
 	const handleChange = (value: IStudent[]) => {
 		setSelectedRows(value);
 	};
@@ -157,16 +150,16 @@ const Student = () => {
 			</div>
 			<div className="mb-5 flex justify-between">
 				<div className="flex justify-between gap-2">
-					<Button variant="outline">Thêm</Button>
-					<Button variant="outline" disabled={isDisableButton}>
-						Cập nhật
-					</Button>
-					<Button variant="outline" disabled={isDisableButton}>
-						Xóa
-					</Button>
+					<Panel type="create" disable={false} />
+					<Panel
+						type="edit"
+						disable={isDisableButton}
+						selectedStudent={selectedRows?.[0]}
+					/>
+					<Button disabled={isDisableButton}>Xóa</Button>
 				</div>
 				<div>
-					<Button variant="outline">Xuất file</Button>
+					<Button className="min-w-[100px]">Xuất file</Button>
 				</div>
 			</div>
 			<div>

@@ -169,12 +169,12 @@ const Account = () => {
 			</div>
 			<div className="mb-5 flex justify-between">
 				<div className="flex justify-between gap-2">
-					<Button variant="outline">Kích hoạt</Button>
-					<Button variant="outline">Ngừng hoạt động</Button>
-					<Button variant="outline">Xóa</Button>
+					<Button>Kích hoạt</Button>
+					<Button>Ngừng hoạt động</Button>
+					<Button>Xóa</Button>
 				</div>
 				<div>
-					<Button variant="outline">Xuất file</Button>
+					<Button>Xuất file</Button>
 				</div>
 			</div>
 			<div>

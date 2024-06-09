@@ -58,3 +58,10 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  .required:after {
+    content:" *";
+    color: #E11D48;
+  }
+}

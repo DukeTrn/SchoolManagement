@@ -28,9 +28,10 @@ interface IProps {
 	columns: ColumnDef<any>[];
 	data: any;
 	loading: boolean;
+	useRadio?: boolean;
 }
 export function TableDetails(props: IProps) {
-	const { onChange, columns, data, loading } = props;
+	const { onChange, columns, data, loading, useRadio = false } = props;
 	const [sorting, setSorting] = React.useState<SortingState>([]);
 	const [columnFilters, setColumnFilters] =
 		React.useState<ColumnFiltersState>([]);
@@ -49,6 +50,8 @@ export function TableDetails(props: IProps) {
 		getFilteredRowModel: getFilteredRowModel(),
 		onColumnVisibilityChange: setColumnVisibility,
 		onRowSelectionChange: setRowSelection,
+		enableMultiRowSelection: !useRadio,
+		enableSubRowSelection: !useRadio,
 		state: {
 			sorting,
 			columnFilters,
