@@ -12,11 +12,12 @@ import classNames from "classnames";
 const RANGE = 1;
 interface IPaginationProps {
 	pageSize: number;
+	totalPageCount: number;
 	onChangePage?: (value: string) => void;
 	onChangeRow?: (value: string) => void;
 }
 const Pagination = (props: IPaginationProps) => {
-	const { pageSize, onChangePage, onChangeRow } = props;
+	const { totalPageCount, onChangePage, onChangeRow, pageSize } = props;
 	const [currentPage, setCurrentPage] = useState<number>(1);
 
 	const renderPagination = () => {
@@ -31,7 +32,7 @@ const Pagination = (props: IPaginationProps) => {
 				return (
 					<span
 						key={uuidv4()}
-						className="mx-2 cursor-pointer rounded border bg-white px-3 py-2 shadow-sm"
+						className="mx-2 cursor-pointer rounded border bg-white px-3 py-2 text-sm shadow-sm"
 					>
 						...
 					</span>
@@ -47,7 +48,7 @@ const Pagination = (props: IPaginationProps) => {
 				return (
 					<span
 						key={uuidv4()}
-						className="mx-2 cursor-pointer rounded border bg-white px-3 py-2 shadow-sm"
+						className="mx-2 cursor-pointer rounded border bg-white px-3 py-2 text-sm shadow-sm"
 					>
 						...
 					</span>
@@ -55,19 +56,19 @@ const Pagination = (props: IPaginationProps) => {
 			}
 			return null;
 		};
-		return Array(pageSize)
+		return Array(totalPageCount)
 			.fill(0)
 			.map((_, index) => {
 				const pageNumber = index + 1;
 				if (
 					currentPage <= RANGE * 2 + 1 &&
 					pageNumber > currentPage + RANGE &&
-					pageNumber <= pageSize - RANGE
+					pageNumber <= totalPageCount - RANGE
 				) {
 					return onRenderDotAfter();
 				} else if (
 					currentPage > RANGE * 2 + 1 &&
-					currentPage < pageSize - RANGE * 2
+					currentPage < totalPageCount - RANGE * 2
 				) {
 					if (
 						pageNumber < currentPage - RANGE &&
@@ -76,14 +77,14 @@ const Pagination = (props: IPaginationProps) => {
 						return onRenderDotBefore();
 					} else if (
 						pageNumber > currentPage + RANGE &&
-						pageNumber <= pageSize - RANGE
+						pageNumber <= totalPageCount - RANGE
 					) {
 						return onRenderDotAfter();
 					}
 				} else if (
 					pageNumber < currentPage - RANGE &&
 					pageNumber > RANGE &&
-					currentPage >= pageSize - RANGE * 2
+					currentPage >= totalPageCount - RANGE * 2
 				) {
 					return onRenderDotBefore();
 				}
@@ -91,9 +92,9 @@ const Pagination = (props: IPaginationProps) => {
 					<button
 						key={uuidv4()}
 						className={classNames(
-							"mx-2 h-[40px] w-[40px] cursor-pointer rounded border bg-white/60 px-2 py-2 shadow-sm",
+							"mx-2 h-[40px] w-[40px] cursor-pointer rounded border px-2 py-2 text-sm shadow-sm",
 							{
-								"bg-[#E11D47] text-white":
+								"bg-[#E11D48] text-white":
 									pageNumber === currentPage,
 								"": pageNumber !== currentPage,
 							}
@@ -117,7 +118,7 @@ const Pagination = (props: IPaginationProps) => {
 						onChangeRow && onChangeRow(value);
 					}}
 				>
-					<SelectTrigger className="h-10 w-[150px]">
+					<SelectTrigger className="h-10 w-[100px]">
 						<SelectValue />
 					</SelectTrigger>
 					<SelectContent side="top">
@@ -130,7 +131,7 @@ const Pagination = (props: IPaginationProps) => {
 				</Select>
 				<div>
 					{currentPage === 1 ? (
-						<button className="mx-2 cursor-not-allowed rounded border bg-white/60 px-3 py-2 shadow-sm">
+						<button className="mx-2 cursor-not-allowed rounded border bg-white/60 px-3 py-2 text-sm shadow-sm">
 							Prev
 						</button>
 					) : (
@@ -142,7 +143,7 @@ const Pagination = (props: IPaginationProps) => {
 									(currentPage) => currentPage - 1
 								);
 							}}
-							className="mx-2 cursor-pointer rounded border bg-white px-3 py-2 shadow-sm "
+							className="mx-2 cursor-pointer rounded border bg-white px-3 py-2 text-sm shadow-sm"
 						>
 							Prev
 						</button>
@@ -150,8 +151,8 @@ const Pagination = (props: IPaginationProps) => {
 
 					{renderPagination()}
 
-					{currentPage === pageSize ? (
-						<button className="mx-2 cursor-not-allowed rounded border bg-white px-3 py-2 shadow-sm">
+					{currentPage === totalPageCount ? (
+						<button className="mx-2 cursor-not-allowed rounded border bg-white px-3 py-2 text-sm shadow-sm">
 							Next
 						</button>
 					) : (
@@ -163,7 +164,7 @@ const Pagination = (props: IPaginationProps) => {
 									(currentPage) => currentPage + 1
 								);
 							}}
-							className="mx-2 cursor-pointer rounded border bg-white px-3 py-2 shadow-sm"
+							className="mx-2 cursor-pointer rounded border bg-white px-3 py-2 text-sm shadow-sm"
 						>
 							Next
 						</button>

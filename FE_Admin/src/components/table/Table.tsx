@@ -83,6 +83,10 @@ export function TableDetails(props: IProps) {
 		table.setPageSize(data?.length);
 	}, [data?.length]);
 
+	useEffect(() => {
+		table.resetRowSelection();
+	}, [loading]);
+
 	return (
 		<div className="w-full">
 			<div className="rounded-md border">

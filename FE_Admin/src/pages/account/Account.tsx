@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -7,22 +7,21 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { MultiSelect } from "@/components/multiselect/MultiSelect";
 import Pagination from "@/components/pagination";
+import { IAccount } from "@/types/account.type";
+import {
+	activeAccount,
+	deleteAccount,
+	getAllAccount,
+} from "@/apis/account.api";
+import { useToast } from "@/components/ui/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 
 const roles = [
-	{ value: "0", label: "Học sinh" },
-	{ value: "1", label: "Giáo viên" },
-	{ value: "2", label: "Quản trị" },
+	{ value: "1", label: "Admin" },
+	{ value: "2", label: "Giáo viên chủ nhiệm" },
+	{ value: "3", label: "Giáo viên" },
+	{ value: "4", label: "Học sinh" },
 ];
-export type IAccount = {
-	accountId?: string;
-	userName: string;
-	fullName: string;
-	password?: string;
-	createdAt: string;
-	modifiedAt?: string;
-	isActive?: boolean;
-	role: string;
-};
 
 export const columns: ColumnDef<IAccount>[] = [
 	{
@@ -81,72 +80,85 @@ export const columns: ColumnDef<IAccount>[] = [
 	{
 		accessorKey: "isActive",
 		header: "Tình trạng hoạt động",
-		cell: ({ row }) => <div className="lowercase">{}</div>,
-	},
-];
-let data: IAccount[] = [
-	{
-		userName: "m5gr84i9",
-		fullName: "Le Vu Bao Trung",
-		role: "Hoc sinh",
-		createdAt: "01/01/2020",
-		modifiedAt: "01/01/2020",
-	},
-	{
-		userName: "m5gr384i9",
-		fullName: "Le Vu Bao Trung",
-		role: "Hoc sinh",
-		createdAt: "01/01/2020",
-		modifiedAt: "01/01/2020",
-	},
-	{
-		userName: "m5gr284i9",
-		fullName: "Le Vu Bao Trung",
-		role: "Hoc sinh",
-		createdAt: "01/01/2020",
-		modifiedAt: "01/01/2020",
-	},
-	{
-		userName: "m5gr584i9",
-		fullName: "Le Vu Bao Trung",
-		role: "Hoc sinh",
-		createdAt: "01/01/2020",
-		modifiedAt: "01/01/2020",
-	},
-	{
-		userName: "m5gr584i9",
-		fullName: "Le Vu Bao Trung",
-		role: "Hoc sinh",
-		createdAt: "01/01/2020",
-		modifiedAt: "01/01/2020",
-	},
-	{
-		userName: "m5gr584i9",
-		fullName: "Le Vu Bao Trung",
-		role: "Hoc sinh",
-		createdAt: "01/01/2020",
-		modifiedAt: "01/01/2020",
-	},
-	{
-		userName: "m5gr584i9",
-		fullName: "Le Vu Bao Trung",
-		role: "Hoc sinh",
-		createdAt: "01/01/2020",
-		modifiedAt: "01/01/2020",
+		cell: ({ row }) => (
+			<div>
+				{row.getValue("isActive")
+					? "Đang hoạt động"
+					: "Ngừng hoạt động"}
+			</div>
+		),
 	},
 ];
 
 const Account = () => {
+	const { toast } = useToast();
+	const [loading, setLoading] = useState<boolean>(false);
+	const [accounts, setAccounts] = useState<IAccount[]>([]);
 	const [searchValue, setSearchValue] = useState("");
 	const [position, setPosition] = useState("");
 	const [selectedRows, setSelectedRows] = useState<IAccount[]>([]);
 	const [selectedFields, setSelectedFields] = useState<string[]>([]);
 	const [pageSize, setPageSize] = useState<number>(10);
 	const [pageNumber, setPageNumber] = useState<number>(1);
+	const [totalPage, setTotalPage] = useState<number>(1);
+	const isDisableButton =
+		selectedRows?.length <= 0 || selectedRows?.length > 1;
+
+	useEffect(() => {
+		handleGetData();
+	}, [pageNumber, pageSize, searchValue]);
+
+	const handleGetData = () => {
+		setLoading(true);
+		getAllAccount({
+			searchValue: searchValue,
+			pageSize: pageSize,
+			pageNumber: pageNumber,
+			roles: selectedFields?.map((i) => Number(i)),
+		}).then((res) => {
+			setLoading(false);
+			setTotalPage(res?.data?.totalPageCount);
+			setAccounts(res?.data?.dataList);
+		});
+	};
+
+	const refreshData = (message: string) => {
+		setSelectedRows([]);
+		handleGetData();
+		toast({
+			title: "Thông báo:",
+			description: message,
+			action: (
+				<ToastAction
+					altText="Success"
+					className="bg-green-600 text-white"
+				>
+					Success
+				</ToastAction>
+			),
+		});
+	};
+
+	const handleActive = (isActive: boolean) => {
+		activeAccount({
+			accountId: selectedRows?.[0].accountId,
+			isActive: isActive,
+		}).then((res) => {
+			refreshData(res?.data?.message);
+		});
+	};
+
+	const handleDelete = () => {
+		deleteAccount(selectedRows[0]?.accountId as string).then((res) => {
+			refreshData(res?.data?.message);
+		});
+	};
 
 	const handleChange = (value: IAccount[]) => {
 		setSelectedRows(value);
 	};
+
+	console.log(selectedFields);
 
 	return (
 		<>
@@ -164,8 +176,9 @@ const Account = () => {
 				<MultiSelect
 					options={roles}
 					onValueChange={setSelectedFields}
+					handleRetrive={handleGetData}
 					defaultValue={selectedFields}
-					placeholder="Tình trạng học tập"
+					placeholder="Chức vụ"
 					variant="inverted"
 					animation={2}
 					maxCount={0}
@@ -174,9 +187,23 @@ const Account = () => {
 			</div>
 			<div className="mb-5 flex justify-between">
 				<div className="flex justify-between gap-2">
-					<Button>Kích hoạt</Button>
-					<Button>Ngừng hoạt động</Button>
-					<Button>Xóa</Button>
+					<Button
+						onClick={() => handleActive(true)}
+						disabled={isDisableButton || selectedRows?.[0].isActive}
+					>
+						Kích hoạt
+					</Button>
+					<Button
+						onClick={() => handleActive(false)}
+						disabled={
+							isDisableButton || !selectedRows?.[0].isActive
+						}
+					>
+						Ngừng hoạt động
+					</Button>
+					<Button disabled={isDisableButton} onClick={handleDelete}>
+						Xóa
+					</Button>
 				</div>
 				<div>
 					<Button>Xuất file</Button>
@@ -184,15 +211,16 @@ const Account = () => {
 			</div>
 			<div>
 				<TableDetails
-					data={data}
+					data={accounts}
 					columns={columns}
 					onChange={handleChange}
-					// loading={true}
+					loading={loading}
 				/>
 				<Pagination
 					pageSize={pageSize}
 					onChangePage={(value) => setPageNumber(Number(value))}
 					onChangeRow={(value) => setPageSize(Number(value))}
+					totalPageCount={totalPage}
 				/>
 			</div>
 		</>

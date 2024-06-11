@@ -214,12 +214,18 @@ export const MultiSelect = React.forwardRef<
 										</Badge>
 									)}
 								</div>
-								<div className="flex items-center justify-between">
+								{/* <div className="flex items-center justify-between">
 									<XIcon
 										className="mx-2 h-4 cursor-pointer text-muted-foreground"
 										onClick={(event) => {
 											event.stopPropagation();
-											handleClear();
+											Promise.resolve()
+												.then(() => handleClear())
+												.then(
+													() =>
+														handleRetrive &&
+														handleRetrive()
+												);
 										}}
 									/>
 									<Separator
@@ -227,7 +233,7 @@ export const MultiSelect = React.forwardRef<
 										className="flex h-full min-h-6"
 									/>
 									<ChevronDown className="mx-2 h-4 cursor-pointer text-muted-foreground" />
-								</div>
+								</div> */}
 							</div>
 						) : (
 							<div className="mx-auto flex w-full items-center justify-between">
@@ -289,7 +295,7 @@ export const MultiSelect = React.forwardRef<
 							<CommandSeparator />
 							<CommandGroup>
 								<div className="flex items-center justify-between">
-									{selectedValues.length > 0 && (
+									{/* {selectedValues.length > 0 && (
 										<>
 											<CommandItem
 												onSelect={handleClear}
@@ -307,7 +313,7 @@ export const MultiSelect = React.forwardRef<
 											/>
 										</>
 									)}
-									<CommandSeparator />
+									<CommandSeparator /> */}
 									<CommandItem
 										onSelect={() => {
 											setIsPopoverOpen(false);
