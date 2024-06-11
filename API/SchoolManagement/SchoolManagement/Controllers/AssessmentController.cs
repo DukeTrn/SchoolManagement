@@ -65,6 +65,10 @@ namespace SchoolManagement.Web.Controllers
                     messageType = 0
                 });
             }
+            catch (NotFoundException)
+            {
+                return StatusCode(200, new { result = false, messageType = MessageType.Error, message = $"Không tìm thấy mã lớp học {classId} hoặc khối {grade}" });
+            }
             catch (Exception ex)
             {
                 return StatusCode(200, new { result = false, messageType = MessageType.Error, message = ex });
