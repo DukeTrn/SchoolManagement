@@ -28,6 +28,7 @@
 		"@types/uuid": "^9.0.8",
 		"axios": "^1.4.0",
 		"class-variance-authority": "^0.7.0",
+		"classnames": "^2.5.1",
 		"clsx": "^2.1.0",
 		"cmdk": "^1.0.0",
 		"date-fns": "^3.6.0",

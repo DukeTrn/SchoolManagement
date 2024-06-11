@@ -4,6 +4,8 @@ import Home from "@/pages/home";
 import { Navigate, useRoutes } from "react-router-dom";
 import Account from "@/pages/account";
 import Student from "@/pages/student";
+import Department from "@/pages/department";
+import DepartmentDetail from "@/pages/department/details/DepartmentDetail";
 
 const useRouteElement = () => {
 	const routeElement = useRoutes([
@@ -33,6 +35,22 @@ const useRouteElement = () => {
 			element: (
 				<MainLayout>
 					<Student />
+				</MainLayout>
+			),
+		},
+		{
+			path: path.department,
+			element: (
+				<MainLayout>
+					<Department />
+				</MainLayout>
+			),
+		},
+		{
+			path: path.departmentDetails,
+			element: (
+				<MainLayout>
+					<DepartmentDetail />
 				</MainLayout>
 			),
 		},

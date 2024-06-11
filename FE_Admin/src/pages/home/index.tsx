@@ -6,8 +6,9 @@ export default function Home() {
 	const currrentLanguage = i18n.language;
 	return (
 		<div>
-			<Button>Click me</Button>
-			<span>{t("TEST")}</span>
+			<div className="text-3xl font-semibold uppercase">
+				Chào mừng bạn đến với trang quản lý đào tạo
+			</div>
 		</div>
 	);
 }

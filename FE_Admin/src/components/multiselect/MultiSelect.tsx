@@ -58,7 +58,7 @@ interface MultiSelectProps
 		icon?: React.ComponentType<{ className?: string }>;
 	}[];
 	onValueChange: (value: string[]) => void;
-	defaultValue: string[];
+	defaultValue?: string[];
 	placeholder?: string;
 	animation?: number;
 	maxCount?: number;

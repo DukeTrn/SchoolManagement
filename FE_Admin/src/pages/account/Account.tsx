@@ -1,25 +1,27 @@
 import { useState } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { TableDetails } from "@/components/table/Table";
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Cat, Dog, Fish, Rabbit, Turtle } from "lucide-react";
+import { MultiSelect } from "@/components/multiselect/MultiSelect";
+import Pagination from "@/components/pagination";
 
+const roles = [
+	{ value: "0", label: "Học sinh" },
+	{ value: "1", label: "Giáo viên" },
+	{ value: "2", label: "Quản trị" },
+];
 export type IAccount = {
-	id: string;
-	amount: number;
-	status: "pending" | "processing" | "success" | "failed";
-	email: string;
-	size?: number;
+	accountId?: string;
+	userName: string;
+	fullName: string;
+	password?: string;
+	createdAt: string;
+	modifiedAt?: string;
+	isActive?: boolean;
+	role: string;
 };
 
 export const columns: ColumnDef<IAccount>[] = [
@@ -48,82 +50,89 @@ export const columns: ColumnDef<IAccount>[] = [
 		enableHiding: false,
 	},
 	{
-		accessorKey: "status",
+		accessorKey: "userName",
 		header: "Tài khoản",
-		cell: ({ row }) => (
-			<div className="capitalize">{row.getValue("status")}</div>
-		),
+		cell: ({ row }) => <div>{row.getValue("userName")}</div>,
 	},
 	{
-		accessorKey: "email",
+		accessorKey: "fullName",
 		header: () => {
 			return <div>Họ tên</div>;
 		},
-		cell: ({ row }) => (
-			<div className="lowercase">{row.getValue("email")}</div>
-		),
+		cell: ({ row }) => <div>{row.getValue("fullName")}</div>,
 	},
 	{
-		accessorKey: "email1",
+		accessorKey: "role",
 		header: () => {
 			return <div>Chức vụ</div>;
 		},
-		cell: ({ row }) => (
-			<div className="lowercase">{row.getValue("email")}</div>
-		),
+		cell: ({ row }) => <div>{row.getValue("role")}</div>,
 	},
 	{
-		accessorKey: "email2",
-		header: "Email",
-		cell: ({ row }) => (
-			<div className="lowercase">{row.getValue("email")}</div>
-		),
-	},
-	{
-		accessorKey: "email3",
+		accessorKey: "createdAt",
 		header: "Ngày tạo",
-		cell: ({ row }) => (
-			<div className="lowercase">{row.getValue("email")}</div>
-		),
+		cell: ({ row }) => <div>{row.getValue("createdAt")}</div>,
 	},
 	{
-		accessorKey: "amount",
-		header: "Ngày cập nhập",
-		cell: ({ row }) => (
-			<div className="lowercase">{row.getValue("amount")}</div>
-		),
+		accessorKey: "modifiedAt",
+		header: "Ngày cập nhật",
+		cell: ({ row }) => <div>{row.getValue("modifiedAt")}</div>,
+	},
+	{
+		accessorKey: "isActive",
+		header: "Tình trạng hoạt động",
+		cell: ({ row }) => <div className="lowercase">{}</div>,
 	},
 ];
-const data: IAccount[] = [
+let data: IAccount[] = [
 	{
-		id: "m5gr84i9",
-		amount: 316,
-		status: "success",
-		email: "ken99@yahoo.com",
+		userName: "m5gr84i9",
+		fullName: "Le Vu Bao Trung",
+		role: "Hoc sinh",
+		createdAt: "01/01/2020",
+		modifiedAt: "01/01/2020",
 	},
 	{
-		id: "3u1reuv4",
-		amount: 242,
-		status: "success",
-		email: "Abe45@gmail.com",
+		userName: "m5gr384i9",
+		fullName: "Le Vu Bao Trung",
+		role: "Hoc sinh",
+		createdAt: "01/01/2020",
+		modifiedAt: "01/01/2020",
 	},
 	{
-		id: "derv1ws0",
-		amount: 837,
-		status: "processing",
-		email: "Monserrat44@gmail.com",
+		userName: "m5gr284i9",
+		fullName: "Le Vu Bao Trung",
+		role: "Hoc sinh",
+		createdAt: "01/01/2020",
+		modifiedAt: "01/01/2020",
 	},
 	{
-		id: "5kma53ae",
-		amount: 874,
-		status: "success",
-		email: "Silas22@gmail.com",
+		userName: "m5gr584i9",
+		fullName: "Le Vu Bao Trung",
+		role: "Hoc sinh",
+		createdAt: "01/01/2020",
+		modifiedAt: "01/01/2020",
 	},
 	{
-		id: "bhqecj4p",
-		amount: 721,
-		status: "failed",
-		email: "carmella@hotmail.com",
+		userName: "m5gr584i9",
+		fullName: "Le Vu Bao Trung",
+		role: "Hoc sinh",
+		createdAt: "01/01/2020",
+		modifiedAt: "01/01/2020",
+	},
+	{
+		userName: "m5gr584i9",
+		fullName: "Le Vu Bao Trung",
+		role: "Hoc sinh",
+		createdAt: "01/01/2020",
+		modifiedAt: "01/01/2020",
+	},
+	{
+		userName: "m5gr584i9",
+		fullName: "Le Vu Bao Trung",
+		role: "Hoc sinh",
+		createdAt: "01/01/2020",
+		modifiedAt: "01/01/2020",
 	},
 ];
 
@@ -131,7 +140,9 @@ const Account = () => {
 	const [searchValue, setSearchValue] = useState("");
 	const [position, setPosition] = useState("");
 	const [selectedRows, setSelectedRows] = useState<IAccount[]>([]);
-	const [selectedFrameworks, setSelectedFrameworks] = useState<string[]>([]);
+	const [selectedFields, setSelectedFields] = useState<string[]>([]);
+	const [pageSize, setPageSize] = useState<number>(10);
+	const [pageNumber, setPageNumber] = useState<number>(1);
 
 	const handleChange = (value: IAccount[]) => {
 		setSelectedRows(value);
@@ -150,22 +161,16 @@ const Account = () => {
 						onChange={(e) => setSearchValue(e.target?.value)}
 					/>
 				</div>
-				<div className="min-w-[200px]">
-					<Select
-						onValueChange={(value) => setPosition(value)}
-						defaultValue=""
-					>
-						<SelectTrigger>
-							<SelectValue placeholder="Chức vụ" />
-						</SelectTrigger>
-
-						<SelectContent>
-							<SelectItem value="hs">Học sinh</SelectItem>
-							<SelectItem value="gv">Giáo viên</SelectItem>
-							<SelectItem value="admin">Quản trị viên</SelectItem>
-						</SelectContent>
-					</Select>
-				</div>
+				<MultiSelect
+					options={roles}
+					onValueChange={setSelectedFields}
+					defaultValue={selectedFields}
+					placeholder="Tình trạng học tập"
+					variant="inverted"
+					animation={2}
+					maxCount={0}
+					width={230}
+				/>
 			</div>
 			<div className="mb-5 flex justify-between">
 				<div className="flex justify-between gap-2">
@@ -182,7 +187,12 @@ const Account = () => {
 					data={data}
 					columns={columns}
 					onChange={handleChange}
-					loading={true}
+					// loading={true}
+				/>
+				<Pagination
+					pageSize={pageSize}
+					onChangePage={(value) => setPageNumber(Number(value))}
+					onChangeRow={(value) => setPageSize(Number(value))}
 				/>
 			</div>
 		</>
