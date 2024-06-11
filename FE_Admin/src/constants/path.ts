@@ -1,5 +1,7 @@
 const path = {
-  home: '/'
-} as const
+	home: "/",
+	account: "/account",
+	student: "/student",
+} as const;
 
-export default path
+export default path;
