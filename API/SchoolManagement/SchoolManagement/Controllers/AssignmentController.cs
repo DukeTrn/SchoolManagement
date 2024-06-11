@@ -66,14 +66,14 @@ namespace SchoolManagement.Web.Controllers
         /// Update assignment (chuyển lớp cho giáo viên)
         /// </summary>
         /// <param name="assignmentId"></param>
-        /// <param name="teacherId"></param>
+        /// <param name="classId"></param>
         /// <returns></returns>
         [HttpPut, Route("update/{assignmentId}")]
-        public async Task<IActionResult> UpdateAssignment(Guid assignmentId, string teacherId)
+        public async Task<IActionResult> UpdateAssignment(Guid assignmentId, string classId)
         {
             try
             {
-                await _service.UpdateAssignment(assignmentId, teacherId);
+                await _service.UpdateAssignment(assignmentId, classId);
                 return Ok(new { result = true, messageType = 0 });
             }
             catch (KeyNotFoundException)

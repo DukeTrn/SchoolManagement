@@ -6,7 +6,7 @@ namespace SchoolManagement.Service.Intention
     {
         ValueTask<IEnumerable<AssignmentDisplayModel>> GetListAssignments(int grade, string semesterId, int subjectId, AssignmentQueryModel queryModel);
         ValueTask CreateAssignment(AssignmentAddModel model);
-        ValueTask UpdateAssignment(Guid assignmentId, string teacherId);
+        ValueTask UpdateAssignment(Guid assignmentId, string classId);
         ValueTask DeleteAssignment(Guid assignmentId);
     }
 }

@@ -69,6 +69,7 @@ namespace SchoolManagement.Service
                     TeacherName = a.Teacher.FullName,
                     Email = a.Teacher.Email,
                     PhoneNumber = a.Teacher.PhoneNumber,
+                    ClassId = a.ClassId,
                     ClassName = a.Class.ClassName,
                     SemesterName = a.Semester.SemesterName, // Assuming there is a SemesterName property in SemesterEntity
                     AcademicYear = a.Class.AcademicYear
@@ -166,7 +167,7 @@ namespace SchoolManagement.Service
         /// <param name="teacherId"></param>
         /// <returns></returns>
         /// <exception cref="KeyNotFoundException"></exception>
-        public async ValueTask UpdateAssignment(Guid assignmentId, string teacherId)
+        public async ValueTask UpdateAssignment(Guid assignmentId, string classId)
         {
             try
             {
@@ -181,17 +182,17 @@ namespace SchoolManagement.Service
                     throw new KeyNotFoundException("Assignment not found.");
                 }
 
-                // Kiểm tra xem giáo viên mới có tồn tại không
-                var newTeacher = await _context.TeacherEntities.FindAsync(teacherId);
+                // Kiểm tra xem lớp mới có tồn tại không
+                var newTeacher = await _context.ClassEntities.FindAsync(classId);
 
                 if (newTeacher == null)
                 {
-                    _logger.LogWarning("New teacher not found.");
-                    throw new KeyNotFoundException("New teacher not found.");
+                    _logger.LogWarning("New class not found.");
+                    throw new KeyNotFoundException("New class not found.");
                 }
 
                 // Cập nhật giáo viên cho phân công giảng dạy
-                assignment.TeacherId = teacherId;
+                assignment.ClassId = classId;
 
                 // Lưu thay đổi vào cơ sở dữ liệu
                 await _context.SaveChangesAsync();

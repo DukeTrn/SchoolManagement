@@ -79,7 +79,7 @@ namespace SchoolManagement.Service
         }
 
         /// <summary>
-        /// Get list subjects and scores of 1 student in 1 class in 1 semester
+        /// Get list subjects and scores of 1 student in 1 class in 1 semester (sẽ gộp cả điểm và trung bình môn vào 1 bảng)
         /// </summary>
         /// <param name="grade"></param>
         /// <param name="semesterId"></param>
