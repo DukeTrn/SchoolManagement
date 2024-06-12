@@ -20,7 +20,7 @@ namespace SchoolManagement.Service
         }
 
         /// <summary>
-        /// Get list students in assessment (Currently semesterId in param are redundant) (2nd page)
+        /// Get list students in assessment (Currently semesterId in param are redundant => done) (2nd page)
         /// </summary>
         /// <param name="grade"></param>
         /// <param name="semesterId"></param>
@@ -42,19 +42,24 @@ namespace SchoolManagement.Service
                 }
 
                 // Lấy danh sách học sinh trong lớp và học kỳ cụ thể
-                var studentQuery = from cd in _context.ClassDetailEntities
-                                   join s in _context.StudentEntities on cd.StudentId equals s.StudentId
-                                   join c in _context.ClassEntities on cd.ClassId equals c.ClassId
-                                   where cd.ClassId == classId && c.Grade == grade
-                                   select new AssessmentDetailModel
-                                   {
-                                       ClassDetailId = cd.ClassDetailId,
-                                       StudentId = s.StudentId,
-                                       FullName = s.FullName,
-                                       ClassName = c.ClassName,
-                                       Grade = c.Grade,
-                                       AcademicYear = c.AcademicYear,
-                                   };
+                var studentQuery = _context.ClassDetailEntities
+                    .Include(cd => cd.Class)
+                    .ThenInclude(c => c.HomeroomTeacher)
+                    .Include(cd => cd.Student)
+                    .Include(cd => cd.Class.SemClassIds)
+                        .ThenInclude(sc => sc.Semester)
+                    .Where(cd => cd.Class.Grade == grade
+                              && cd.Class.ClassId == classId
+                              && cd.Class.SemClassIds.Any(sc => sc.SemesterId == semesterId))
+                    .Select(cd => new AssessmentDetailModel
+                    {
+                        ClassDetailId = cd.ClassDetailId,
+                        StudentId = cd.Student.StudentId,
+                        FullName = cd.Student.FullName,
+                        ClassName = cd.Class.ClassName,
+                        Grade = cd.Class.Grade,
+                        AcademicYear = cd.Class.AcademicYear,
+                    });
 
                 var totalStudents = await studentQuery.CountAsync();
 
@@ -90,14 +95,15 @@ namespace SchoolManagement.Service
         {
             try
             {
+                _logger.LogInformation("Start to get list of subjects and scores.");
+
                 // Truy vấn tất cả các môn học trong khối
                 var subjects = await _context.SubjectEntities.Where(c => c.Grade == grade).ToListAsync();
 
-                // Bắt lỗi nếu không tìm thấy
+                // Bắt lỗi nếu không tìm thấy ClassDetailId hoặc SemesterId
                 var classDetailExist = await _context.ClassDetailEntities.AnyAsync(s => s.ClassDetailId == classDetailId);
                 if (!classDetailExist)
                 {
-                    //return Enumerable.Empty<AssessmentScoreDisplayModel>();
                     var errorMsg = $"Không tìm thấy Class Detail ID {classDetailId} này!";
                     _logger.LogWarning(errorMsg);
                     throw new NotFoundException(errorMsg);
@@ -111,8 +117,7 @@ namespace SchoolManagement.Service
                     throw new NotFoundException(errorMsg);
                 }
 
-
-                // Truy vấn tất cả các đánh giá có liên quan đến grade và semesterId
+                // Truy vấn tất cả các đánh giá có liên quan đến grade, semesterId và classDetailId
                 var assessments = await _context.AssessmentEntities
                     .Where(a => a.ClassDetail.Class.Grade == grade && a.SemesterId == semesterId && a.ClassDetailId == classDetailId)
                     .Include(a => a.Subject)
@@ -125,33 +130,54 @@ namespace SchoolManagement.Service
                     .GroupBy(a => a.SubjectId)
                     .ToDictionary(g => g.Key, g => g.ToList());
 
-                // Tạo danh sách kết quả
-                var subjectGroups = subjects.Select(subject => new AssessmentScoreDisplayModel
+                // Tạo danh sách kết quả với điểm trung bình từng môn
+                var subjectGroups = subjects.Select(subject =>
                 {
-                    ClassDetailId = classDetailId,
-                    SubjectId = subject.SubjectId,
-                    SubjectName = subject.SubjectName,
-                    Weight1 = assessmentGroups.ContainsKey(subject.SubjectId) ?
+                    var weight1Scores = assessmentGroups.ContainsKey(subject.SubjectId) ?
                         assessmentGroups[subject.SubjectId].Where(a => a.Weight == 1).Select(a => new ScoreModel
                         {
                             AssessmentId = a.AssessmentId,
-                            Score = Math.Round(a.Score,1),
+                            Score = Math.Round(a.Score, 1),
                             Feedback = a.Feedback
-                        }).ToList() : new List<ScoreModel>(),
-                    Weight2 = assessmentGroups.ContainsKey(subject.SubjectId) ?
+                        }).ToList() : new List<ScoreModel>();
+
+                    var weight2Scores = assessmentGroups.ContainsKey(subject.SubjectId) ?
                         assessmentGroups[subject.SubjectId].Where(a => a.Weight == 2).Select(a => new ScoreModel
                         {
                             AssessmentId = a.AssessmentId,
                             Score = Math.Round(a.Score, 1),
                             Feedback = a.Feedback
-                        }).ToList() : new List<ScoreModel>(),
-                    Weight3 = assessmentGroups.ContainsKey(subject.SubjectId) ?
+                        }).ToList() : new List<ScoreModel>();
+
+                    var weight3Scores = assessmentGroups.ContainsKey(subject.SubjectId) ?
                         assessmentGroups[subject.SubjectId].Where(a => a.Weight == 3).Select(a => new ScoreModel
                         {
                             AssessmentId = a.AssessmentId,
                             Score = Math.Round(a.Score, 1),
                             Feedback = a.Feedback
-                        }).ToList() : new List<ScoreModel>(),
+                        }).ToList() : new List<ScoreModel>();
+
+                    // Tính tổng điểm và trọng số của từng môn học
+                    var totalWeight1Scores = weight1Scores.Sum(w => w.Score);
+                    var totalWeight2Scores = weight2Scores.Sum(w => w.Score);
+                    var totalWeight3Scores = weight3Scores.Sum(w => w.Score);
+
+                    var totalWeight = weight1Scores.Count * 1 + weight2Scores.Count * 2 + weight3Scores.Count * 3;
+                    var totalScores = totalWeight1Scores * 1 + totalWeight2Scores * 2 + totalWeight3Scores * 3;
+
+                    // Tính điểm trung bình
+                    var average = totalWeight > 0 ? Math.Round(totalScores / totalWeight, 2) : 0;
+
+                    return new AssessmentScoreDisplayModel
+                    {
+                        ClassDetailId = classDetailId,
+                        SubjectId = subject.SubjectId,
+                        SubjectName = subject.SubjectName,
+                        Weight1 = weight1Scores,
+                        Weight2 = weight2Scores,
+                        Weight3 = weight3Scores,
+                        Average = average // Điểm trung bình của môn học
+                    };
                 }).ToList();
 
                 return subjectGroups;
@@ -232,10 +258,46 @@ namespace SchoolManagement.Service
                 // Tính điểm trung bình của lớp
                 var totalAverage = averageScores.Any() ? averageScores.Average(score => score.Average) : 0;
 
+                // Tính toán AcademicPerform
+                string academicPerform;
+                if (totalAverage >= 8 &&
+                    averageScores.All(s => s.Average >= 6.5M) &&
+                    (averageScores.Any(s => s.SubjectName.Contains("Đại số & Giải tích") && s.Average >= 8) ||
+                     averageScores.Any(s => s.SubjectName.Contains("Ngữ văn") && s.Average >= 8.0M)))
+                {
+                    academicPerform = "Giỏi";
+                }
+                else if (totalAverage >= 6.5M && totalAverage < 8 &&
+                    averageScores.All(s => s.Average >= 5) &&
+                    (averageScores.Any(s => s.SubjectName.Contains("Đại số & Giải tích") && s.Average >= 6.5M && s.Average < 8) ||
+                     averageScores.Any(s => s.SubjectName.Contains("Ngữ văn") && s.Average >= 6.5M && s.Average < 8)))
+                {
+                    academicPerform = "Khá";
+                }
+                else if (totalAverage >= 5 && totalAverage < 6.5M &&
+                    averageScores.All(s => s.Average >= 3.5M) &&
+                    (averageScores.Any(s => s.SubjectName.Contains("Đại số & Giải tích") && s.Average >= 5 && s.Average < 6.5M) ||
+                     averageScores.Any(s => s.SubjectName.Contains("Ngữ văn") && s.Average >= 5 && s.Average < 6.5M)))
+                {
+                    academicPerform = "Trung bình Khá";
+                }
+                else if (totalAverage >= 3.5M && totalAverage < 5 &&
+                    averageScores.All(s => s.Average >= 2) &&
+                    (averageScores.Any(s => s.SubjectName.Contains("Đại số & Giải tích") && s.Average >= 3.5M && s.Average < 5) ||
+                     averageScores.Any(s => s.SubjectName.Contains("Ngữ văn") && s.Average >= 3.5M && s.Average < 5)))
+                {
+                    academicPerform = "Trung bình";
+                }
+                else
+                {
+                    academicPerform = "Yếu";
+                }
+
                 return new AverageScoreModel
                 {
                     ClassDetailId = classDetailId,
-                    TotalAverage = Math.Round(totalAverage,1),
+                    TotalAverage = Math.Round(totalAverage, 1),
+                    AcademicPerform = academicPerform,
                     Subjects = averageScores
                 };
             }
@@ -245,6 +307,7 @@ namespace SchoolManagement.Service
                 throw;
             }
         }
+
 
         public async ValueTask<AverageScoreForAcademicYearModel> GetAverageScoreForAcademicYear(int grade, string classDetailId, string academicYear)
         {

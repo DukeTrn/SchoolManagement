@@ -210,14 +210,31 @@ namespace SchoolManagement.Common.Extensions
         {
             // Tách họ, tên đệm và tên
             string[] nameParts = fullName.Split(' ');
+
+            // Nếu chỉ có một từ hoặc không có từ nào, trả về null hoặc throw exception
+            if (nameParts.Length < 2)
+            {
+                throw new ArgumentException("Full name must contain at least a first name and a last name.");
+            }
+
+            // Lấy họ, tên và tên đệm (nếu có)
             string lastName = nameParts[0];
-            string middleName = string.Join(" ", nameParts.Skip(1).Take(nameParts.Length - 2));
             string firstName = nameParts[nameParts.Length - 1];
+            string middleName = nameParts.Length > 2 ? string.Join(" ", nameParts.Skip(1).Take(nameParts.Length - 2)) : "";
 
             // Lấy ký tự đầu tiên từ họ, tên đệm và tên
             string initials = lastName[0].ToString().ToLower();
-            initials += string.Join("", middleName.Split(' ').Select(n => n[0].ToString().ToLower()));
+            if (!string.IsNullOrEmpty(middleName))
+            {
+                initials += string.Join("", middleName.Split(' ').Select(n => n[0].ToString().ToLower()));
+            }
             initials += firstName[0].ToString().ToLower();
+
+            // Đảm bảo ID có ít nhất 6 ký tự
+            if (id.Length < 6)
+            {
+                throw new ArgumentException("ID must be at least 6 characters long.");
+            }
 
             // Lấy 6 chữ số cuối của ID
             string idSuffix = id.Substring(id.Length - 6);
@@ -225,6 +242,7 @@ namespace SchoolManagement.Common.Extensions
             // Kết hợp các kí tự vừa lấy được với id
             return $"{initials}{idSuffix}@thptquangtrung.edu";
         }
+
 
         public static string RemoveAccents(string text)
         {

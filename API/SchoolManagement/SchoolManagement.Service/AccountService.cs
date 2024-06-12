@@ -37,10 +37,11 @@ namespace SchoolManagement.Service
         {
             try
             {
-                // bug pagination
                 _logger.LogInformation("Start to get list accounts.");
+
                 int pageNumber = queryModel.PageNumber != null && queryModel.PageNumber.Value > 0 ? queryModel.PageNumber.Value : 1;
                 int pageSize = queryModel.PageSize != null && queryModel.PageSize.Value > 0 ? queryModel.PageSize.Value : 10;
+
                 FilterModel filter = new();
                 var query = _context.AccountEntities.AsQueryable();
 
@@ -48,27 +49,36 @@ namespace SchoolManagement.Service
                 if (!string.IsNullOrEmpty(queryModel.SearchValue))
                 {
                     _logger.LogInformation("Add Search Value: {SearchValue}", queryModel.SearchValue);
-                    var searchFilter = BuildSearchFilter(queryModel.SearchValue,
-                        nameof(AccountEntity.UserName));
-                    //query = query.Where(a => (a.Student != null && a.Student.FullName.Contains(queryModel.SearchValue)) ||
-                    //                          (a.Teacher != null && a.Teacher.FullName.Contains(queryModel.SearchValue)));
-                    filter.Or.AddRange(searchFilter);
+
+                    string searchValue = queryModel.SearchValue.Trim().ToLower();
+
+                    query = query.Where(a =>
+                        EF.Functions.Like(a.UserName.ToLower(), $"%{searchValue}%") ||
+                        (a.Student != null && EF.Functions.Like(a.Student.FullName.ToLower(), $"%{searchValue}%")) ||
+                        (a.Teacher != null && EF.Functions.Like(a.Teacher.FullName.ToLower(), $"%{searchValue}%"))
+                    );
                 }
                 #endregion
 
                 #region Role filter
                 if (queryModel.Roles.Count > 0)
                 {
-                    _logger.LogInformation("Add Roles condition: {Status}", queryModel.Roles.ToString());
+                    _logger.LogInformation("Add Roles condition: {Roles}", string.Join(",", queryModel.Roles));
                     filter.AddAnd((AccountEntity entity) => entity.Role, queryModel.Roles);
                 }
                 #endregion
 
+                // Apply filters
                 query = _filterBuilder.BuildFilterQuery(query, filter);
 
+                // Calculate total count before pagination
+                var totalCount = await query.CountAsync();
+
+                // Fetch data with pagination
                 var accountsQuery = await query
                     .Include(a => a.Student)
                     .Include(a => a.Teacher)
+                    .OrderBy(a => a.Role).ThenBy(a => a.UserName) // Sort before pagination
                     .Skip((pageNumber - 1) * pageSize)
                     .Take(pageSize)
                     .ToListAsync();
@@ -83,10 +93,11 @@ namespace SchoolManagement.Service
                     ModifiedAt = a.ModifiedAt == null ? "" : a.ModifiedAt.Value.ToString("dd/MM/yyyy"),
                     IsActive = a.IsActive,
                     Role = TranslateStatus(a.Role)
-                }).OrderBy(a => a.Role).ThenBy(a => a.FullName).ToList();
+                }).ToList();
+
                 return new PaginationModel<AccountDisplayModel>
                 {
-                    TotalCount = accountsQuery.Count,
+                    TotalCount = totalCount, // Use totalCount calculated before pagination
                     PageNumber = pageNumber,
                     PageSize = pageSize,
                     DataList = accountDisplayModels
@@ -94,10 +105,11 @@ namespace SchoolManagement.Service
             }
             catch (Exception ex)
             {
-                _logger.LogError("An error occured while getting list of all accounts. Error: {ex}", ex);
+                _logger.LogError("An error occurred while getting list of all accounts. Error: {ex}", ex);
                 throw;
             }
         }
+
 
         #endregion
 
