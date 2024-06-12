@@ -153,6 +153,10 @@ namespace SchoolManagement.Controllers
             {
                 return Ok(new { result = false, messageType = MessageType.Duplicated, message = "ID này đã tồn tại" });
             }
+            catch (ArgumentException ex)
+            {
+                return Ok(new { result = false, messageType = MessageType.Error, message = ex.Message });
+            }
             catch (Exception ex)
             {
                 // Log other exceptions if needed

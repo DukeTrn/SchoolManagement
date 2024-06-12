@@ -20,22 +20,22 @@ namespace SchoolManagement.Web.Controllers
         }
 
         /// <summary>
-        /// Get list classes by grade and semester 
+        /// Get list classes by grade and academic year 
         /// </summary>
         /// <param name="grade"></param>
-        /// <param name="semesterId"></param>
+        /// <param name="academicYear"></param>
         /// <returns></returns>
-        [HttpPost, Route("{grade}/{semesterId}/classes")]
-        public async ValueTask<IActionResult> GetListClassesInSemester(int grade, string semesterId)
+        [HttpPost, Route("{academicYear}/{grade}/classes")]
+        public async ValueTask<IActionResult> GetListClassesInAcademicYear(int grade, string academicYear)
         {
             try
             {
-                var result = await _classService.GetListClassesInSemester(grade, semesterId);
+                var classes = await _classService.GetListClassesInAcademicYear(grade, academicYear);
                 return Ok(new
                 {
                     result = true,
-                    data = result,
-                    messageType = 0
+                    data = classes,
+                    messageType = MessageType.Information
                 });
             }
             catch (Exception ex)
