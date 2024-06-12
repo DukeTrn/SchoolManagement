@@ -33,7 +33,9 @@ const MainLayout = ({ children }: IMainLayout) => {
 				<ResizableHandle withHandle />
 
 				<ResizablePanel defaultSize={655} minSize={40}>
-					<div className="p-5">{children}</div>
+					<div className="max-h-screen overflow-auto p-5">
+						{children}
+					</div>
 				</ResizablePanel>
 			</ResizablePanelGroup>
 		</div>

@@ -14,7 +14,7 @@ export const sideBarNavs = [
 	{
 		title: "Trang chủ",
 		icon: Home,
-		path: "/",
+		path: "/home",
 		variant: "default",
 	},
 	{
@@ -32,7 +32,7 @@ export const sideBarNavs = [
 	{
 		title: "Tổ bộ môn",
 		icon: Component,
-		path: "/group",
+		path: "/department",
 		variant: "ghost",
 	},
 	{

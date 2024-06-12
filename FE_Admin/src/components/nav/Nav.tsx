@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
@@ -18,11 +18,14 @@ const Nav = (props: INavProps) => {
 		<div className="flex flex-col gap-4 py-2">
 			<div className="grid gap-1 px-2">
 				{links?.map((item) => {
+					const isActive = location?.pathname.includes(
+						item?.path as string
+					);
 					return (
 						<NavLink
 							key={item.title}
 							to={`${item?.path}`}
-							className={({ isActive }) =>
+							className={() =>
 								cn(
 									buttonVariants({
 										variant: isActive ? "default" : "ghost",

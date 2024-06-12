@@ -16,7 +16,7 @@ const statusList = [
 	{ value: "2", label: "Nghỉ  học" },
 ];
 
-export const columns: ColumnDef<IStudent>[] = [
+const columns: ColumnDef<IStudent>[] = [
 	{
 		id: "select",
 		header: ({ table }) => (
@@ -116,7 +116,7 @@ const Student = () => {
 	const [searchValue, setSearchValue] = useState("");
 	const [position, setPosition] = useState("");
 	const [selectedRows, setSelectedRows] = useState<IStudent[]>([]);
-	const [selectedFrameworks, setSelectedFrameworks] = useState<string[]>([]);
+	const [selectedField, setSelectedField] = useState<string[]>([]);
 
 	const isDisableButton =
 		selectedRows?.length > 1 || selectedRows?.length === 0;
@@ -139,8 +139,7 @@ const Student = () => {
 				</div>
 				<MultiSelect
 					options={statusList}
-					onValueChange={setSelectedFrameworks}
-					defaultValue={selectedFrameworks}
+					onValueChange={setSelectedField}
 					placeholder="Tình trạng học tập"
 					variant="inverted"
 					animation={2}

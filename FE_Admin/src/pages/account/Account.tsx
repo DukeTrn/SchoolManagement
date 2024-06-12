@@ -1,26 +1,27 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { TableDetails } from "@/components/table/Table";
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Cat, Dog, Fish, Rabbit, Turtle } from "lucide-react";
+import { MultiSelect } from "@/components/multiselect/MultiSelect";
+import Pagination from "@/components/pagination";
+import { IAccount } from "@/types/account.type";
+import {
+	activeAccount,
+	deleteAccount,
+	getAllAccount,
+} from "@/apis/account.api";
+import { useToast } from "@/components/ui/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 
-export type IAccount = {
-	id: string;
-	amount: number;
-	status: "pending" | "processing" | "success" | "failed";
-	email: string;
-	size?: number;
-};
+const roles = [
+	{ value: "1", label: "Admin" },
+	{ value: "2", label: "Giáo viên chủ nhiệm" },
+	{ value: "3", label: "Giáo viên" },
+	{ value: "4", label: "Học sinh" },
+];
 
 export const columns: ColumnDef<IAccount>[] = [
 	{
@@ -48,94 +49,116 @@ export const columns: ColumnDef<IAccount>[] = [
 		enableHiding: false,
 	},
 	{
-		accessorKey: "status",
+		accessorKey: "userName",
 		header: "Tài khoản",
-		cell: ({ row }) => (
-			<div className="capitalize">{row.getValue("status")}</div>
-		),
+		cell: ({ row }) => <div>{row.getValue("userName")}</div>,
 	},
 	{
-		accessorKey: "email",
+		accessorKey: "fullName",
 		header: () => {
 			return <div>Họ tên</div>;
 		},
-		cell: ({ row }) => (
-			<div className="lowercase">{row.getValue("email")}</div>
-		),
+		cell: ({ row }) => <div>{row.getValue("fullName")}</div>,
 	},
 	{
-		accessorKey: "email1",
+		accessorKey: "role",
 		header: () => {
 			return <div>Chức vụ</div>;
 		},
-		cell: ({ row }) => (
-			<div className="lowercase">{row.getValue("email")}</div>
-		),
+		cell: ({ row }) => <div>{row.getValue("role")}</div>,
 	},
 	{
-		accessorKey: "email2",
-		header: "Email",
-		cell: ({ row }) => (
-			<div className="lowercase">{row.getValue("email")}</div>
-		),
-	},
-	{
-		accessorKey: "email3",
+		accessorKey: "createdAt",
 		header: "Ngày tạo",
+		cell: ({ row }) => <div>{row.getValue("createdAt")}</div>,
+	},
+	{
+		accessorKey: "modifiedAt",
+		header: "Ngày cập nhật",
+		cell: ({ row }) => <div>{row.getValue("modifiedAt")}</div>,
+	},
+	{
+		accessorKey: "isActive",
+		header: "Tình trạng hoạt động",
 		cell: ({ row }) => (
-			<div className="lowercase">{row.getValue("email")}</div>
+			<div>
+				{row.getValue("isActive")
+					? "Đang hoạt động"
+					: "Ngừng hoạt động"}
+			</div>
 		),
-	},
-	{
-		accessorKey: "amount",
-		header: "Ngày cập nhập",
-		cell: ({ row }) => (
-			<div className="lowercase">{row.getValue("amount")}</div>
-		),
-	},
-];
-const data: IAccount[] = [
-	{
-		id: "m5gr84i9",
-		amount: 316,
-		status: "success",
-		email: "ken99@yahoo.com",
-	},
-	{
-		id: "3u1reuv4",
-		amount: 242,
-		status: "success",
-		email: "Abe45@gmail.com",
-	},
-	{
-		id: "derv1ws0",
-		amount: 837,
-		status: "processing",
-		email: "Monserrat44@gmail.com",
-	},
-	{
-		id: "5kma53ae",
-		amount: 874,
-		status: "success",
-		email: "Silas22@gmail.com",
-	},
-	{
-		id: "bhqecj4p",
-		amount: 721,
-		status: "failed",
-		email: "carmella@hotmail.com",
 	},
 ];
 
 const Account = () => {
+	const { toast } = useToast();
+	const [loading, setLoading] = useState<boolean>(false);
+	const [accounts, setAccounts] = useState<IAccount[]>([]);
 	const [searchValue, setSearchValue] = useState("");
 	const [position, setPosition] = useState("");
 	const [selectedRows, setSelectedRows] = useState<IAccount[]>([]);
-	const [selectedFrameworks, setSelectedFrameworks] = useState<string[]>([]);
+	const [selectedFields, setSelectedFields] = useState<string[]>([]);
+	const [pageSize, setPageSize] = useState<number>(10);
+	const [pageNumber, setPageNumber] = useState<number>(1);
+	const [totalPage, setTotalPage] = useState<number>(1);
+	const isDisableButton =
+		selectedRows?.length <= 0 || selectedRows?.length > 1;
+
+	useEffect(() => {
+		handleGetData();
+	}, [pageNumber, pageSize, searchValue]);
+
+	const handleGetData = () => {
+		setLoading(true);
+		getAllAccount({
+			searchValue: searchValue,
+			pageSize: pageSize,
+			pageNumber: pageNumber,
+			roles: selectedFields?.map((i) => Number(i)),
+		}).then((res) => {
+			setLoading(false);
+			setTotalPage(res?.data?.totalPageCount);
+			setAccounts(res?.data?.dataList);
+		});
+	};
+
+	const refreshData = (message: string) => {
+		setSelectedRows([]);
+		handleGetData();
+		toast({
+			title: "Thông báo:",
+			description: message,
+			action: (
+				<ToastAction
+					altText="Success"
+					className="bg-green-600 text-white"
+				>
+					Success
+				</ToastAction>
+			),
+		});
+	};
+
+	const handleActive = (isActive: boolean) => {
+		activeAccount({
+			accountId: selectedRows?.[0].accountId,
+			isActive: isActive,
+		}).then((res) => {
+			refreshData(res?.data?.message);
+		});
+	};
+
+	const handleDelete = () => {
+		deleteAccount(selectedRows[0]?.accountId as string).then((res) => {
+			refreshData(res?.data?.message);
+		});
+	};
 
 	const handleChange = (value: IAccount[]) => {
 		setSelectedRows(value);
 	};
+
+	console.log(selectedFields);
 
 	return (
 		<>
@@ -150,28 +173,37 @@ const Account = () => {
 						onChange={(e) => setSearchValue(e.target?.value)}
 					/>
 				</div>
-				<div className="min-w-[200px]">
-					<Select
-						onValueChange={(value) => setPosition(value)}
-						defaultValue=""
-					>
-						<SelectTrigger>
-							<SelectValue placeholder="Chức vụ" />
-						</SelectTrigger>
-
-						<SelectContent>
-							<SelectItem value="hs">Học sinh</SelectItem>
-							<SelectItem value="gv">Giáo viên</SelectItem>
-							<SelectItem value="admin">Quản trị viên</SelectItem>
-						</SelectContent>
-					</Select>
-				</div>
+				<MultiSelect
+					options={roles}
+					onValueChange={setSelectedFields}
+					handleRetrive={handleGetData}
+					defaultValue={selectedFields}
+					placeholder="Chức vụ"
+					variant="inverted"
+					animation={2}
+					maxCount={0}
+					width={230}
+				/>
 			</div>
 			<div className="mb-5 flex justify-between">
 				<div className="flex justify-between gap-2">
-					<Button>Kích hoạt</Button>
-					<Button>Ngừng hoạt động</Button>
-					<Button>Xóa</Button>
+					<Button
+						onClick={() => handleActive(true)}
+						disabled={isDisableButton || selectedRows?.[0].isActive}
+					>
+						Kích hoạt
+					</Button>
+					<Button
+						onClick={() => handleActive(false)}
+						disabled={
+							isDisableButton || !selectedRows?.[0].isActive
+						}
+					>
+						Ngừng hoạt động
+					</Button>
+					<Button disabled={isDisableButton} onClick={handleDelete}>
+						Xóa
+					</Button>
 				</div>
 				<div>
 					<Button>Xuất file</Button>
@@ -179,10 +211,16 @@ const Account = () => {
 			</div>
 			<div>
 				<TableDetails
-					data={data}
+					data={accounts}
 					columns={columns}
 					onChange={handleChange}
-					loading={true}
+					loading={loading}
+				/>
+				<Pagination
+					pageSize={pageSize}
+					onChangePage={(value) => setPageNumber(Number(value))}
+					onChangeRow={(value) => setPageSize(Number(value))}
+					totalPageCount={totalPage}
 				/>
 			</div>
 		</>

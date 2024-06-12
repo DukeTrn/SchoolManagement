@@ -27,11 +27,17 @@ interface IProps {
 	onChange?: (value: any) => void;
 	columns: ColumnDef<any>[];
 	data: any;
-	loading: boolean;
+	loading?: boolean;
 	useRadio?: boolean;
 }
 export function TableDetails(props: IProps) {
-	const { onChange, columns, data, loading, useRadio = false } = props;
+	const {
+		onChange,
+		columns,
+		data,
+		loading = false,
+		useRadio = false,
+	} = props;
 	const [sorting, setSorting] = React.useState<SortingState>([]);
 	const [columnFilters, setColumnFilters] =
 		React.useState<ColumnFiltersState>([]);
@@ -52,6 +58,11 @@ export function TableDetails(props: IProps) {
 		onRowSelectionChange: setRowSelection,
 		enableMultiRowSelection: !useRadio,
 		enableSubRowSelection: !useRadio,
+		initialState: {
+			pagination: {
+				pageSize: 10,
+			},
+		},
 		state: {
 			sorting,
 			columnFilters,
@@ -67,6 +78,14 @@ export function TableDetails(props: IProps) {
 	useEffect(() => {
 		onChange && onChange(selectedRows);
 	}, [rowSelection]);
+
+	useEffect(() => {
+		table.setPageSize(data?.length);
+	}, [data?.length]);
+
+	useEffect(() => {
+		table.resetRowSelection();
+	}, [loading]);
 
 	return (
 		<div className="w-full">
@@ -128,30 +147,6 @@ export function TableDetails(props: IProps) {
 						)}
 					</TableBody>
 				</Table>
-			</div>
-			<div className="flex items-center justify-end space-x-2 py-4">
-				<div className="flex-1 text-sm text-muted-foreground">
-					{table.getFilteredSelectedRowModel().rows.length} of{" "}
-					{table.getFilteredRowModel().rows.length} row(s) selected.
-				</div>
-				<div className="space-x-2">
-					<Button
-						variant="outline"
-						size="sm"
-						onClick={() => table.previousPage()}
-						disabled={!table.getCanPreviousPage()}
-					>
-						Previous
-					</Button>
-					<Button
-						variant="outline"
-						size="sm"
-						onClick={() => table.nextPage()}
-						disabled={!table.getCanNextPage()}
-					>
-						Next
-					</Button>
-				</div>
 			</div>
 		</div>
 	);

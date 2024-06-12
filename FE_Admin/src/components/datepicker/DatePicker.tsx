@@ -15,6 +15,7 @@ interface IProps {
 
 export default function DatePicker(props: IProps) {
 	const { date, setDate, errorMessage } = props;
+
 	return (
 		<Popover>
 			<PopoverTrigger asChild>

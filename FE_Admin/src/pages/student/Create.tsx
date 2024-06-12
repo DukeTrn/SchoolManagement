@@ -28,6 +28,28 @@ import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import DatePicker from "@/components/datepicker/DatePicker";
 
+const initValues = {
+	studentId: "",
+	fullName: "",
+	dob: new Date(1990, 0, 1).toISOString(),
+	gender: "",
+	phoneNumber: "",
+	email: "",
+	status: "",
+	identificationNumber: "",
+	address: "",
+	ethnic: "",
+	avatar: "",
+	fatherName: "",
+	fatherJob: "",
+	fatherPhoneNumber: "",
+	fatherEmail: "",
+	motherName: "",
+	motherJob: "",
+	motherPhoneNumber: "",
+	motherEmail: "",
+	academicYear: "",
+};
 interface IPanelProps {
 	type: "edit" | "create";
 	selectedStudent?: IStudent | null;
@@ -37,13 +59,17 @@ type IFormData = IStudentSchema;
 export function Panel(props: IPanelProps) {
 	const { type, selectedStudent, disable } = props;
 	const [openSheet, setOpenSheet] = useState(false);
+	const [count, setCount] = useState(0);
 
 	const {
 		register,
 		handleSubmit,
 		formState: { errors },
 		control,
+		setValue,
+		reset,
 	} = useForm<IFormData>({
+		defaultValues: initValues,
 		resolver: yupResolver(studentSchema),
 	});
 
@@ -54,13 +80,26 @@ export function Panel(props: IPanelProps) {
 		// console.log(value)
 		console.log("handle submit");
 		console.log("data", data);
-		// setOpenSheet(false);
+		setOpenSheet(false);
+		reset(initValues);
+		setCount(0);
 	});
+
+	const handleGetData = () => {
+		if (count === 0) {
+			fetch("https://jsonplaceholder.typicode.com/todos/1")
+				.then((response) => response.json())
+				.then((json) => {
+					setValue("fullName", json.title);
+					setCount((count) => count + 1);
+				});
+		}
+	};
 
 	return (
 		<Sheet open={openSheet} onOpenChange={setOpenSheet}>
 			<SheetTrigger asChild>
-				<Button disabled={disable}>
+				<Button disabled={disable} onClick={handleGetData}>
 					{type === "edit" ? "Cập nhật" : "Thêm"}
 				</Button>
 			</SheetTrigger>
@@ -92,7 +131,7 @@ export function Panel(props: IPanelProps) {
 							control={control}
 							name="dob"
 							render={({ field }) => (
-								<FormItem className="flex flex-col">
+								<FormItem className="mt-[2px] flex flex-col">
 									<DatePicker
 										date={field.value}
 										setDate={field.onChange}
