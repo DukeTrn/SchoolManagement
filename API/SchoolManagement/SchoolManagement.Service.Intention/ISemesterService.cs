@@ -9,6 +9,8 @@ namespace SchoolManagement.Service.Intention
         ValueTask CreateSemester(SemesterAddModel model);
         ValueTask UpdateSemester(string id, SemesterUpdateModel model);
         ValueTask DeleteSemester(string id);
-        ValueTask<IEnumerable<SemesterFilterModel>> GetFilter();
+        ValueTask<IEnumerable<SemesterFilterModel>> GetSemFilter();
+        ValueTask<List<string>> GetAcademicYearFilter();
+        ValueTask<IEnumerable<SemesterFilterModel>> GetSemsByAcademicYearFilter(string academicYear);
     }
 }

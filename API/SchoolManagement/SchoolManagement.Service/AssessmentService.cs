@@ -20,7 +20,7 @@ namespace SchoolManagement.Service
         }
 
         /// <summary>
-        /// Get list students in assessment (Currently semesterId in param are redundant) (2nd page)
+        /// Get list students in assessment (Currently semesterId in param are redundant => done) (2nd page)
         /// </summary>
         /// <param name="grade"></param>
         /// <param name="semesterId"></param>
@@ -42,19 +42,24 @@ namespace SchoolManagement.Service
                 }
 
                 // Lấy danh sách học sinh trong lớp và học kỳ cụ thể
-                var studentQuery = from cd in _context.ClassDetailEntities
-                                   join s in _context.StudentEntities on cd.StudentId equals s.StudentId
-                                   join c in _context.ClassEntities on cd.ClassId equals c.ClassId
-                                   where cd.ClassId == classId && c.Grade == grade
-                                   select new AssessmentDetailModel
-                                   {
-                                       ClassDetailId = cd.ClassDetailId,
-                                       StudentId = s.StudentId,
-                                       FullName = s.FullName,
-                                       ClassName = c.ClassName,
-                                       Grade = c.Grade,
-                                       AcademicYear = c.AcademicYear,
-                                   };
+                var studentQuery = _context.ClassDetailEntities
+                    .Include(cd => cd.Class)
+                    .ThenInclude(c => c.HomeroomTeacher)
+                    .Include(cd => cd.Student)
+                    .Include(cd => cd.Class.SemClassIds)
+                        .ThenInclude(sc => sc.Semester)
+                    .Where(cd => cd.Class.Grade == grade
+                              && cd.Class.ClassId == classId
+                              && cd.Class.SemClassIds.Any(sc => sc.SemesterId == semesterId))
+                    .Select(cd => new AssessmentDetailModel
+                    {
+                        ClassDetailId = cd.ClassDetailId,
+                        StudentId = cd.Student.StudentId,
+                        FullName = cd.Student.FullName,
+                        ClassName = cd.Class.ClassName,
+                        Grade = cd.Class.Grade,
+                        AcademicYear = cd.Class.AcademicYear,
+                    });
 
                 var totalStudents = await studentQuery.CountAsync();
 
@@ -97,7 +102,6 @@ namespace SchoolManagement.Service
                 var classDetailExist = await _context.ClassDetailEntities.AnyAsync(s => s.ClassDetailId == classDetailId);
                 if (!classDetailExist)
                 {
-                    //return Enumerable.Empty<AssessmentScoreDisplayModel>();
                     var errorMsg = $"Không tìm thấy Class Detail ID {classDetailId} này!";
                     _logger.LogWarning(errorMsg);
                     throw new NotFoundException(errorMsg);

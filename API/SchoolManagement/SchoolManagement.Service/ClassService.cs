@@ -130,7 +130,7 @@ namespace SchoolManagement.Service
                         ClassId = c.ClassId,
                         ClassName = c.ClassName,
                         AcademicYear = c.AcademicYear,
-                        TotalStudents = _context.ClassDetailEntities.Count(cd => cd.ClassId == c.ClassId),
+                        //TotalStudents = _context.ClassDetailEntities.Count(cd => cd.ClassId == c.ClassId),
                         HomeroomTeacherName = c.HomeroomTeacher.FullName
                         // Thêm các trường khác cần thiết vào đây nếu cần
                     })
@@ -139,6 +139,49 @@ namespace SchoolManagement.Service
                 // Thêm logic filter ở đây nếu cần
 
                 return classesInSemester;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occurred while fetching classes in semester. Error: {Error}", ex.Message);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Get list classes in 1 semester. This dto is for 1st conduct and assessment display
+        /// </summary>
+        /// <param name="grade"></param>
+        /// <param name="semesterId"></param>
+        /// <param name="queryModel"></param>
+        /// <returns></returns>
+        public async ValueTask<IEnumerable<ClassInSemesterModel>> GetListClassesInAcademicYear(int grade, string academicYear)
+        {
+            try
+            {
+                // Kiểm tra xem academic year có tồn tại trong cơ sở dữ liệu không
+                var acaYearExists = await _context.SemesterEntities.AnyAsync(s => s.AcademicYear == academicYear);
+
+                // Nếu semesterId không tồn tại, trả về danh sách rỗng
+                if (!acaYearExists)
+                {
+                    return Enumerable.Empty<ClassInSemesterModel>();
+
+                }
+
+                var classesInAcaYear = await _context.ClassEntities
+                    .Where(c => c.Grade == grade && c.AcademicYear == academicYear)
+                    .Select(c => new ClassInSemesterModel
+                    {
+                        ClassId = c.ClassId,
+                        ClassName = c.ClassName,
+                        AcademicYear = c.AcademicYear,
+                        HomeroomTeacherName = c.HomeroomTeacher.FullName
+                    })
+                    .ToListAsync();
+
+                // Thêm logic filter ở đây nếu cần
+
+                return classesInAcaYear;
             }
             catch (Exception ex)
             {

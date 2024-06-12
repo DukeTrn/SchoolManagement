@@ -59,7 +59,7 @@ namespace SchoolManagement.Service
         }
         #endregion
 
-        public async ValueTask<IEnumerable<SemesterFilterModel>> GetFilter()
+        public async ValueTask<IEnumerable<SemesterFilterModel>> GetSemFilter()
         {
             try
             {
@@ -73,6 +73,42 @@ namespace SchoolManagement.Service
             catch (Exception ex)
             {
                 _logger.LogError("An error occured while getting list of all Semesters. Error: {ex}", ex);
+                throw;
+            }
+        }
+
+        public async ValueTask<IEnumerable<SemesterFilterModel>> GetSemsByAcademicYearFilter(string academicYear)
+        {
+            try
+            {
+                return await _context.SemesterEntities
+                    .Where(s => s.AcademicYear == academicYear)
+                    .Select(t => new SemesterFilterModel
+                    {
+                        SemesterId = t.SemesterId,
+                        SemesterName = t.SemesterName
+                    }).OrderByDescending(p => p.SemesterId).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occured while getting list of all Semesters. Error: {ex}", ex);
+                throw;
+            }
+        }
+
+        public async ValueTask<List<string>> GetAcademicYearFilter()
+        {
+            try
+            {
+                return await _context.Set<SemesterEntity>()
+                     .Select(s => s.AcademicYear)
+                     .Distinct()
+                     .OrderByDescending(s => s)
+                     .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occured while getting list of all Academic Years. Error: {ex}", ex);
                 throw;
             }
         }

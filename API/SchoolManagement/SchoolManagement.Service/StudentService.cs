@@ -77,6 +77,9 @@ namespace SchoolManagement.Service
 
                 query = _filterBuilder.BuildFilterQuery(query, filter);
 
+                query = query.OrderByDescending(s => s.StudentId.Substring(0, 4))
+                     .ThenBy(s => s.StudentId.Substring(4));
+
                 var paginatedData = await query
                             .Skip((pageNumber - 1) * pageSize)
                             .Take(pageSize)

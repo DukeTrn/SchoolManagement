@@ -37,19 +37,66 @@ namespace SchoolManagement.Web.Controllers
         }
 
         /// <summary>
-        /// Use for filter
+        /// Filter: Use to get all semesters  (filter lấy tất cả học kỳ)
         /// </summary>
         /// <returns></returns>
-        [HttpGet, Route("filter")]
-        public async Task<IActionResult> GetFilter()
+        [HttpGet, Route("filter/allsemesters")]
+        public async Task<IActionResult> GetSemFilter()
         {
             try
             {
-                var sems = await _service.GetFilter();
+                var sems = await _service.GetSemFilter();
                 return Ok(new
                 {
                     result = true,
                     data = sems,
+                    messageType = 0
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(200, new { result = false, messageType = MessageType.Error, message = ex });
+            }
+        }
+
+        /// <summary>
+        /// Filter: Use to get semesters based on academic year (filter lấy tất cả học kỳ trong 1 niên khóa)
+        /// </summary>
+        /// <param name="academicYear"></param>
+        /// <returns></returns>
+        [HttpGet, Route("filter/semesters")]
+        public async Task<IActionResult> GetSemsByAcademicYearFilter(string academicYear)
+        {
+            try
+            {
+                var sems = await _service.GetSemsByAcademicYearFilter(academicYear);
+                return Ok(new
+                {
+                    result = true,
+                    data = sems,
+                    messageType = 0
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(200, new { result = false, messageType = MessageType.Error, message = ex });
+            }
+        }
+
+        /// <summary>
+        /// Use for academic year filter (filter niên khóa)
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet, Route("filter/academicyears")]
+        public async Task<IActionResult> GetAcademicYearFilter()
+        {
+            try
+            {
+                var years = await _service.GetAcademicYearFilter();
+                return Ok(new
+                {
+                    result = true,
+                    data = years,
                     messageType = 0
                 });
             }

@@ -69,7 +69,7 @@ namespace SchoolManagement.Web.Controllers
         /// <param name="academicYear"></param>
         /// <returns></returns>
         [HttpGet, Route("class-filter/{academicYear}/{grade}")]
-        public async ValueTask<IActionResult> GetClassesByGradeAndAcaYear(int grade, string academicYear)
+        public async ValueTask<IActionResult> GetClassesByGradeAndAcaYearFilter(int grade, string academicYear)
         {
             try
             {
