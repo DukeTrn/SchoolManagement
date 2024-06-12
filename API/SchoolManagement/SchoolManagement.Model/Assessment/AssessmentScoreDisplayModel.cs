@@ -8,7 +8,7 @@
         public List<ScoreModel> Weight1 { get; set; } = new List<ScoreModel>();
         public List<ScoreModel> Weight2 { get; set; } = new List<ScoreModel>();
         public List<ScoreModel> Weight3 { get; set; } = new List<ScoreModel>();
-
+        public decimal Average { get; set; } = 0;
     }
     public class ScoreModel
     {

@@ -95,10 +95,12 @@ namespace SchoolManagement.Service
         {
             try
             {
+                _logger.LogInformation("Start to get list of subjects and scores.");
+
                 // Truy vấn tất cả các môn học trong khối
                 var subjects = await _context.SubjectEntities.Where(c => c.Grade == grade).ToListAsync();
 
-                // Bắt lỗi nếu không tìm thấy
+                // Bắt lỗi nếu không tìm thấy ClassDetailId hoặc SemesterId
                 var classDetailExist = await _context.ClassDetailEntities.AnyAsync(s => s.ClassDetailId == classDetailId);
                 if (!classDetailExist)
                 {
@@ -115,8 +117,7 @@ namespace SchoolManagement.Service
                     throw new NotFoundException(errorMsg);
                 }
 
-
-                // Truy vấn tất cả các đánh giá có liên quan đến grade và semesterId
+                // Truy vấn tất cả các đánh giá có liên quan đến grade, semesterId và classDetailId
                 var assessments = await _context.AssessmentEntities
                     .Where(a => a.ClassDetail.Class.Grade == grade && a.SemesterId == semesterId && a.ClassDetailId == classDetailId)
                     .Include(a => a.Subject)
@@ -129,33 +130,54 @@ namespace SchoolManagement.Service
                     .GroupBy(a => a.SubjectId)
                     .ToDictionary(g => g.Key, g => g.ToList());
 
-                // Tạo danh sách kết quả
-                var subjectGroups = subjects.Select(subject => new AssessmentScoreDisplayModel
+                // Tạo danh sách kết quả với điểm trung bình từng môn
+                var subjectGroups = subjects.Select(subject =>
                 {
-                    ClassDetailId = classDetailId,
-                    SubjectId = subject.SubjectId,
-                    SubjectName = subject.SubjectName,
-                    Weight1 = assessmentGroups.ContainsKey(subject.SubjectId) ?
+                    var weight1Scores = assessmentGroups.ContainsKey(subject.SubjectId) ?
                         assessmentGroups[subject.SubjectId].Where(a => a.Weight == 1).Select(a => new ScoreModel
                         {
                             AssessmentId = a.AssessmentId,
-                            Score = Math.Round(a.Score,1),
+                            Score = Math.Round(a.Score, 1),
                             Feedback = a.Feedback
-                        }).ToList() : new List<ScoreModel>(),
-                    Weight2 = assessmentGroups.ContainsKey(subject.SubjectId) ?
+                        }).ToList() : new List<ScoreModel>();
+
+                    var weight2Scores = assessmentGroups.ContainsKey(subject.SubjectId) ?
                         assessmentGroups[subject.SubjectId].Where(a => a.Weight == 2).Select(a => new ScoreModel
                         {
                             AssessmentId = a.AssessmentId,
                             Score = Math.Round(a.Score, 1),
                             Feedback = a.Feedback
-                        }).ToList() : new List<ScoreModel>(),
-                    Weight3 = assessmentGroups.ContainsKey(subject.SubjectId) ?
+                        }).ToList() : new List<ScoreModel>();
+
+                    var weight3Scores = assessmentGroups.ContainsKey(subject.SubjectId) ?
                         assessmentGroups[subject.SubjectId].Where(a => a.Weight == 3).Select(a => new ScoreModel
                         {
                             AssessmentId = a.AssessmentId,
                             Score = Math.Round(a.Score, 1),
                             Feedback = a.Feedback
-                        }).ToList() : new List<ScoreModel>(),
+                        }).ToList() : new List<ScoreModel>();
+
+                    // Tính tổng điểm và trọng số của từng môn học
+                    var totalWeight1Scores = weight1Scores.Sum(w => w.Score);
+                    var totalWeight2Scores = weight2Scores.Sum(w => w.Score);
+                    var totalWeight3Scores = weight3Scores.Sum(w => w.Score);
+
+                    var totalWeight = weight1Scores.Count * 1 + weight2Scores.Count * 2 + weight3Scores.Count * 3;
+                    var totalScores = totalWeight1Scores * 1 + totalWeight2Scores * 2 + totalWeight3Scores * 3;
+
+                    // Tính điểm trung bình
+                    var average = totalWeight > 0 ? Math.Round(totalScores / totalWeight, 2) : 0;
+
+                    return new AssessmentScoreDisplayModel
+                    {
+                        ClassDetailId = classDetailId,
+                        SubjectId = subject.SubjectId,
+                        SubjectName = subject.SubjectName,
+                        Weight1 = weight1Scores,
+                        Weight2 = weight2Scores,
+                        Weight3 = weight3Scores,
+                        Average = average // Điểm trung bình của môn học
+                    };
                 }).ToList();
 
                 return subjectGroups;

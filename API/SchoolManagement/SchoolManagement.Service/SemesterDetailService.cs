@@ -18,7 +18,7 @@ namespace SchoolManagement.Service
             _context = context;
         }
 
-        public async ValueTask<PaginationModel<SemesterDetailDisplayModel>> GetAllClassesInSem(SemesterDetailQueryModel queryModel)
+        public async ValueTask<PaginationModel<SemesterDetailDisplayModel>> GetAllClassesInSem(string semId, SemesterDetailQueryModel queryModel)
         {
             try
             {
@@ -28,23 +28,28 @@ namespace SchoolManagement.Service
                 int pageSize = queryModel.PageSize != null && queryModel.PageSize.Value > 0 ? queryModel.PageSize.Value : 10;
 
                 var query = _context.SemesterDetailEntities
-                    .Include(sd => sd.Class)
-                        .ThenInclude(c => c.HomeroomTeacher)
-                    .Include(sd => sd.Semester)
-                    .AsQueryable();
+                        .Include(sd => sd.Class)
+                            .ThenInclude(c => c.HomeroomTeacher)
+                        .Include(sd => sd.Semester)
+                        .Where(sd => sd.SemesterId == semId)
+                        .AsQueryable();
 
+                #region Filter
                 if (queryModel.Grades.Any())
                 {
                     _logger.LogInformation("Filter by grades: {Grades}", string.Join(", ", queryModel.Grades));
                     query = query.Where(sd => queryModel.Grades.Contains(sd.Class.Grade));
                 }
+                #endregion
 
+                #region Search
                 if (!string.IsNullOrEmpty(queryModel.SearchValue))
                 {
                     _logger.LogInformation("Search value: {SearchValue}", queryModel.SearchValue);
                     query = query.Where(sd => sd.Class.ClassName.Contains(queryModel.SearchValue) ||
                                               sd.Class.HomeroomTeacher.FullName.Contains(queryModel.SearchValue));
                 }
+                #endregion
 
                 var totalCount = await query.CountAsync();
 
