@@ -41,7 +41,7 @@ const DepartmentDetail = () => {
 
 	return (
 		<>
-			<div className="mb-4 text-2xl font-medium">QUẢN LÝ BỘ MÔN TOÁN</div>
+			<div className="mb-4 text-2xl font-medium">QUẢN LÝ BỘ MÔN </div>
 			<div className="mb-5 flex justify-between">
 				<div className="relative min-w-[295px]">
 					<Search className="absolute left-2 top-2.5 h-4 w-4 " />
@@ -68,12 +68,12 @@ const DepartmentDetail = () => {
 				</div>
 			</div>
 			<div>
-				<TableDetails
+				{/* <TableDetails
 					data={data}
 					columns={columns}
 					onChange={handleChange}
 					loading={false}
-				/>
+				/> */}
 			</div>
 		</>
 	);

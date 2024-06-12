@@ -68,7 +68,6 @@ export function Panel(props: IPanelProps) {
 		resolver: yupResolver(studentSchema),
 	});
 
-	console.log(errors);
 	const onSubmit = handleSubmit((data) => {
 		const formData = new FormData();
 
@@ -118,17 +117,30 @@ export function Panel(props: IPanelProps) {
 					setValue("fullName", info?.fullName);
 					setValue("dob", convertDateISO(info?.dob));
 					setValue("gender", info?.gender);
-					setValue(
-						"identificationNumber",
-						info?.identificationNumber
-					);
+					info?.identificationNumber &&
+						setValue(
+							"identificationNumber",
+							info?.identificationNumber
+						);
 					setValue("ethnic", info?.ethnic);
-					setValue("address".info?.address);
+					setValue("address", info?.address);
+					setValue("phoneNumber", info?.phoneNumber);
+					info?.email && setValue("email", info?.email);
+					setValue("fatherName", info?.fatherName);
+					setValue("fatherJob", info?.fatherJob);
+					setValue("fatherPhoneNumber", info?.fatherPhoneNumber);
+					setValue("motherName", info?.motherName);
+					setValue("motherJob", info?.motherJob);
+					setValue("motherPhoneNumber", info?.motherPhoneNumber);
 					setCount((count) => count + 1);
 				}
 			);
 		}
 	};
+
+	useEffect(() => {
+		setCount(0);
+	}, [selectedStudent]);
 
 	return (
 		<Sheet open={openSheet} onOpenChange={setOpenSheet}>

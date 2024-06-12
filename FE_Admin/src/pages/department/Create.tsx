@@ -1,51 +1,97 @@
+import { createDepartment, updateDepartment } from "@/apis/department.api";
+import CommonInput from "@/components/input/CommonInput";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
 	Sheet,
-	SheetClose,
 	SheetContent,
-	SheetDescription,
-	SheetFooter,
 	SheetHeader,
 	SheetTitle,
 	SheetTrigger,
 } from "@/components/ui/sheet";
 import { IDepartment } from "@/types/department.type";
-import { useState, useReducer } from "react";
+import {
+	IDepartmentSchema,
+	departmentSchema,
+} from "@/utils/schema/department.schema";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useState, useReducer, useEffect } from "react";
+import { useForm } from "react-hook-form";
 
-interface IPanelState {
-	id: string;
-	name: string;
-	description: string;
-	notification: string;
-}
 interface IPanelProps {
 	type: "edit" | "create";
 	selected?: IDepartment | null;
 	disable: boolean;
+	refreshData: (value: string) => void;
 }
-
+const initValues = {
+	departmentId: "",
+	subjectName: "",
+	description: "",
+	notification: "",
+};
 export function Create(props: IPanelProps) {
-	const { type, selected, disable } = props;
+	const { type, selected, disable, refreshData } = props;
 	const [openSheet, setOpenSheet] = useState(false);
+	const [count, setCount] = useState(0);
+	const [loading, setLoading] = useState(false);
 
-	const [formValue, handleForm] = useReducer(
-		(prev: IPanelState, next: Partial<IPanelState>) => {
-			return { ...prev, ...next };
-		},
-		{ id: "", name: "", description: "", notification: "" }
-	);
+	const {
+		register,
+		handleSubmit,
+		formState: { errors },
+		control,
+		setValue,
+		reset,
+	} = useForm<IDepartmentSchema>({
+		defaultValues: initValues,
+		resolver: yupResolver(departmentSchema),
+	});
 
-	const handleChange =
-		(name: "id" | "name" | "description" | "notification") =>
-		(event: React.ChangeEvent<HTMLInputElement>) => {
-			handleForm({
-				[name]: event.target?.value,
-			});
+	useEffect(() => {
+		setCount(0);
+	}, [selected]);
+
+	const handleGetData = () => {
+		if (count === 0) {
+			setValue("departmentId", selected?.departmentId as string);
+			setValue("subjectName", selected?.subjectName as string);
+			selected?.description &&
+				setValue("description", selected?.description);
+			selected?.notification &&
+				setValue("notification", selected?.notification);
+			setCount((count) => count + 1);
+		}
+	};
+
+	const resetState = () => {
+		setLoading(false);
+		setCount(0);
+		reset(initValues);
+		setOpenSheet(false);
+	};
+
+	const onSubmit = handleSubmit((data) => {
+		const body = {
+			departmentId: data?.departmentId,
+			subjectName: data?.subjectName,
+			description: data?.description ?? "",
+			notification: data?.notification ?? "",
 		};
-
-	const handleGetData = () => {};
+		setLoading(true);
+		if (type === "create") {
+			createDepartment(body).then(() => {
+				resetState();
+				refreshData("Thêm tổ bộ môn thành công!");
+			});
+		} else {
+			updateDepartment(body).then(() => {
+				resetState();
+				refreshData("Cập nhật tổ bộ môn thành công!");
+			});
+		}
+	});
 
 	return (
 		<Sheet open={openSheet} onOpenChange={setOpenSheet}>
@@ -63,43 +109,51 @@ export function Create(props: IPanelProps) {
 					</SheetTitle>
 				</SheetHeader>
 				<div className="mt-5">
-					<Label htmlFor="departmentId">Mã bộ môn</Label>
-					<Input
+					<Label htmlFor="departmentId" className="required">
+						Mã bộ môn
+					</Label>
+					<CommonInput
+						className="mt-[2px]"
 						name="departmentId"
-						className="mt-[2px]"
-						value={formValue?.id}
-						onChange={handleChange("id")}
+						register={register}
+						errorMessage={errors.departmentId?.message}
 					/>
 				</div>
-				<div className="mt-5">
-					<Label htmlFor="subjectName">Tên bộ môn</Label>
-					<Input
+				<div>
+					<Label htmlFor="subjectName" className="required">
+						Tên bộ môn
+					</Label>
+					<CommonInput
+						className="mt-[2px]"
 						name="subjectName"
-						className="mt-[2px]"
-						value={formValue?.name}
-						onChange={handleChange("name")}
+						register={register}
+						errorMessage={errors.subjectName?.message}
 					/>
 				</div>
-				<div className="mt-5">
+				<div>
 					<Label htmlFor="description">Mô tả</Label>
-					<Input
+					<CommonInput
+						className="mt-[2px]"
 						name="description"
-						className="mt-[2px]"
-						value={formValue?.description}
-						onChange={handleChange("description")}
+						register={register}
 					/>
 				</div>
-				<div className="mt-5">
+				<div>
 					<Label htmlFor="notification">Thông báo</Label>
-					<Input
-						name="notification"
+					<CommonInput
 						className="mt-[2px]"
-						value={formValue?.notification}
-						onChange={handleChange("notification")}
+						name="notification"
+						register={register}
 					/>
 				</div>
-				<div className="mt-10">
-					<Button className="w-full">Save changes</Button>
+				<div className="mt-3">
+					<Button
+						className="w-full"
+						loading={loading}
+						onClick={onSubmit}
+					>
+						Save changes
+					</Button>
 				</div>
 			</SheetContent>
 		</Sheet>

@@ -10,9 +10,14 @@ import { StudentDetail } from "./StudentDetails";
 import { IStudent, IStudentInfo } from "@/types/student.type";
 import { Panel } from "./Create";
 import { useDebounce } from "@/hooks";
-import { deleteStudent, getAllStudent } from "@/apis/student.api";
+import {
+	deleteStudent,
+	exportStudent,
+	getAllStudent,
+} from "@/apis/student.api";
 import { useToast } from "@/components/ui/use-toast";
 import Pagination from "@/components/pagination";
+import { downloadFile } from "@/utils/utils";
 
 const statusList = [
 	{ value: "1", label: "Đang học" },
@@ -99,6 +104,7 @@ const Student = () => {
 	const [pageSize, setPageSize] = useState<number>(10);
 	const [pageNumber, setPageNumber] = useState<number>(1);
 	const [totalPage, setTotalPage] = useState<number>(1);
+	const [loadingExport, setLoadingExport] = useState<boolean>(false);
 
 	const searchQuery = useDebounce(searchValue, 1500);
 
@@ -140,6 +146,18 @@ const Student = () => {
 	const handleDelete = () => {
 		deleteStudent(selectedRows?.[0]?.studentId as string).then(() => {
 			refreshData("Xóa học sinh thành công!");
+		});
+	};
+
+	const handleExport = () => {
+		setLoadingExport(true);
+		exportStudent({
+			studentIds:
+				(selectedRows?.map((item) => item.studentId) as string[]) ?? [],
+			status: [],
+		}).then((res) => {
+			setLoadingExport(false);
+			downloadFile(res?.data, "QuanLyHocSinh");
 		});
 	};
 
@@ -186,7 +204,13 @@ const Student = () => {
 					</Button>
 				</div>
 				<div>
-					<Button className="min-w-[100px]">Xuất file</Button>
+					<Button
+						className="w-[100px]"
+						onClick={handleExport}
+						loading={loadingExport}
+					>
+						Xuất file
+					</Button>
 				</div>
 			</div>
 			<div>

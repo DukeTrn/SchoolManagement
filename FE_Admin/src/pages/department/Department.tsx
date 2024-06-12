@@ -2,10 +2,13 @@ import { TableDetails } from "@/components/table/Table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Create } from "@/pages/department/Create";
 import { IDepartment } from "@/types/department.type";
+import { deleteDepartment, getAllDepartment } from "@/apis/department.api";
+import Pagination from "@/components/pagination";
+import { useToast } from "@/components/ui/use-toast";
 
 const columns: ColumnDef<IDepartment>[] = [
 	{
@@ -21,6 +24,7 @@ const columns: ColumnDef<IDepartment>[] = [
 		),
 		enableSorting: false,
 		enableHiding: false,
+		size: 10,
 	},
 	{
 		accessorKey: "departmentId",
@@ -53,26 +57,49 @@ const columns: ColumnDef<IDepartment>[] = [
 	},
 ];
 
-const data: IDepartment[] = [
-	{
-		departmentId: "lvbt123",
-		subjectName: "Toán",
-		description:
-			"Lorem ipsum dolor sit amet, consectetur adipiscing elit.  ",
-		notification: "",
-	},
-	{
-		departmentId: "tlvb321",
-		subjectName: "Toán",
-		description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-		notification: "",
-	},
-];
 const Department = () => {
+	const { toast } = useToast();
+	const [loading, setLoading] = useState<boolean>(false);
 	const [selectedRow, setSelectedRow] = useState<IDepartment>();
+	const [departments, setDepartments] = useState<IDepartment[]>([]);
+	const [pageSize, setPageSize] = useState<number>(10);
+	const [pageNumber, setPageNumber] = useState<number>(1);
+	const [totalPage, setTotalPage] = useState<number>(1);
 
 	const handleChange = (value: IDepartment[]) => {
 		setSelectedRow(value?.[0]);
+	};
+
+	useEffect(() => {
+		handleGetData();
+	}, [pageNumber, pageSize]);
+
+	const handleGetData = () => {
+		setLoading(true);
+		getAllDepartment({
+			pageNumber: pageNumber,
+			pageSize: pageSize,
+		}).then((res) => {
+			setLoading(false);
+			setTotalPage(res?.data?.totalPageCount);
+			setDepartments(res?.data?.dataList);
+		});
+	};
+
+	const refreshData = (message: string) => {
+		setSelectedRow(undefined);
+		handleGetData();
+		toast({
+			title: "Thông báo:",
+			description: message,
+			className: "border-2 border-green-500 p-4",
+		});
+	};
+
+	const handleDelete = () => {
+		deleteDepartment(selectedRow?.departmentId as string).then(() => {
+			refreshData("Xóa học sinh thành công!");
+		});
 	};
 
 	const isDisableButton = !selectedRow;
@@ -81,22 +108,35 @@ const Department = () => {
 			<div className="mb-4 text-2xl font-medium">QUẢN LÝ TỔ BỘ MÔN</div>
 			<div className="mb-5">
 				<div className="flex gap-2">
-					<Create type="create" disable={false} />
+					<Create
+						type="create"
+						disable={false}
+						refreshData={refreshData}
+					/>
 					<Create
 						type="edit"
 						disable={isDisableButton}
 						selected={selectedRow}
+						refreshData={refreshData}
 					/>
-					<Button disabled={isDisableButton}>Xóa</Button>
+					<Button disabled={isDisableButton} onClick={handleDelete}>
+						Xóa
+					</Button>
 				</div>
 			</div>
 			<div className="mb-5">
 				<TableDetails
-					data={data}
+					data={departments}
 					columns={columns}
 					onChange={handleChange}
-					loading={false}
+					loading={loading}
 					useRadio
+				/>
+				<Pagination
+					pageSize={pageSize}
+					onChangePage={(value) => setPageNumber(Number(value))}
+					onChangeRow={(value) => setPageSize(Number(value))}
+					totalPageCount={totalPage}
 				/>
 			</div>
 		</>

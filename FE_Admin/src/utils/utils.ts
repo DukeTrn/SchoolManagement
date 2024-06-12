@@ -21,3 +21,12 @@ export const convertDateISO = (dateStr: string) => {
 	const date = new Date(Date.UTC(year, month - 1, day));
 	return date.toISOString();
 };
+
+export const downloadFile = (res: string, name: string) => {
+	const url = window.URL.createObjectURL(new Blob([res]));
+	const link = document.createElement("a");
+	link.href = url;
+	link.setAttribute("download", `${name}_${Date.now()}.xlsx`);
+	document.body.appendChild(link);
+	link.click();
+};

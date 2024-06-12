@@ -28,3 +28,11 @@ export const createStudent = (body: FormData) => {
 };
 
 export const deleteStudent = (id: string) => http.delete(`student/${id}`);
+
+export const exportStudent = (body: {
+	studentIds: string[];
+	status: string[];
+}) =>
+	http.post("/student/export", body, {
+		responseType: "blob",
+	});
