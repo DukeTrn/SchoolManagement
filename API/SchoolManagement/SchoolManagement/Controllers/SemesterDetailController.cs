@@ -20,14 +20,15 @@ namespace SchoolManagement.Web.Controllers
         /// <summary>
         /// Get all classes in 1 semester
         /// </summary>
+        /// <param name="semesterId"></param>
         /// <param name="queryModel"></param>
         /// <returns></returns>
         [HttpPost, Route("all")]
-        public async ValueTask<IActionResult> GetAllClassDetail([FromBody] SemesterDetailQueryModel queryModel)
+        public async ValueTask<IActionResult> GetAllClassDetail(string semesterId, [FromBody] SemesterDetailQueryModel queryModel)
         {
             try
             {
-                var result = await _service.GetAllClassesInSem(queryModel);
+                var result = await _service.GetAllClassesInSem(semesterId, queryModel);
                 return Ok(result);
             }
             catch (Exception ex)
