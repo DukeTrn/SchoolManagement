@@ -7,7 +7,9 @@ import {
 	SheetTitle,
 	SheetTrigger,
 } from "@/components/ui/sheet";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { getStudentDetail } from "@/apis/student.api";
+import { IStudent } from "@/types/student.type";
 
 interface IStudentDetailsProps {
 	studentId: string;
@@ -15,12 +17,12 @@ interface IStudentDetailsProps {
 
 export function StudentDetail(props: IStudentDetailsProps) {
 	const { studentId } = props;
-	const [data, setData] = useState<any>();
+	const [student, setStudent] = useState<IStudent>();
 
 	const getStudentDetails = () => {
-		fetch("https://jsonplaceholder.typicode.com/todos/1")
-			.then((response) => response.json())
-			.then((json) => setData(json));
+		getStudentDetail(studentId).then((res) => {
+			setStudent(res?.data?.data);
+		});
 	};
 
 	return (
@@ -42,11 +44,8 @@ export function StudentDetail(props: IStudentDetailsProps) {
 				<div className="mt-6">
 					<div className="mb-6 flex items-center justify-center">
 						<Avatar className="h-28 w-28">
-							<AvatarImage
-								src="https://github.com/shadcn.png"
-								alt="@shadcn"
-							/>
-							<AvatarFallback>CN</AvatarFallback>
+							<AvatarImage src={student?.avatar} alt="@shadcn" />
+							<AvatarFallback>AVT</AvatarFallback>
 						</Avatar>
 					</div>
 					<div>
@@ -54,81 +53,81 @@ export function StudentDetail(props: IStudentDetailsProps) {
 							<span className="mr-4 font-medium">
 								Mã số học sinh:
 							</span>
-							<span>{studentId}</span>
+							<span>{student?.studentId}</span>
 						</div>
 						<div className="mb-3 flex">
 							<span className="mr-4 font-medium">
 								Họ tên học sinh:
 							</span>
-							<span></span>
+							<span>{student?.fullName}</span>
 						</div>
 						<div className="mb-3 flex">
 							<span className="mr-4 font-medium">Ngày sinh:</span>
-							<span></span>
+							<span>{student?.dob}</span>
 						</div>
 						<div className="mb-3 flex">
 							<span className="mr-4 font-medium">Giới tính:</span>
-							<span></span>
+							<span>{student?.gender}</span>
 						</div>
 						<div className="mb-3 flex">
 							<span className="mr-4 font-medium">CCCD:</span>
-							<span></span>
+							<span>{student?.identificationNumber}</span>
 						</div>
 						<div className="mb-3 flex">
 							<span className="mr-4 font-medium">Dân tộc:</span>
-							<span></span>
+							<span>{student?.ethnic}</span>
 						</div>
 						<div className="mb-3 flex">
 							<span className="mr-4 font-medium">Địa chỉ:</span>
-							<span></span>
+							<span>{student?.address}</span>
 						</div>
 						<div className="mb-3 flex">
 							<span className="mr-4 font-medium">
 								Số điện thoại:
 							</span>
-							<span></span>
+							<span>{student?.phoneNumber}</span>
 						</div>
 						<div className="mb-3 flex">
 							<span className="mr-4 font-medium">Email:</span>
-							<span></span>
+							<span>{student?.email}</span>
 						</div>
 						<div className="mb-3 flex">
 							<span className="mr-4 font-medium">Niên khoá:</span>
-							<span></span>
+							<span>{student?.academicYear}</span>
 						</div>
 						<div className="mb-3 flex">
 							<span className="mr-4 font-medium">Họ tên bố:</span>
-							<span></span>
+							<span>{student?.fatherName}</span>
 						</div>
 						<div className="mb-3 flex">
 							<span className="mr-4 font-medium">
 								Nghề nghiệp bố:
 							</span>
-							<span></span>
+							<span>{student?.fatherJob}</span>
 						</div>
 						<div className="mb-3 flex">
 							<span className="mr-4 font-medium">SĐT bố:</span>
-							<span></span>
+							<span>{student?.fatherPhoneNumber}</span>
 						</div>
 						<div className="mb-3 flex">
 							<span className="mr-4 font-medium">Họ tên mẹ:</span>
-							<span></span>
+							<span>{student?.motherName}</span>
 						</div>
 						<div className="mb-3 flex">
 							<span className="mr-4 font-medium">
 								Nghề nghiệp mẹ:
 							</span>
-							<span></span>
+							<span>{student?.motherJob}</span>
 						</div>
 						<div className="mb-3 flex">
 							<span className="mr-4 font-medium">SĐT mẹ:</span>
-							<span></span>
+							<span>{student?.motherPhoneNumber}</span>
 						</div>
 						<div className="mb-10 flex">
 							<span className="mr-4 font-medium">
 								Trạng thái học tập:
 							</span>
-							<span></span>
+							<span>{student?.status}</span>
 						</div>
 					</div>
 				</div>

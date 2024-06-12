@@ -90,7 +90,10 @@ export function TableDetails(props: IProps) {
 	return (
 		<div className="w-full">
 			<div className="rounded-md border">
-				<Table className="relative overflow-y-auto">
+				<Table
+					className="relative overflow-y-auto"
+					// style={{ width: table.getCenterTotalSize() }}
+				>
 					<TableHeader>
 						{table.getHeaderGroups().map((headerGroup) => (
 							<TableRow key={headerGroup.id}>
@@ -121,11 +124,21 @@ export function TableDetails(props: IProps) {
 								>
 									{row.getVisibleCells().map((cell) => {
 										return loading ? (
-											<TableCell key={cell.id}>
+											<TableCell
+												key={cell.id}
+												style={{
+													width: cell.column.getSize(),
+												}}
+											>
 												<Skeleton className="h-[15px] w-full rounded bg-gray-200" />
 											</TableCell>
 										) : (
-											<TableCell key={cell.id}>
+											<TableCell
+												key={cell.id}
+												style={{
+													width: cell.column.getSize(),
+												}}
+											>
 												{flexRender(
 													cell.column.columnDef.cell,
 													cell.getContext()
@@ -141,7 +154,7 @@ export function TableDetails(props: IProps) {
 									colSpan={columns.length}
 									className="h-24 text-center"
 								>
-									No results.
+									Không có dữ liệu
 								</TableCell>
 							</TableRow>
 						)}

@@ -4,29 +4,21 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Label } from "@/components/ui/label";
 import {
 	Sheet,
-	SheetClose,
 	SheetContent,
-	SheetDescription,
-	SheetFooter,
 	SheetHeader,
 	SheetTitle,
 	SheetTrigger,
 } from "@/components/ui/sheet";
-import {
-	Form,
-	FormControl,
-	FormDescription,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
-} from "@/components/ui/form";
+import { FormField, FormItem, FormMessage } from "@/components/ui/form";
 
 import { IStudent } from "@/types/student.type";
 import { IStudentSchema, studentSchema } from "@/utils/schema/student.schema";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import DatePicker from "@/components/datepicker/DatePicker";
+import { Input } from "@/components/ui/input";
+import { createStudent, getStudentDetail } from "@/apis/student.api";
+import { convertDateISO } from "@/utils/utils";
 
 const initValues = {
 	studentId: "",
@@ -54,12 +46,15 @@ interface IPanelProps {
 	type: "edit" | "create";
 	selectedStudent?: IStudent | null;
 	disable: boolean;
+	refreshData: (message: string) => void;
 }
 type IFormData = IStudentSchema;
 export function Panel(props: IPanelProps) {
-	const { type, selectedStudent, disable } = props;
+	const { type, selectedStudent, disable, refreshData } = props;
 	const [openSheet, setOpenSheet] = useState(false);
 	const [count, setCount] = useState(0);
+	const [file, setFile] = useState<File>();
+	const [loading, setLoading] = useState<boolean>(false);
 
 	const {
 		register,
@@ -73,26 +68,65 @@ export function Panel(props: IPanelProps) {
 		resolver: yupResolver(studentSchema),
 	});
 
-	console.log("errors", errors);
-
+	console.log(errors);
 	const onSubmit = handleSubmit((data) => {
-		// const value = getValues()
-		// console.log(value)
-		console.log("handle submit");
-		console.log("data", data);
-		setOpenSheet(false);
-		reset(initValues);
-		setCount(0);
+		const formData = new FormData();
+
+		file && formData.append("avatar", file);
+		formData.append(
+			"studentId",
+			Math.floor(Math.random() * 1000).toString()
+		);
+		formData.append("fullName", data?.fullName);
+		formData.append("dob", new Date(data?.dob).toISOString());
+		data?.identificationNumber &&
+			formData.append("identificationNumber", data?.identificationNumber);
+		formData.append("gender", data?.gender);
+		formData.append("address", data?.address);
+		formData.append("ethnic", data?.ethnic);
+		formData.append("phoneNumber", data?.phoneNumber);
+		formData.append("email", data?.email);
+		formData.append("fatherName", data?.fatherName);
+		formData.append("fatherJob", data?.fatherJob);
+		formData.append("fatherPhoneNumber", data?.fatherPhoneNumber);
+		data?.fatherEmail && formData.append("fatherEmail", data?.fatherEmail);
+		formData.append("motherName", data?.motherName);
+		formData.append("motherJob", data?.motherJob);
+		formData.append("motherPhoneNumber", data?.motherPhoneNumber);
+		data?.motherEmail && formData.append("motherEmail", data?.motherEmail);
+
+		setLoading(true);
+		createStudent(formData).then(() => {
+			setLoading(false);
+			setCount(0);
+			reset(initValues);
+			setOpenSheet(false);
+			refreshData(
+				type === "create"
+					? "Thêm học sinh thành công"
+					: "Cập nhật thông tin học sinh thành công"
+			);
+		});
 	});
 
 	const handleGetData = () => {
 		if (count === 0) {
-			fetch("https://jsonplaceholder.typicode.com/todos/1")
-				.then((response) => response.json())
-				.then((json) => {
-					setValue("fullName", json.title);
+			getStudentDetail(selectedStudent?.studentId as string).then(
+				(res) => {
+					const info = res?.data?.data;
+					setValue("studentId", info?.studentId);
+					setValue("fullName", info?.fullName);
+					setValue("dob", convertDateISO(info?.dob));
+					setValue("gender", info?.gender);
+					setValue(
+						"identificationNumber",
+						info?.identificationNumber
+					);
+					setValue("ethnic", info?.ethnic);
+					setValue("address".info?.address);
 					setCount((count) => count + 1);
-				});
+				}
+			);
 		}
 	};
 
@@ -174,7 +208,7 @@ export function Panel(props: IPanelProps) {
 					</div>
 					<div>
 						<Label htmlFor="address" className="required">
-							Dân tộc
+							Địa chỉ
 						</Label>
 						<CommonInput
 							className="mt-[2px]"
@@ -203,15 +237,16 @@ export function Panel(props: IPanelProps) {
 							// errorMessage={errors.email?.message}
 						/>
 					</div>
-					<div>
-						<Label htmlFor="academicYear" className="required">
-							Niên khoá
-						</Label>
-						<CommonInput
+					<div className="mb-4">
+						<Label htmlFor="avatar">Avatar</Label>
+						<Input
 							className="mt-[2px]"
-							name="academicYear"
-							register={register}
-							errorMessage={errors.academicYear?.message}
+							id="avatar"
+							type="file"
+							name="avatar"
+							onChange={(
+								event: React.ChangeEvent<HTMLInputElement>
+							) => setFile(event.target.files?.[0])}
 						/>
 					</div>
 					<div>
@@ -280,18 +315,12 @@ export function Panel(props: IPanelProps) {
 							errorMessage={errors.motherPhoneNumber?.message}
 						/>
 					</div>
-					<div>
-						<Label htmlFor="status" className="required">
-							Trạng thái học tập
-						</Label>
-						<CommonInput
-							className="mt-[2px]"
-							name="status"
-							register={register}
-							errorMessage={errors.status?.message}
-						/>
-					</div>
-					<Button className="w-full" onClick={onSubmit}>
+
+					<Button
+						className="w-full"
+						onClick={onSubmit}
+						loading={loading}
+					>
 						Save changes
 					</Button>
 				</div>

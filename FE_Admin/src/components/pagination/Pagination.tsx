@@ -32,7 +32,7 @@ const Pagination = (props: IPaginationProps) => {
 				return (
 					<span
 						key={uuidv4()}
-						className="mx-2 cursor-pointer rounded border bg-white px-3 py-2 text-sm shadow-sm"
+						className="mx-2 flex h-8 w-10 cursor-pointer items-center justify-center rounded border bg-white text-sm shadow-sm"
 					>
 						...
 					</span>
@@ -48,7 +48,7 @@ const Pagination = (props: IPaginationProps) => {
 				return (
 					<span
 						key={uuidv4()}
-						className="mx-2 cursor-pointer rounded border bg-white px-3 py-2 text-sm shadow-sm"
+						className="mx-2 flex h-8 w-10 cursor-pointer items-center justify-center rounded border bg-white text-sm shadow-sm"
 					>
 						...
 					</span>
@@ -92,7 +92,7 @@ const Pagination = (props: IPaginationProps) => {
 					<button
 						key={uuidv4()}
 						className={classNames(
-							"mx-2 h-[40px] w-[40px] cursor-pointer rounded border px-2 py-2 text-sm shadow-sm",
+							"mx-2 flex h-8 w-8 cursor-pointer items-center justify-center rounded border px-2 py-2 text-sm shadow-sm",
 							{
 								"bg-[#E11D48] text-white":
 									pageNumber === currentPage,
@@ -118,7 +118,7 @@ const Pagination = (props: IPaginationProps) => {
 						onChangeRow && onChangeRow(value);
 					}}
 				>
-					<SelectTrigger className="h-10 w-[100px]">
+					<SelectTrigger className="h-8 w-[100px]">
 						<SelectValue />
 					</SelectTrigger>
 					<SelectContent side="top">
@@ -129,9 +129,9 @@ const Pagination = (props: IPaginationProps) => {
 						))}
 					</SelectContent>
 				</Select>
-				<div>
+				<div className="flex items-center">
 					{currentPage === 1 ? (
-						<button className="mx-2 cursor-not-allowed rounded border bg-white/60 px-3 py-2 text-sm shadow-sm">
+						<button className="mx-2 flex h-8 w-12 cursor-not-allowed items-center justify-center rounded border bg-white/60 px-2 text-sm shadow-sm">
 							Prev
 						</button>
 					) : (
@@ -143,7 +143,7 @@ const Pagination = (props: IPaginationProps) => {
 									(currentPage) => currentPage - 1
 								);
 							}}
-							className="mx-2 cursor-pointer rounded border bg-white px-3 py-2 text-sm shadow-sm"
+							className="v mx-2 flex h-8 w-12 w-8 cursor-pointer items-center justify-center rounded border bg-white px-2 text-sm shadow-sm"
 						>
 							Prev
 						</button>
@@ -152,7 +152,7 @@ const Pagination = (props: IPaginationProps) => {
 					{renderPagination()}
 
 					{currentPage === totalPageCount ? (
-						<button className="mx-2 cursor-not-allowed rounded border bg-white px-3 py-2 text-sm shadow-sm">
+						<button className="mx-2 flex h-8 w-12 cursor-not-allowed items-center justify-center rounded  border bg-white text-sm shadow-sm ">
 							Next
 						</button>
 					) : (
@@ -164,7 +164,7 @@ const Pagination = (props: IPaginationProps) => {
 									(currentPage) => currentPage + 1
 								);
 							}}
-							className="mx-2 cursor-pointer rounded border bg-white px-3 py-2 text-sm shadow-sm"
+							className="mx-2 flex h-8 w-12 cursor-pointer items-center justify-center rounded border bg-white text-sm shadow-sm"
 						>
 							Next
 						</button>

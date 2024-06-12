@@ -65,7 +65,7 @@ interface MultiSelectProps
 	asChild?: boolean;
 	className?: string;
 	width?: number;
-	handleRetrive?: () => void;
+	handleRetrieve?: () => void;
 }
 
 export const MultiSelect = React.forwardRef<
@@ -84,7 +84,7 @@ export const MultiSelect = React.forwardRef<
 			asChild = false,
 			className,
 			width,
-			handleRetrive,
+			handleRetrieve,
 			...props
 		},
 		ref
@@ -317,7 +317,7 @@ export const MultiSelect = React.forwardRef<
 									<CommandItem
 										onSelect={() => {
 											setIsPopoverOpen(false);
-											handleRetrive && handleRetrive();
+											handleRetrieve && handleRetrieve();
 										}}
 										style={{
 											pointerEvents: "auto",

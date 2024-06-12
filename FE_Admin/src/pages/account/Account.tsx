@@ -15,6 +15,7 @@ import {
 } from "@/apis/account.api";
 import { useToast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
+import { useDebounce } from "@/hooks";
 
 const roles = [
 	{ value: "1", label: "Admin" },
@@ -47,6 +48,7 @@ export const columns: ColumnDef<IAccount>[] = [
 		),
 		enableSorting: false,
 		enableHiding: false,
+		size: 30,
 	},
 	{
 		accessorKey: "userName",
@@ -87,6 +89,7 @@ export const columns: ColumnDef<IAccount>[] = [
 					: "Ngừng hoạt động"}
 			</div>
 		),
+		minSize: 200,
 	},
 ];
 
@@ -95,23 +98,25 @@ const Account = () => {
 	const [loading, setLoading] = useState<boolean>(false);
 	const [accounts, setAccounts] = useState<IAccount[]>([]);
 	const [searchValue, setSearchValue] = useState("");
-	const [position, setPosition] = useState("");
 	const [selectedRows, setSelectedRows] = useState<IAccount[]>([]);
 	const [selectedFields, setSelectedFields] = useState<string[]>([]);
 	const [pageSize, setPageSize] = useState<number>(10);
 	const [pageNumber, setPageNumber] = useState<number>(1);
 	const [totalPage, setTotalPage] = useState<number>(1);
+
+	const searchQuery = useDebounce(searchValue, 1500);
+
 	const isDisableButton =
 		selectedRows?.length <= 0 || selectedRows?.length > 1;
 
 	useEffect(() => {
 		handleGetData();
-	}, [pageNumber, pageSize, searchValue]);
+	}, [pageNumber, pageSize, searchQuery]);
 
 	const handleGetData = () => {
 		setLoading(true);
 		getAllAccount({
-			searchValue: searchValue,
+			searchValue: searchQuery,
 			pageSize: pageSize,
 			pageNumber: pageNumber,
 			roles: selectedFields?.map((i) => Number(i)),
@@ -128,14 +133,7 @@ const Account = () => {
 		toast({
 			title: "Thông báo:",
 			description: message,
-			action: (
-				<ToastAction
-					altText="Success"
-					className="bg-green-600 text-white"
-				>
-					Success
-				</ToastAction>
-			),
+			className: "border-2 border-green-500 p-4",
 		});
 	};
 
@@ -158,8 +156,6 @@ const Account = () => {
 		setSelectedRows(value);
 	};
 
-	console.log(selectedFields);
-
 	return (
 		<>
 			<div className="mb-4 text-2xl font-medium">QUẢN LÝ TÀI KHOẢN</div>
@@ -176,7 +172,7 @@ const Account = () => {
 				<MultiSelect
 					options={roles}
 					onValueChange={setSelectedFields}
-					handleRetrive={handleGetData}
+					handleRetrieve={handleGetData}
 					defaultValue={selectedFields}
 					placeholder="Chức vụ"
 					variant="inverted"
