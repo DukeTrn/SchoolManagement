@@ -258,10 +258,46 @@ namespace SchoolManagement.Service
                 // Tính điểm trung bình của lớp
                 var totalAverage = averageScores.Any() ? averageScores.Average(score => score.Average) : 0;
 
+                // Tính toán AcademicPerform
+                string academicPerform;
+                if (totalAverage >= 8 &&
+                    averageScores.All(s => s.Average >= 6.5M) &&
+                    (averageScores.Any(s => s.SubjectName.Contains("Đại số & Giải tích") && s.Average >= 8) ||
+                     averageScores.Any(s => s.SubjectName.Contains("Ngữ văn") && s.Average >= 8.0M)))
+                {
+                    academicPerform = "Giỏi";
+                }
+                else if (totalAverage >= 6.5M && totalAverage < 8 &&
+                    averageScores.All(s => s.Average >= 5) &&
+                    (averageScores.Any(s => s.SubjectName.Contains("Đại số & Giải tích") && s.Average >= 6.5M && s.Average < 8) ||
+                     averageScores.Any(s => s.SubjectName.Contains("Ngữ văn") && s.Average >= 6.5M && s.Average < 8)))
+                {
+                    academicPerform = "Khá";
+                }
+                else if (totalAverage >= 5 && totalAverage < 6.5M &&
+                    averageScores.All(s => s.Average >= 3.5M) &&
+                    (averageScores.Any(s => s.SubjectName.Contains("Đại số & Giải tích") && s.Average >= 5 && s.Average < 6.5M) ||
+                     averageScores.Any(s => s.SubjectName.Contains("Ngữ văn") && s.Average >= 5 && s.Average < 6.5M)))
+                {
+                    academicPerform = "Trung bình Khá";
+                }
+                else if (totalAverage >= 3.5M && totalAverage < 5 &&
+                    averageScores.All(s => s.Average >= 2) &&
+                    (averageScores.Any(s => s.SubjectName.Contains("Đại số & Giải tích") && s.Average >= 3.5M && s.Average < 5) ||
+                     averageScores.Any(s => s.SubjectName.Contains("Ngữ văn") && s.Average >= 3.5M && s.Average < 5)))
+                {
+                    academicPerform = "Trung bình";
+                }
+                else
+                {
+                    academicPerform = "Yếu";
+                }
+
                 return new AverageScoreModel
                 {
                     ClassDetailId = classDetailId,
-                    TotalAverage = Math.Round(totalAverage,1),
+                    TotalAverage = Math.Round(totalAverage, 1),
+                    AcademicPerform = academicPerform,
                     Subjects = averageScores
                 };
             }
@@ -271,6 +307,7 @@ namespace SchoolManagement.Service
                 throw;
             }
         }
+
 
         public async ValueTask<AverageScoreForAcademicYearModel> GetAverageScoreForAcademicYear(int grade, string classDetailId, string academicYear)
         {

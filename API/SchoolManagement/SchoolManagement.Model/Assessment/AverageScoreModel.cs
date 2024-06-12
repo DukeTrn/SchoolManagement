@@ -3,6 +3,8 @@
     public class AverageScoreModel
     {
         public string ClassDetailId { get; set; } = string.Empty;
+        // nếu TotalAverage >= 8 && Average của từng Subject trong Subjects >=6.5 && (SubjectId == 1 >= 8 || SubjectId == 12 >= 8) ==> AcademicPerform == "Giỏi"
+        public string AcademicPerform { get; set; } = string.Empty; // [0;3.5): Yếu ; [3.5;5): Trung bình ; [5;6.5): Trung bình Khá ; [6.5;8): Khá ; [8;10]: Giỏi
         public decimal TotalAverage { get; set; }
         public List<AverageEachSubjectModel> Subjects { get; set; } = new List<AverageEachSubjectModel>();
     }
