@@ -1,5 +1,9 @@
-import { getDepartmentDetail } from "@/apis/department.api";
+import {
+	deleteTeacherDepartment,
+	getDepartmentDetail,
+} from "@/apis/department.api";
 import { MultiSelect } from "@/components/multiselect/MultiSelect";
+import Pagination from "@/components/pagination";
 import { TableDetails } from "@/components/table/Table";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -11,10 +15,11 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Search } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { Create } from "./Create";
 
 const statusList = [
-	{ value: "0", label: "Đang dạy" },
-	{ value: "1", label: "Nghỉ  việc" },
+	{ value: "1", label: "Đang dạy" },
+	{ value: "2", label: "Tạm nghỉ" },
 ];
 
 type ITeacherTable = Pick<
@@ -109,8 +114,7 @@ const DepartmentDetail = () => {
 	const [totalPage, setTotalPage] = useState<number>(1);
 
 	const searchQuery = useDebounce(searchValue, 1500);
-	const isDisableButton =
-		selectedRows?.length > 1 || selectedRows?.length === 0;
+	const isDisableButton = selectedRows?.length === 0;
 
 	useEffect(() => {
 		handleGetData();
@@ -133,8 +137,27 @@ const DepartmentDetail = () => {
 		});
 	};
 
+	const refreshData = (message: string) => {
+		setSelectedRows([]);
+		handleGetData();
+		toast({
+			title: "Thông báo:",
+			description: message,
+			className: "border-2 border-green-500 p-4",
+		});
+	};
+
 	const handleChange = (value: ITeacherTable[]) => {
 		setSelectedRows(value);
+	};
+
+	const handleRemove = () => {
+		deleteTeacherDepartment({
+			departmentId: id as string,
+			teacherIds: selectedRows?.map((i) => i.teacherId) as string[],
+		}).then(() => {
+			refreshData("Xoá giáo viên khỏi bộ môn thành công");
+		});
 	};
 
 	return (
@@ -153,17 +176,24 @@ const DepartmentDetail = () => {
 				<MultiSelect
 					options={statusList}
 					onValueChange={setSelectedField}
-					defaultValue={selectedField}
-					placeholder="Tình trạng học tập"
+					value={selectedField}
+					placeholder="Tình trạng giảng dạy"
 					variant="inverted"
 					animation={2}
 					maxCount={0}
 					width={230}
+					handleRetrieve={handleGetData}
 				/>
 			</div>
 			<div className="mb-5 flex justify-between">
-				<div>
-					<Button>Xóa</Button>
+				<div className="flex gap-2">
+					<Create
+						departmentId={id as string}
+						refreshData={refreshData}
+					/>
+					<Button onClick={handleRemove} disabled={isDisableButton}>
+						Xóa
+					</Button>
 				</div>
 			</div>
 			<div>
@@ -171,7 +201,13 @@ const DepartmentDetail = () => {
 					data={teachers}
 					columns={columns}
 					onChange={handleChange}
-					loading={false}
+					loading={loading}
+				/>
+				<Pagination
+					pageSize={pageSize}
+					onChangePage={(value) => setPageNumber(Number(value))}
+					onChangeRow={(value) => setPageSize(Number(value))}
+					totalPageCount={totalPage}
 				/>
 			</div>
 		</>

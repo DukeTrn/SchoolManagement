@@ -12,3 +12,11 @@ export const departmentSchema = yup.object({
 });
 
 export type IDepartmentSchema = yup.InferType<typeof departmentSchema>;
+
+export const departmentDetailSchema = yup.object({
+	teacher: yup.array().length(1, defaultError).required(defaultError),
+});
+
+export type IDepartmentDetailSchema = yup.InferType<
+	typeof departmentDetailSchema
+>;

@@ -58,7 +58,7 @@ interface MultiSelectProps
 		icon?: React.ComponentType<{ className?: string }>;
 	}[];
 	onValueChange: (value: string[]) => void;
-	defaultValue?: string[];
+	value?: string[];
 	placeholder?: string;
 	animation?: number;
 	maxCount?: number;
@@ -66,6 +66,7 @@ interface MultiSelectProps
 	className?: string;
 	width?: number;
 	handleRetrieve?: () => void;
+	errorMessage?: string;
 }
 
 export const MultiSelect = React.forwardRef<
@@ -77,7 +78,7 @@ export const MultiSelect = React.forwardRef<
 			options,
 			onValueChange,
 			variant,
-			defaultValue = [],
+			value = [],
 			placeholder = "Select options",
 			animation = 0,
 			maxCount = 3,
@@ -85,22 +86,21 @@ export const MultiSelect = React.forwardRef<
 			className,
 			width,
 			handleRetrieve,
+			errorMessage,
 			...props
 		},
 		ref
 	) => {
 		const [selectedValues, setSelectedValues] =
-			React.useState<string[]>(defaultValue);
+			React.useState<string[]>(value);
 		const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);
 		const [isAnimating, setIsAnimating] = React.useState(false);
 
 		React.useEffect(() => {
-			if (
-				JSON.stringify(selectedValues) !== JSON.stringify(defaultValue)
-			) {
-				setSelectedValues(defaultValue);
+			if (JSON.stringify(selectedValues) !== JSON.stringify(value)) {
+				setSelectedValues(value);
 			}
-		}, [defaultValue, selectedValues]);
+		}, [value, selectedValues]);
 
 		const handleInputKeyDown = (
 			event: React.KeyboardEvent<HTMLInputElement>
@@ -332,6 +332,11 @@ export const MultiSelect = React.forwardRef<
 						</CommandList>
 					</Command>
 				</PopoverContent>
+				{errorMessage && (
+					<div className="mt-1 min-h-[1.25rem] text-sm text-red-600">
+						{errorMessage}
+					</div>
+				)}
 			</Popover>
 		);
 	}

@@ -20,7 +20,10 @@ type ITeacherTable = Pick<
 	| "status"
 	| "gender"
 >;
-
+interface IAddTeacher {
+	departmentId: string;
+	teacherIds: string[];
+}
 export const getAllDepartment = (body: {
 	pageSize: number;
 	pageNumber: number;
@@ -39,3 +42,16 @@ export const getDepartmentDetail = (body: IDepartmentDetailBody, id: string) =>
 		`department/${id}/teachers/all`,
 		body
 	);
+
+export const getTeacherDepartment = () =>
+	http.get<{ data: { teacherId: string; fullName: string }[] }>(
+		"teacher/filter"
+	);
+
+export const addTeacherDepartment = (body: IAddTeacher) => {
+	return http.post("department/add-teachers", body);
+};
+
+export const deleteTeacherDepartment = (body: IAddTeacher) => {
+	return http.post("department/remove-teachers", body);
+};

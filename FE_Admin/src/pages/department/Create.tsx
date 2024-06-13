@@ -151,7 +151,7 @@ export function Create(props: IPanelProps) {
 						loading={loading}
 						onClick={onSubmit}
 					>
-						Save changes
+						Lưu
 					</Button>
 				</div>
 			</SheetContent>

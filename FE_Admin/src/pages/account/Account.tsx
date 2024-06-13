@@ -173,7 +173,7 @@ const Account = () => {
 					options={roles}
 					onValueChange={setSelectedFields}
 					handleRetrieve={handleGetData}
-					defaultValue={selectedFields}
+					value={selectedFields}
 					placeholder="Chức vụ"
 					variant="inverted"
 					animation={2}

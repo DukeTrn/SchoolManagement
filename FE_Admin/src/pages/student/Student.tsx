@@ -178,7 +178,7 @@ const Student = () => {
 					options={statusList}
 					onValueChange={setSelectedField}
 					handleRetrieve={handleGetData}
-					defaultValue={selectedField}
+					value={selectedField}
 					placeholder="Tình trạng học tập"
 					variant="inverted"
 					animation={2}

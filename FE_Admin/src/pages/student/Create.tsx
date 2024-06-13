@@ -341,7 +341,7 @@ export function Panel(props: IPanelProps) {
 						onClick={onSubmit}
 						loading={loading}
 					>
-						Save changes
+						Lưu
 					</Button>
 				</div>
 			</SheetContent>
