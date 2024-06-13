@@ -130,9 +130,8 @@ namespace SchoolManagement.Service
                         ClassId = c.ClassId,
                         ClassName = c.ClassName,
                         AcademicYear = c.AcademicYear,
-                        //TotalStudents = _context.ClassDetailEntities.Count(cd => cd.ClassId == c.ClassId),
+                        TotalStudents = _context.ClassDetailEntities.Count(cd => cd.ClassId == c.ClassId),
                         HomeroomTeacherName = c.HomeroomTeacher.FullName
-                        // Thêm các trường khác cần thiết vào đây nếu cần
                     })
                     .ToListAsync();
 
@@ -154,7 +153,7 @@ namespace SchoolManagement.Service
         /// <param name="semesterId"></param>
         /// <param name="queryModel"></param>
         /// <returns></returns>
-        public async ValueTask<IEnumerable<ClassInSemesterModel>> GetListClassesInAcademicYear(int grade, string academicYear)
+        public async ValueTask<IEnumerable<ClassInAcademicYearModel>> GetListClassesInAcademicYear(int grade, string academicYear)
         {
             try
             {
@@ -164,13 +163,13 @@ namespace SchoolManagement.Service
                 // Nếu semesterId không tồn tại, trả về danh sách rỗng
                 if (!acaYearExists)
                 {
-                    return Enumerable.Empty<ClassInSemesterModel>();
+                    return Enumerable.Empty<ClassInAcademicYearModel>();
 
                 }
 
                 var classesInAcaYear = await _context.ClassEntities
                     .Where(c => c.Grade == grade && c.AcademicYear == academicYear)
-                    .Select(c => new ClassInSemesterModel
+                    .Select(c => new ClassInAcademicYearModel
                     {
                         ClassId = c.ClassId,
                         ClassName = c.ClassName,

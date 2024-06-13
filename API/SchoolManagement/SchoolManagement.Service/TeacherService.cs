@@ -219,7 +219,10 @@ namespace SchoolManagement.Service
             try
             {
                 _logger.LogInformation("Start to get a teacher by id.");
-                var teacher = await _context.TeacherEntities.FindAsync(id);
+                var teacher = await _context.TeacherEntities
+                    .Include(t => t.Department)
+                    .Include(t => t.Account)
+                    .FirstOrDefaultAsync(t => t.TeacherId == id);
                 if (teacher == null)
                 {
                     throw new NotFoundException($"Teacher with ID {id} not found.");
@@ -247,7 +250,10 @@ namespace SchoolManagement.Service
             try
             {
                 _logger.LogInformation("Start to get a teacher by account id.");
-                var teacher = await _context.TeacherEntities.FirstOrDefaultAsync(s => s.AccountId == id);
+                var teacher = await _context.TeacherEntities
+                    .Include(t => t.Department)
+                    .Include(t => t.Account)
+                    .FirstOrDefaultAsync(s => s.AccountId == id);
                 if (teacher == null)
                 {
                     throw new NotFoundException($"Teacher with ID {id} not found.");

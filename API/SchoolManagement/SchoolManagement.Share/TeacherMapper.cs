@@ -34,7 +34,8 @@ namespace SchoolManagement.Share
             TimeStart = entity.TimeStart.ToString("dd/MM/yyyy"),
             TimeEnd = entity.TimeEnd == null ? "" : entity.TimeEnd.Value.ToString("dd/MM/yyyy"),
             Status = TranslateStatus(entity.Status),
-
+            DepartmentName = entity.Department?.SubjectName ?? string.Empty,
+            Username = entity.Account?.UserName ?? string.Empty,
         };
 
         private static string TranslateStatus(TeacherStatusType status)
