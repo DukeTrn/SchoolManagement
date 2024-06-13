@@ -41,7 +41,6 @@ export function Create(props: IPanelProps) {
 		register,
 		handleSubmit,
 		formState: { errors },
-		control,
 		setValue,
 		reset,
 	} = useForm<IDepartmentSchema>({

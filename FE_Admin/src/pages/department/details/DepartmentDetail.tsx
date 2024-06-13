@@ -1,11 +1,16 @@
+import { getDepartmentDetail } from "@/apis/department.api";
 import { MultiSelect } from "@/components/multiselect/MultiSelect";
 import { TableDetails } from "@/components/table/Table";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/use-toast";
+import { useDebounce } from "@/hooks";
 import { ITeacher } from "@/types/teacher.type";
 import { ColumnDef } from "@tanstack/react-table";
 import { Search } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
 const statusList = [
 	{ value: "0", label: "Đang dạy" },
@@ -21,23 +26,116 @@ type ITeacherTable = Pick<
 	| "email"
 	| "level"
 	| "status"
+	| "gender"
 >;
 
-const data: ITeacherTable[] = [
+const columns: ColumnDef<ITeacherTable>[] = [
 	{
-		teacherId: "10012024",
-		fullName: "",
-		dob: "",
-		phoneNumber: "",
-		email: "",
-		level: "",
-		status: "",
+		id: "select",
+		header: ({ table }) => (
+			<Checkbox
+				checked={
+					table.getIsAllPageRowsSelected() ||
+					(table.getIsSomePageRowsSelected() && "indeterminate")
+				}
+				onCheckedChange={(value) =>
+					table.toggleAllPageRowsSelected(!!value)
+				}
+				aria-label="Select all"
+			/>
+		),
+		cell: ({ row }) => (
+			<Checkbox
+				checked={row.getIsSelected()}
+				onCheckedChange={(value) => row.toggleSelected(!!value)}
+				aria-label="Select row"
+			/>
+		),
+		enableSorting: false,
+		enableHiding: false,
+		size: 30,
+	},
+	{
+		accessorKey: "teacherId",
+		header: "MSBV",
+		cell: ({ row }) => <div>{row.getValue("teacherId")}</div>,
+	},
+	{
+		accessorKey: "fullName",
+		header: () => {
+			return <div>Họ tên</div>;
+		},
+		cell: ({ row }) => <div>{row.getValue("fullName")}</div>,
+		minSize: 200,
+	},
+	{
+		accessorKey: "dob",
+		header: "Ngày sinh",
+		cell: ({ row }) => <div>{row.getValue("dob")}</div>,
+	},
+	{
+		accessorKey: "gender",
+		header: "Giới tính",
+		cell: ({ row }) => <div>{row.getValue("gender")}</div>,
+	},
+	{
+		accessorKey: "phoneNumber",
+		header: "SDT",
+		cell: ({ row }) => <div>{row.getValue("phoneNumber")}</div>,
+	},
+	{
+		accessorKey: "email",
+		header: "Email",
+		cell: ({ row }) => <div>{row.getValue("email")}</div>,
+	},
+	{
+		accessorKey: "status",
+		header: "Tình trạng học tập",
+		cell: ({ row }) => <div>{row.getValue("status")}</div>,
+		size: 500,
 	},
 ];
 
 const DepartmentDetail = () => {
+	const { id } = useParams();
+	const { toast } = useToast();
 	const [searchValue, setSearchValue] = useState("");
+	const [teachers, setTeachers] = useState<ITeacherTable[]>([]);
+	const [loading, setLoading] = useState<boolean>(false);
 	const [selectedField, setSelectedField] = useState<string[]>([]);
+	const [selectedRows, setSelectedRows] = useState<ITeacherTable[]>([]);
+	const [pageSize, setPageSize] = useState<number>(10);
+	const [pageNumber, setPageNumber] = useState<number>(1);
+	const [totalPage, setTotalPage] = useState<number>(1);
+
+	const searchQuery = useDebounce(searchValue, 1500);
+	const isDisableButton =
+		selectedRows?.length > 1 || selectedRows?.length === 0;
+
+	useEffect(() => {
+		handleGetData();
+	}, [pageNumber, pageSize, searchQuery, id]);
+
+	const handleGetData = () => {
+		setLoading(true);
+		getDepartmentDetail(
+			{
+				pageNumber: pageNumber,
+				pageSize: pageSize,
+				searchValue: searchQuery,
+				status: selectedField?.map((i) => Number(i)),
+			},
+			id as string
+		).then((res) => {
+			setLoading(false);
+			setTotalPage(res?.data?.totalPageCount);
+			setTeachers(res?.data?.dataList);
+		});
+	};
+
+	const handleChange = (value: ITeacherTable[]) => {
+		setSelectedRows(value);
+	};
 
 	return (
 		<>
@@ -55,6 +153,7 @@ const DepartmentDetail = () => {
 				<MultiSelect
 					options={statusList}
 					onValueChange={setSelectedField}
+					defaultValue={selectedField}
 					placeholder="Tình trạng học tập"
 					variant="inverted"
 					animation={2}
@@ -68,12 +167,12 @@ const DepartmentDetail = () => {
 				</div>
 			</div>
 			<div>
-				{/* <TableDetails
-					data={data}
+				<TableDetails
+					data={teachers}
 					columns={columns}
 					onChange={handleChange}
 					loading={false}
-				/> */}
+				/>
 			</div>
 		</>
 	);

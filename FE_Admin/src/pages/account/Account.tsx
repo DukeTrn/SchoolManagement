@@ -201,9 +201,6 @@ const Account = () => {
 						Xóa
 					</Button>
 				</div>
-				<div>
-					<Button>Xuất file</Button>
-				</div>
 			</div>
 			<div>
 				<TableDetails

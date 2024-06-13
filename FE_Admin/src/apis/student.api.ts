@@ -27,6 +27,14 @@ export const createStudent = (body: FormData) => {
 	});
 };
 
+export const updateStudent = (body: FormData, id: string) => {
+	return http.put(`student/${id}`, body, {
+		headers: {
+			"Content-Type": "multipart/form-data",
+		},
+	});
+};
+
 export const deleteStudent = (id: string) => http.delete(`student/${id}`);
 
 export const exportStudent = (body: {

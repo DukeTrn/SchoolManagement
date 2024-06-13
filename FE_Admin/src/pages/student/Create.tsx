@@ -17,7 +17,11 @@ import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import DatePicker from "@/components/datepicker/DatePicker";
 import { Input } from "@/components/ui/input";
-import { createStudent, getStudentDetail } from "@/apis/student.api";
+import {
+	createStudent,
+	getStudentDetail,
+	updateStudent,
+} from "@/apis/student.api";
 import { convertDateISO } from "@/utils/utils";
 
 const initValues = {
@@ -95,7 +99,11 @@ export function Panel(props: IPanelProps) {
 		data?.motherEmail && formData.append("motherEmail", data?.motherEmail);
 
 		setLoading(true);
-		createStudent(formData).then(() => {
+
+		(type === "create"
+			? createStudent(formData)
+			: updateStudent(formData, data?.studentId as string)
+		).then(() => {
 			setLoading(false);
 			setCount(0);
 			reset(initValues);

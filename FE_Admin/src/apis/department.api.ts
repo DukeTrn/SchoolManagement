@@ -1,6 +1,25 @@
 import { IDepartment } from "@/types/department.type";
+import { ITeacher } from "@/types/teacher.type";
 import { ISuccessResponseApi } from "@/types/utils.type";
 import http from "@/utils/http";
+
+interface IDepartmentDetailBody {
+	searchValue: string;
+	pageSize: number;
+	pageNumber: number;
+	status: number[];
+}
+type ITeacherTable = Pick<
+	ITeacher,
+	| "teacherId"
+	| "fullName"
+	| "dob"
+	| "phoneNumber"
+	| "email"
+	| "level"
+	| "status"
+	| "gender"
+>;
 
 export const getAllDepartment = (body: {
 	pageSize: number;
@@ -14,3 +33,9 @@ export const updateDepartment = (body: IDepartment) =>
 	http.put(`department/${body?.departmentId}`, body);
 
 export const deleteDepartment = (id: string) => http.delete(`department/${id}`);
+
+export const getDepartmentDetail = (body: IDepartmentDetailBody, id: string) =>
+	http.post<ISuccessResponseApi<ITeacherTable[]>>(
+		`department/${id}/teachers/all`,
+		body
+	);
