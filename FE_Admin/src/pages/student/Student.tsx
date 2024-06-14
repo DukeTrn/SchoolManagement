@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -7,13 +7,22 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { MultiSelect } from "@/components/multiselect/MultiSelect";
 import { StudentDetail } from "./StudentDetails";
-import { IStudent } from "@/types/student.type";
+import { IStudent, IStudentInfo } from "@/types/student.type";
 import { Panel } from "./Create";
+import { useDebounce } from "@/hooks";
+import {
+	deleteStudent,
+	exportStudent,
+	getAllStudent,
+} from "@/apis/student.api";
+import { useToast } from "@/components/ui/use-toast";
+import Pagination from "@/components/pagination";
+import { downloadFile } from "@/utils/utils";
 
 const statusList = [
-	{ value: "0", label: "Đang học" },
-	{ value: "1", label: "Đình chỉ" },
-	{ value: "2", label: "Nghỉ  học" },
+	{ value: "1", label: "Đang học" },
+	{ value: "2", label: "Đình chỉ" },
+	{ value: "3", label: "Nghỉ  học" },
 ];
 
 const columns: ColumnDef<IStudent>[] = [
@@ -40,6 +49,7 @@ const columns: ColumnDef<IStudent>[] = [
 		),
 		enableSorting: false,
 		enableHiding: false,
+		size: 30,
 	},
 	{
 		accessorKey: "studentId",
@@ -54,6 +64,7 @@ const columns: ColumnDef<IStudent>[] = [
 			return <div>Họ tên</div>;
 		},
 		cell: ({ row }) => <div>{row.getValue("fullName")}</div>,
+		minSize: 200,
 	},
 	{
 		accessorKey: "dob",
@@ -82,46 +93,72 @@ const columns: ColumnDef<IStudent>[] = [
 		size: 500,
 	},
 ];
-const data: IStudent[] = [
-	{
-		studentId: "20193153",
-		fullName: "Le Vu Bao Trung",
-		dob: "03/11/2001",
-		gender: "Nam",
-		phoneNumber: "0395311258",
-		email: "trunglvb.hust@gmail.com",
-		status: "Đang học",
-	},
-	{
-		studentId: "20193154",
-		fullName: "Le Vu Bao Trung",
-		dob: "03/11/2001",
-		gender: "Nam",
-		phoneNumber: "0395311258",
-		email: "trunglvb.hust@gmail.com",
-		status: "Đang học",
-	},
-	{
-		studentId: "20193155",
-		fullName: "Le Vu Bao Trung",
-		dob: "03/11/2001",
-		gender: "Nam",
-		phoneNumber: "0395311258",
-		email: "trunglvb.hust@gmail.com",
-		status: "Đang học",
-	},
-];
 
 const Student = () => {
+	const { toast } = useToast();
+	const [students, setStudents] = useState<IStudentInfo[]>([]);
+	const [loading, setLoading] = useState<boolean>(false);
 	const [searchValue, setSearchValue] = useState("");
-	const [position, setPosition] = useState("");
 	const [selectedRows, setSelectedRows] = useState<IStudent[]>([]);
 	const [selectedField, setSelectedField] = useState<string[]>([]);
+	const [pageSize, setPageSize] = useState<number>(10);
+	const [pageNumber, setPageNumber] = useState<number>(1);
+	const [totalPage, setTotalPage] = useState<number>(1);
+	const [loadingExport, setLoadingExport] = useState<boolean>(false);
+
+	const searchQuery = useDebounce(searchValue, 1500);
 
 	const isDisableButton =
 		selectedRows?.length > 1 || selectedRows?.length === 0;
+
+	useEffect(() => {
+		handleGetData();
+	}, [pageNumber, pageSize, searchQuery]);
+
 	const handleChange = (value: IStudent[]) => {
 		setSelectedRows(value);
+	};
+
+	const handleGetData = () => {
+		setLoading(true);
+		getAllStudent({
+			searchValue: searchQuery,
+			pageSize: pageSize,
+			pageNumber: pageNumber,
+			status: selectedField?.map((i) => Number(i)),
+		}).then((res) => {
+			setLoading(false);
+			setTotalPage(res?.data?.totalPageCount);
+			setStudents(res?.data?.dataList);
+		});
+	};
+
+	const refreshData = (message: string) => {
+		setSelectedRows([]);
+		handleGetData();
+		toast({
+			title: "Thông báo:",
+			description: message,
+			className: "border-2 border-green-500 p-4",
+		});
+	};
+
+	const handleDelete = () => {
+		deleteStudent(selectedRows?.[0]?.studentId as string).then(() => {
+			refreshData("Xóa học sinh thành công!");
+		});
+	};
+
+	const handleExport = () => {
+		setLoadingExport(true);
+		exportStudent({
+			studentIds:
+				(selectedRows?.map((item) => item.studentId) as string[]) ?? [],
+			status: [],
+		}).then((res) => {
+			setLoadingExport(false);
+			downloadFile(res?.data, "QuanLyHocSinh");
+		});
 	};
 
 	return (
@@ -140,6 +177,8 @@ const Student = () => {
 				<MultiSelect
 					options={statusList}
 					onValueChange={setSelectedField}
+					handleRetrieve={handleGetData}
+					value={selectedField}
 					placeholder="Tình trạng học tập"
 					variant="inverted"
 					animation={2}
@@ -149,24 +188,43 @@ const Student = () => {
 			</div>
 			<div className="mb-5 flex justify-between">
 				<div className="flex justify-between gap-2">
-					<Panel type="create" disable={false} />
+					<Panel
+						type="create"
+						disable={false}
+						refreshData={refreshData}
+					/>
 					<Panel
 						type="edit"
 						disable={isDisableButton}
 						selectedStudent={selectedRows?.[0]}
+						refreshData={refreshData}
 					/>
-					<Button disabled={isDisableButton}>Xóa</Button>
+					<Button disabled={isDisableButton} onClick={handleDelete}>
+						Xóa
+					</Button>
 				</div>
 				<div>
-					<Button className="min-w-[100px]">Xuất file</Button>
+					<Button
+						className="w-[100px]"
+						onClick={handleExport}
+						loading={loadingExport}
+					>
+						Xuất file
+					</Button>
 				</div>
 			</div>
 			<div>
 				<TableDetails
-					data={data}
+					data={students}
 					columns={columns}
 					onChange={handleChange}
-					loading={false}
+					loading={loading}
+				/>
+				<Pagination
+					pageSize={pageSize}
+					onChangePage={(value) => setPageNumber(Number(value))}
+					onChangeRow={(value) => setPageSize(Number(value))}
+					totalPageCount={totalPage}
 				/>
 			</div>
 		</>
