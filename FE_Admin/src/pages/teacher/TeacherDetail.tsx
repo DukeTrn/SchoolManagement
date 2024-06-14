@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { getTeacherDetail } from "@/apis/teacher.api";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
 	Sheet,
@@ -7,21 +7,20 @@ import {
 	SheetTitle,
 	SheetTrigger,
 } from "@/components/ui/sheet";
+import { ITeacher } from "@/types/teacher.type";
 import { useState } from "react";
-import { getStudentDetail } from "@/apis/student.api";
-import { IStudent } from "@/types/student.type";
 
 interface IStudentDetailsProps {
-	studentId: string;
+	teacherId: string;
 }
 
 export function TeacherDetails(props: IStudentDetailsProps) {
-	const { studentId } = props;
-	const [student, setStudent] = useState<IStudent>();
+	const { teacherId } = props;
+	const [teacher, setTeacher] = useState<ITeacher>();
 
 	const getStudentDetails = () => {
-		getStudentDetail(studentId).then((res) => {
-			setStudent(res?.data?.data);
+		getTeacherDetail(teacherId).then((res) => {
+			setTeacher(res?.data?.data);
 		});
 	};
 
@@ -32,102 +31,86 @@ export function TeacherDetails(props: IStudentDetailsProps) {
 					className="cursor-pointer font-medium text-blue-600 underline"
 					onClick={getStudentDetails}
 				>
-					{studentId}
+					{teacherId}
 				</div>
 			</SheetTrigger>
 			<SheetContent className="max-h-screen overflow-y-scroll">
 				<SheetHeader>
 					<SheetTitle className="uppercase">
-						Chi tiết học sinh
+						Chi tiết giáo viên
 					</SheetTitle>
 				</SheetHeader>
 				<div className="mt-6">
 					<div className="mb-6 flex items-center justify-center">
 						<Avatar className="h-28 w-28">
-							<AvatarImage src={student?.avatar} alt="@shadcn" />
+							<AvatarImage src={teacher?.avatar} alt="@shadcn" />
 							<AvatarFallback>AVT</AvatarFallback>
 						</Avatar>
 					</div>
 					<div>
 						<div className="mb-3 flex">
 							<span className="mr-4 font-medium">
-								Mã số học sinh:
+								Mã số giáo viên:
 							</span>
-							<span>{student?.studentId}</span>
+							<span>{teacher?.teacherId}</span>
 						</div>
 						<div className="mb-3 flex">
 							<span className="mr-4 font-medium">
-								Họ tên học sinh:
+								Họ tên giáo viên:
 							</span>
-							<span>{student?.fullName}</span>
+							<span>{teacher?.fullName}</span>
 						</div>
 						<div className="mb-3 flex">
 							<span className="mr-4 font-medium">Ngày sinh:</span>
-							<span>{student?.dob}</span>
+							<span>{teacher?.dob}</span>
 						</div>
 						<div className="mb-3 flex">
 							<span className="mr-4 font-medium">Giới tính:</span>
-							<span>{student?.gender}</span>
+							<span>{teacher?.gender}</span>
 						</div>
 						<div className="mb-3 flex">
 							<span className="mr-4 font-medium">CCCD:</span>
-							<span>{student?.identificationNumber}</span>
+							<span>{teacher?.identificationNumber}</span>
 						</div>
 						<div className="mb-3 flex">
 							<span className="mr-4 font-medium">Dân tộc:</span>
-							<span>{student?.ethnic}</span>
+							<span>{teacher?.ethnic}</span>
 						</div>
 						<div className="mb-3 flex">
 							<span className="mr-4 font-medium">Địa chỉ:</span>
-							<span>{student?.address}</span>
+							<span>{teacher?.address}</span>
 						</div>
 						<div className="mb-3 flex">
 							<span className="mr-4 font-medium">
 								Số điện thoại:
 							</span>
-							<span>{student?.phoneNumber}</span>
+							<span>{teacher?.phoneNumber}</span>
 						</div>
 						<div className="mb-3 flex">
 							<span className="mr-4 font-medium">Email:</span>
-							<span>{student?.email}</span>
+							<span>{teacher?.email}</span>
 						</div>
 						<div className="mb-3 flex">
-							<span className="mr-4 font-medium">Niên khoá:</span>
-							<span>{student?.academicYear}</span>
-						</div>
-						<div className="mb-3 flex">
-							<span className="mr-4 font-medium">Họ tên bố:</span>
-							<span>{student?.fatherName}</span>
+							<span className="mr-4 font-medium">Trình độ:</span>
+							<span>{teacher?.level}</span>
 						</div>
 						<div className="mb-3 flex">
 							<span className="mr-4 font-medium">
-								Nghề nghiệp bố:
+								Tình trạng giảng dạy:
 							</span>
-							<span>{student?.fatherJob}</span>
-						</div>
-						<div className="mb-3 flex">
-							<span className="mr-4 font-medium">SĐT bố:</span>
-							<span>{student?.fatherPhoneNumber}</span>
-						</div>
-						<div className="mb-3 flex">
-							<span className="mr-4 font-medium">Họ tên mẹ:</span>
-							<span>{student?.motherName}</span>
+							<span>{teacher?.status}</span>
 						</div>
 						<div className="mb-3 flex">
 							<span className="mr-4 font-medium">
-								Nghề nghiệp mẹ:
+								Ngày bắt đầu:
 							</span>
-							<span>{student?.motherJob}</span>
+							<span>{teacher?.timeStart}</span>
 						</div>
 						<div className="mb-3 flex">
-							<span className="mr-4 font-medium">SĐT mẹ:</span>
-							<span>{student?.motherPhoneNumber}</span>
-						</div>
-						<div className="mb-10 flex">
 							<span className="mr-4 font-medium">
-								Trạng thái học tập:
+								Ngày kết thúc:
 							</span>
-							<span>{student?.status}</span>
+							<span>{teacher?.timeEnd}</span>
 						</div>
 					</div>
 				</div>

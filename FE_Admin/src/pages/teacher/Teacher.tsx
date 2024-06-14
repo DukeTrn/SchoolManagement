@@ -54,7 +54,7 @@ const columns: ColumnDef<ITeacher>[] = [
 		accessorKey: "teacherId",
 		header: "MSGV",
 		cell: ({ row }) => (
-			<TeacherDetails studentId={row.getValue("teacherId")} />
+			<TeacherDetails teacherId={row.getValue("teacherId")} />
 		),
 	},
 	{
@@ -151,7 +151,7 @@ const Teacher = () => {
 	const handleExport = () => {
 		setLoadingExport(true);
 		exportTeacher({
-			studentIds:
+			teacherIds:
 				(selectedRows?.map((item) => item.teacherId) as string[]) ?? [],
 			status: [],
 		}).then((res) => {
@@ -192,12 +192,12 @@ const Teacher = () => {
 						disable={false}
 						refreshData={refreshData}
 					/>
-					{/* <Panel
+					<Panel
 						type="edit"
 						disable={isDisableButton}
-						selectedStudent={selectedRows?.[0]}
+						selected={selectedRows?.[0]}
 						refreshData={refreshData}
-					/> */}
+					/>
 					<Button disabled={isDisableButton} onClick={handleDelete}>
 						Xóa
 					</Button>

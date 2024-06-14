@@ -38,7 +38,7 @@ export const updateTeacher = (body: FormData, id: string) => {
 export const deleteTeacher = (id: string) => http.delete(`teacher/${id}`);
 
 export const exportTeacher = (body: {
-	studentIds: string[];
+	teacherIds: string[];
 	status: string[];
 }) =>
 	http.post("/teacher/export", body, {

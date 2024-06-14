@@ -9,52 +9,53 @@ import {
 	SheetTitle,
 	SheetTrigger,
 } from "@/components/ui/sheet";
-import { FormField, FormItem, FormMessage } from "@/components/ui/form";
+import { FormField, FormItem } from "@/components/ui/form";
 
-import { IStudent } from "@/types/student.type";
-import { IStudentSchema, studentSchema } from "@/utils/schema/student.schema";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import DatePicker from "@/components/datepicker/DatePicker";
 import { Input } from "@/components/ui/input";
-import {
-	createStudent,
-	getStudentDetail,
-	updateStudent,
-} from "@/apis/student.api";
+
 import { convertDateISO } from "@/utils/utils";
+import { ITeacher } from "@/types/teacher.type";
+import { ITeacherSchema, teacherSchema } from "@/utils/schema/teacher.schema";
+import {
+	createTeacher,
+	getTeacherDetail,
+	updateTeacher,
+} from "@/apis/teacher.api";
+import {
+	Select,
+	SelectContent,
+	SelectGroup,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 
 const initValues = {
-	studentId: "",
+	teacherId: "",
 	fullName: "",
 	dob: new Date(1990, 0, 1).toISOString(),
 	gender: "",
-	phoneNumber: "",
-	email: "",
-	status: "",
 	identificationNumber: "",
+	avatar: "",
+	level: "",
+	phoneNumber: "",
 	address: "",
 	ethnic: "",
-	avatar: "",
-	fatherName: "",
-	fatherJob: "",
-	fatherPhoneNumber: "",
-	fatherEmail: "",
-	motherName: "",
-	motherJob: "",
-	motherPhoneNumber: "",
-	motherEmail: "",
-	academicYear: "",
+	timeStart: "",
+	timeEnd: "",
 };
 interface IPanelProps {
 	type: "edit" | "create";
-	selectedStudent?: IStudent | null;
+	selected?: ITeacher | null;
 	disable: boolean;
 	refreshData: (message: string) => void;
 }
-type IFormData = IStudentSchema;
+type IFormData = ITeacherSchema;
 export function Panel(props: IPanelProps) {
-	const { type, selectedStudent, disable, refreshData } = props;
+	const { type, selected, disable, refreshData } = props;
 	const [openSheet, setOpenSheet] = useState(false);
 	const [count, setCount] = useState(0);
 	const [file, setFile] = useState<File>();
@@ -69,7 +70,7 @@ export function Panel(props: IPanelProps) {
 		reset,
 	} = useForm<IFormData>({
 		defaultValues: initValues,
-		resolver: yupResolver(studentSchema),
+		resolver: yupResolver(teacherSchema),
 	});
 
 	const onSubmit = handleSubmit((data) => {
@@ -77,7 +78,7 @@ export function Panel(props: IPanelProps) {
 
 		file && formData.append("avatar", file);
 		formData.append(
-			"studentId",
+			"teacherId",
 			Math.floor(Math.random() * 1000).toString()
 		);
 		formData.append("fullName", data?.fullName);
@@ -89,20 +90,16 @@ export function Panel(props: IPanelProps) {
 		formData.append("ethnic", data?.ethnic);
 		formData.append("phoneNumber", data?.phoneNumber);
 		formData.append("email", data?.email);
-		formData.append("fatherName", data?.fatherName);
-		formData.append("fatherJob", data?.fatherJob);
-		formData.append("fatherPhoneNumber", data?.fatherPhoneNumber);
-		data?.fatherEmail && formData.append("fatherEmail", data?.fatherEmail);
-		formData.append("motherName", data?.motherName);
-		formData.append("motherJob", data?.motherJob);
-		formData.append("motherPhoneNumber", data?.motherPhoneNumber);
-		data?.motherEmail && formData.append("motherEmail", data?.motherEmail);
+		formData.append("level", data?.level);
+		data?.timeEnd &&
+			formData.append("timeEnd", new Date(data?.timeEnd).toISOString());
+		formData.append("timeStart", new Date(data?.timeStart).toISOString());
 
 		setLoading(true);
 
 		(type === "create"
-			? createStudent(formData)
-			: updateStudent(formData, data?.studentId as string)
+			? createTeacher(formData)
+			: updateTeacher(formData, data?.teacherId as string)
 		).then(() => {
 			setLoading(false);
 			setCount(0);
@@ -110,45 +107,42 @@ export function Panel(props: IPanelProps) {
 			setOpenSheet(false);
 			refreshData(
 				type === "create"
-					? "Thêm học sinh thành công"
-					: "Cập nhật thông tin học sinh thành công"
+					? "Thêm giáo viên thành công"
+					: "Cập nhật thông tin giáo viên thành công"
 			);
 		});
 	});
 
 	const handleGetData = () => {
-		if (count === 0) {
-			getStudentDetail(selectedStudent?.studentId as string).then(
-				(res) => {
-					const info = res?.data?.data;
-					setValue("studentId", info?.studentId);
-					setValue("fullName", info?.fullName);
-					setValue("dob", convertDateISO(info?.dob));
-					setValue("gender", info?.gender);
-					info?.identificationNumber &&
-						setValue(
-							"identificationNumber",
-							info?.identificationNumber
-						);
-					setValue("ethnic", info?.ethnic);
-					setValue("address", info?.address);
-					setValue("phoneNumber", info?.phoneNumber);
-					info?.email && setValue("email", info?.email);
-					setValue("fatherName", info?.fatherName);
-					setValue("fatherJob", info?.fatherJob);
-					setValue("fatherPhoneNumber", info?.fatherPhoneNumber);
-					setValue("motherName", info?.motherName);
-					setValue("motherJob", info?.motherJob);
-					setValue("motherPhoneNumber", info?.motherPhoneNumber);
-					setCount((count) => count + 1);
-				}
-			);
+		if (count === 0 && type === "edit") {
+			getTeacherDetail(selected?.teacherId as string).then((res) => {
+				const info = res?.data?.data;
+				setValue("teacherId", info?.teacherId);
+				setValue("fullName", info?.fullName);
+				setValue("dob", convertDateISO(info?.dob));
+				setValue("gender", info?.gender);
+				info?.identificationNumber &&
+					setValue(
+						"identificationNumber",
+						info?.identificationNumber
+					);
+				setValue("ethnic", info?.ethnic);
+				setValue("address", info?.address);
+				setValue("phoneNumber", info?.phoneNumber);
+				setValue("email", info?.email);
+				setValue("level", info?.level);
+				setValue("timeStart", convertDateISO(info?.timeStart));
+				info?.timeEnd &&
+					setValue("timeEnd", convertDateISO(info?.timeEnd));
+
+				setCount((count) => count + 1);
+			});
 		}
 	};
 
 	useEffect(() => {
 		setCount(0);
-	}, [selectedStudent]);
+	}, [selected]);
 
 	return (
 		<Sheet open={openSheet} onOpenChange={setOpenSheet}>
@@ -161,11 +155,22 @@ export function Panel(props: IPanelProps) {
 				<SheetHeader>
 					<SheetTitle className="uppercase">
 						{type === "edit"
-							? "Cập nhật học sinh"
-							: "Thêm học sinh"}
+							? "Cập nhật giáo viên"
+							: "Thêm giáo viên"}
 					</SheetTitle>
 				</SheetHeader>
 				<div className="mt-5">
+					<div>
+						<Label htmlFor="teacherId" className="required">
+							MSGV
+						</Label>
+						<CommonInput
+							className="mt-[2px]"
+							name="teacherId"
+							register={register}
+							errorMessage={errors.teacherId?.message}
+						/>
+					</div>
 					<div>
 						<Label htmlFor="fullName" className="required">
 							Họ tên
@@ -248,15 +253,6 @@ export function Panel(props: IPanelProps) {
 							errorMessage={errors.phoneNumber?.message}
 						/>
 					</div>
-					<div>
-						<Label htmlFor="email">Email</Label>
-						<CommonInput
-							className="mt-[2px]"
-							name="email"
-							register={register}
-							// errorMessage={errors.email?.message}
-						/>
-					</div>
 					<div className="mb-4">
 						<Label htmlFor="avatar">Avatar</Label>
 						<Input
@@ -270,72 +266,91 @@ export function Panel(props: IPanelProps) {
 						/>
 					</div>
 					<div>
-						<Label htmlFor="fatherName" className="required">
-							Họ tên bố:
+						<Label htmlFor="email" className="required">
+							Email
 						</Label>
 						<CommonInput
 							className="mt-[2px]"
-							name="fatherName"
+							name="email"
 							register={register}
-							errorMessage={errors.fatherName?.message}
+							errorMessage={errors.email?.message}
 						/>
 					</div>
 					<div>
-						<Label htmlFor="fatherJob" className="required">
-							Nghề nghiệp bố:
+						<Label htmlFor="level" className="required">
+							Trình độ
 						</Label>
 						<CommonInput
 							className="mt-[2px]"
-							name="fatherJob"
+							name="level"
 							register={register}
-							errorMessage={errors.fatherJob?.message}
+							errorMessage={errors.level?.message}
 						/>
 					</div>
-					<div>
-						<Label htmlFor="fatherPhoneNumber" className="required">
-							SĐT bố:
-						</Label>
-						<CommonInput
-							className="mt-[2px]"
-							name="fatherPhoneNumber"
-							register={register}
-							errorMessage={errors.fatherPhoneNumber?.message}
-						/>
-					</div>
-					<div>
-						<Label htmlFor="motherName" className="required">
-							Họ tên mẹ:
-						</Label>
-						<CommonInput
-							className="mt-[2px]"
-							name="motherName"
-							register={register}
-							errorMessage={errors.motherName?.message}
-						/>
-					</div>
-					<div>
-						<Label htmlFor="motherJob" className="required">
-							Nghề nghiệp mẹ:
-						</Label>
-						<CommonInput
-							className="mt-[2px]"
-							name="motherJob"
-							register={register}
-							errorMessage={errors.motherJob?.message}
-						/>
-					</div>
-					<div>
-						<Label htmlFor="motherPhoneNumber" className="required">
-							SĐT mẹ:
-						</Label>
-						<CommonInput
-							className="mt-[2px]"
-							name="motherPhoneNumber"
-							register={register}
-							errorMessage={errors.motherPhoneNumber?.message}
+					<div className="mb-4">
+						<Label htmlFor="status">Tình trạng giảng dạy</Label>
+						<FormField
+							control={control}
+							name="status"
+							render={({ field }) => (
+								<Select
+									value={field.value}
+									onValueChange={field.onChange}
+								>
+									<SelectTrigger className="w-full">
+										<SelectValue placeholder="Chọn trạng thái" />
+									</SelectTrigger>
+									<SelectContent className="w-full">
+										<SelectGroup>
+											<SelectItem value="1">
+												Đang giảng dạy
+											</SelectItem>
+											<SelectItem value="2">
+												Tạm nghỉ
+											</SelectItem>
+										</SelectGroup>
+									</SelectContent>
+								</Select>
+							)}
 						/>
 					</div>
 
+					<div>
+						<Label htmlFor="timeStart" className="required">
+							Ngày bắt đầu:
+						</Label>
+						<FormField
+							control={control}
+							name="timeStart"
+							render={({ field }) => (
+								<FormItem className="mt-[2px] flex flex-col">
+									<DatePicker
+										date={field.value}
+										setDate={field.onChange}
+										errorMessage={
+											errors.timeStart?.message!
+										}
+									/>
+								</FormItem>
+							)}
+						/>
+					</div>
+					<div>
+						<Label htmlFor="timeEnd">Ngày kết thúc:</Label>
+						<FormField
+							control={control}
+							name="timeEnd"
+							render={({ field }) => (
+								<FormItem className="mt-[2px] flex flex-col">
+									<DatePicker
+										date={field.value}
+										setDate={field.onChange}
+										// errorMessage={errors.timeEnd?.message!}
+									/>
+								</FormItem>
+							)}
+						/>
+					</div>
 					<Button
 						className="w-full"
 						onClick={onSubmit}

@@ -18,7 +18,7 @@ import { useParams } from "react-router-dom";
 import { Create } from "./Create";
 
 const statusList = [
-	{ value: "1", label: "Đang dạy" },
+	{ value: "1", label: "Đang giảng dạy" },
 	{ value: "2", label: "Tạm nghỉ" },
 ];
 

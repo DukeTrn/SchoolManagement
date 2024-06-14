@@ -117,7 +117,7 @@ export function Panel(props: IPanelProps) {
 	});
 
 	const handleGetData = () => {
-		if (count === 0) {
+		if (count === 0 && type === "edit") {
 			getStudentDetail(selectedStudent?.studentId as string).then(
 				(res) => {
 					const info = res?.data?.data;

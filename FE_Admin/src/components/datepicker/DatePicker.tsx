@@ -1,4 +1,3 @@
-import * as React from "react";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 
@@ -10,7 +9,7 @@ import { Calendar } from "../ui/calendar";
 interface IProps {
 	date: any;
 	setDate: any;
-	errorMessage: string;
+	errorMessage?: string;
 }
 
 export default function DatePicker(props: IProps) {
@@ -27,7 +26,7 @@ export default function DatePicker(props: IProps) {
 					)}
 				>
 					<CalendarIcon className="mr-2 h-4 w-4" />
-					{date ? format(date, "PPP") : <span>Pick a date</span>}
+					{date ? format(date, "PPP") : <span>Chọn thời gian</span>}
 				</Button>
 			</PopoverTrigger>
 			<PopoverContent className="w-auto p-0">

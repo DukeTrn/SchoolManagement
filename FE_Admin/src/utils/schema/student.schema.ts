@@ -5,17 +5,15 @@ import * as yup from "yup";
 const defaultError = "Trường này là bắt buộc";
 
 export const studentSchema = yup.object({
-	// email: yup
-	// 	.string()
-	// 	.required(defaultError)
-	// 	.min(5, "Độ dài từ 5-160 kí tự")
-	// 	.max(160, "Độ dài từ 5-160 kí tự")
-	// 	.matches(
-	// 		/^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(\.[a-z0-9](?:[a-z0-9-]*[a-z0-9]))?$/,
-	// 		"Email không đúng định dạng"
-	// 	),
 	studentId: yup.string().trim(),
-	email: yup.string().trim().required(defaultError),
+	email: yup
+		.string()
+		.trim()
+		.required(defaultError)
+		.matches(
+			/^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(\.[a-z0-9](?:[a-z0-9-]*[a-z0-9]))?$/,
+			"Email không đúng định dạng"
+		),
 	fullName: yup.string().trim().required(defaultError),
 	dob: yup.string().trim().required(defaultError),
 	gender: yup.string().trim().required(defaultError),

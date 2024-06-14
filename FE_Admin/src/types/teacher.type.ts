@@ -1,10 +1,10 @@
 export type ITeacher = {
-	teacherId?: string;
+	teacherId: string;
 	fullName: string;
 	dob: string;
 	gender: string;
 	phoneNumber: string;
-	email?: string;
+	email: string;
 	level: string;
 	status: string;
 	identificationNumber?: string;

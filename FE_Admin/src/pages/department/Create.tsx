@@ -53,7 +53,7 @@ export function Create(props: IPanelProps) {
 	}, [selected]);
 
 	const handleGetData = () => {
-		if (count === 0) {
+		if (count === 0 && type === "edit") {
 			setValue("departmentId", selected?.departmentId as string);
 			setValue("subjectName", selected?.subjectName as string);
 			selected?.description &&

@@ -7,6 +7,7 @@ import Student from "@/pages/student";
 import Department from "@/pages/department";
 import DepartmentDetail from "@/pages/department/details/DepartmentDetail";
 import Teacher from "@/pages/teacher/Teacher";
+import Semester from "@/pages/semester";
 
 const useRouteElement = () => {
 	const routeElement = useRoutes([
@@ -60,6 +61,14 @@ const useRouteElement = () => {
 			element: (
 				<MainLayout>
 					<Teacher />
+				</MainLayout>
+			),
+		},
+		{
+			path: path.semester,
+			element: (
+				<MainLayout>
+					<Semester />
 				</MainLayout>
 			),
 		},
