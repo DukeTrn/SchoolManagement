@@ -84,7 +84,7 @@ namespace SchoolManagement.Web.Controllers
         }
 
         /// <summary>
-        /// Use for academic year filter (filter niên khóa)
+        /// Use for academic year filter (filter tất cả niên khóa)
         /// </summary>
         /// <returns></returns>
         [HttpGet, Route("filter/academicyears")]
