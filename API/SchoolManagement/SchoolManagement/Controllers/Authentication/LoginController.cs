@@ -28,7 +28,6 @@ namespace SchoolManagement.Web.Controllers.Authentication
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
-            // Validate the user credentials (this is just a mock, replace with real validation)
             try
             {
                 var account = await _accountService.ValidateAccountAsync(model.Username, model.Password);
@@ -38,13 +37,13 @@ namespace SchoolManagement.Web.Controllers.Authentication
                     result = true,
                     message = "Authentication success",
                     token = token,
+                    accoundId = account.AccountId,
                     role = account.Role.ToString()
                 });
             }
             catch (UnauthorizedAccessException ex)
             {
                 return Unauthorized(ex.Message);
-                //return Unauthorized(new { message = "Authentication failed: " + ex.Message });
             }
             catch (SecurityTokenException ex)
             {

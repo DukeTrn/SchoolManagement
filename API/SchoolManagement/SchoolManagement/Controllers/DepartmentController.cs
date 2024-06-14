@@ -20,7 +20,7 @@ namespace SchoolManagement.Web.Controllers
         }
 
         /// <summary>
-        /// Get list of all departments
+        /// Danh sách tổ bộ môn - Get list of all departments
         /// </summary>
         /// <param name="queryModel"></param>
         /// <returns></returns>
@@ -39,7 +39,7 @@ namespace SchoolManagement.Web.Controllers
         }
 
         /// <summary>
-        /// Get list of teachers in 1 department
+        /// Danh sách giáo viên trong 1 tổ - Get list of teachers in 1 department
         /// </summary>
         /// <param name="departmentId"></param>
         /// <param name="queryModel"></param>
@@ -59,7 +59,7 @@ namespace SchoolManagement.Web.Controllers
         }
 
         /// <summary>
-        /// Get heads and deputies in 1 department
+        /// Trưởng/phó bộ môn - Get heads and deputies in 1 department
         /// Role: 1 (regular), 2 (deputy - phó bộ môn), 3 (head - trưởng bộ môn)
         /// </summary>
         /// <param name="departmentId"></param>
@@ -196,7 +196,7 @@ namespace SchoolManagement.Web.Controllers
         }
 
         /// <summary>
-        /// Add teachers (by id) into 1 department
+        /// Thêm giáo viên vào tổ - Add teachers (by id) into 1 department
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
@@ -215,7 +215,7 @@ namespace SchoolManagement.Web.Controllers
         }
 
         /// <summary>
-        /// Remove teachers (by id) from 1 department
+        /// Xóa giáo viên khỏi tổ - Remove teachers (by id) from 1 department
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
@@ -253,7 +253,7 @@ namespace SchoolManagement.Web.Controllers
         }
 
         /// <summary>
-        /// Filter (of teachers) to add teachers into department
+        /// Filter thêm giáo viên vào tổ - Filter (of teachers) to add teachers into department
         /// </summary>
         /// <returns></returns>
         [HttpGet, Route("teacher-filter")]

@@ -21,7 +21,7 @@ namespace SchoolManagement.Web.Controllers
 
         #region Get lists teachers
         /// <summary>
-        /// Get list of all teachers (not full information)
+        /// Danh sách tất cả  giáo viên - Get list of all teachers (not full information)
         /// </summary>
         /// <param name="queryModel"></param>
         /// <returns></returns>
@@ -108,7 +108,7 @@ namespace SchoolManagement.Web.Controllers
         }
 
         /// <summary>
-        /// Get teacher by account ID (use for Account service, full information of 1 teacher)
+        /// Chi tiết giáo viên - Get teacher by account ID (use for Account service, full information of 1 teacher)
         /// </summary>
         /// <param name="accountId"></param>
         /// <returns></returns>

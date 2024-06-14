@@ -21,7 +21,7 @@ namespace SchoolManagement.Controllers
         }
 
         /// <summary>
-        /// Get list of all student (not full information)
+        /// Danh sách tất cả học sinh - Get list of all student (not full information)
         /// </summary>
         /// <param name="queryModel"></param>
         /// <returns></returns>
@@ -100,7 +100,7 @@ namespace SchoolManagement.Controllers
         }
 
         /// <summary>
-        /// Get student by account ID (use for Account service, full information of 1 student)
+        ///  Chi tiết học sinh - Get student by account ID
         /// </summary>
         /// <param name="accountId"></param>
         /// <returns></returns>
@@ -169,7 +169,7 @@ namespace SchoolManagement.Controllers
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        [HttpPost, Route("createdemo")]
+        [HttpPost, Route("demo-create")]
         public async ValueTask<IActionResult> CreateDemoStudent([FromBody] StudentAddModel model)
         {
             try

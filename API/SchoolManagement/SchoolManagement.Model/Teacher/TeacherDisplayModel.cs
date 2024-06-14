@@ -24,7 +24,9 @@ namespace SchoolManagement.Model
         public string? TimeEnd { get; set; } = string.Empty;
         public bool IsLeader { get; set; } // tổ trưởng
         public bool IsViceLeader { get; set; } // tổ phó
+        public string DepartmentName { get; set; } = string.Empty;
         //public bool NotificationIsSeen { get; set; } // đã xem
+        public string Username { get; set; } = string.Empty;
     }
 
     public class TeacherFilterModel
