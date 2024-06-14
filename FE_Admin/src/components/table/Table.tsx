@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import {
 	ColumnDef,
 	ColumnFiltersState,
@@ -29,14 +29,16 @@ interface IProps {
 	data: any;
 	loading?: boolean;
 	useRadio?: boolean;
+	pageSize: number;
 }
 export function TableDetails(props: IProps) {
 	const {
 		onChange,
 		columns,
 		data,
-		loading = false,
+		loading = true,
 		useRadio = false,
+		pageSize,
 	} = props;
 	const [sorting, setSorting] = React.useState<SortingState>([]);
 	const [columnFilters, setColumnFilters] =
@@ -45,9 +47,29 @@ export function TableDetails(props: IProps) {
 		React.useState<VisibilityState>({});
 	const [rowSelection, setRowSelection] = React.useState({});
 
+	const tableColumn = useMemo(
+		() =>
+			loading
+				? columns.map((column) => ({
+						...column,
+						cell: () => (
+							<Skeleton className="h-[15px] w-full rounded bg-gray-200" />
+						),
+				  }))
+				: columns,
+		[loading, columns]
+	);
+
+	const tableData = React.useMemo(
+		() => (loading ? Array(10).fill(structuredClone({})) : data),
+		[loading, data]
+	);
+
+	console.log("tableData", tableData);
+
 	const table = useReactTable({
-		data,
-		columns,
+		data: tableData,
+		columns: tableColumn,
 		onSortingChange: setSorting,
 		onColumnFiltersChange: setColumnFilters,
 		getCoreRowModel: getCoreRowModel(),
@@ -58,11 +80,6 @@ export function TableDetails(props: IProps) {
 		onRowSelectionChange: setRowSelection,
 		enableMultiRowSelection: !useRadio,
 		enableSubRowSelection: !useRadio,
-		initialState: {
-			pagination: {
-				pageSize: 10,
-			},
-		},
 		state: {
 			sorting,
 			columnFilters,
@@ -76,16 +93,16 @@ export function TableDetails(props: IProps) {
 		.flatRows.map((item) => item.original);
 
 	useEffect(() => {
-		onChange && onChange(selectedRows);
-	}, [rowSelection]);
-
-	useEffect(() => {
-		table.setPageSize(data?.length);
-	}, [data?.length]);
-
-	useEffect(() => {
 		table.resetRowSelection();
 	}, [loading]);
+
+	useEffect(() => {
+		table.setPageSize(pageSize);
+	}, [pageSize]);
+
+	useEffect(() => {
+		onChange && onChange(selectedRows);
+	}, [rowSelection]);
 
 	return (
 		<div className="w-full">
@@ -122,30 +139,19 @@ export function TableDetails(props: IProps) {
 										row.getIsSelected() && "selected"
 									}
 								>
-									{row.getVisibleCells().map((cell) => {
-										return loading ? (
-											<TableCell
-												key={cell.id}
-												style={{
-													width: cell.column.getSize(),
-												}}
-											>
-												<Skeleton className="h-[15px] w-full rounded bg-gray-200" />
-											</TableCell>
-										) : (
-											<TableCell
-												key={cell.id}
-												style={{
-													width: cell.column.getSize(),
-												}}
-											>
-												{flexRender(
-													cell.column.columnDef.cell,
-													cell.getContext()
-												)}
-											</TableCell>
-										);
-									})}
+									{row.getVisibleCells().map((cell) => (
+										<TableCell
+											key={cell.id}
+											style={{
+												width: cell.column.getSize(),
+											}}
+										>
+											{flexRender(
+												cell.column.columnDef.cell,
+												cell.getContext()
+											)}
+										</TableCell>
+									))}
 								</TableRow>
 							))
 						) : (

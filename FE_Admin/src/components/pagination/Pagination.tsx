@@ -143,7 +143,7 @@ const Pagination = (props: IPaginationProps) => {
 									(currentPage) => currentPage - 1
 								);
 							}}
-							className="v mx-2 flex h-8 w-12 w-8 cursor-pointer items-center justify-center rounded border bg-white px-2 text-sm shadow-sm"
+							className="v mx-2 flex h-8 w-12  cursor-pointer items-center justify-center rounded border bg-white px-2 text-sm shadow-sm"
 						>
 							Prev
 						</button>

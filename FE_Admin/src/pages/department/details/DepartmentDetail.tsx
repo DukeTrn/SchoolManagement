@@ -198,6 +198,7 @@ const DepartmentDetail = () => {
 			</div>
 			<div>
 				<TableDetails
+					pageSize={pageSize}
 					data={teachers}
 					columns={columns}
 					onChange={handleChange}

@@ -126,6 +126,7 @@ const Department = () => {
 			</div>
 			<div className="mb-5">
 				<TableDetails
+					pageSize={pageSize}
 					data={departments}
 					columns={columns}
 					onChange={handleChange}

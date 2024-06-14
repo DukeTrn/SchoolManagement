@@ -99,7 +99,7 @@ export function Create({ refreshData, departmentId }: IPanelProps) {
 									onValueChange={field.onChange}
 									// handleRetrieve={handleGetData}
 									value={field.value}
-									placeholder="Tình trạng học tập"
+									placeholder="Thêm giáo viên"
 									variant="inverted"
 									animation={2}
 									maxCount={0}

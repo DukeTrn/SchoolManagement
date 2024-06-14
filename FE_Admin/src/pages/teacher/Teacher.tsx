@@ -6,25 +6,25 @@ import { TableDetails } from "@/components/table/Table";
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { MultiSelect } from "@/components/multiselect/MultiSelect";
-import Pagination from "@/components/pagination";
-import { IAccount } from "@/types/account.type";
-import {
-	activeAccount,
-	deleteAccount,
-	getAllAccount,
-} from "@/apis/account.api";
-import { useToast } from "@/components/ui/use-toast";
-import { ToastAction } from "@/components/ui/toast";
+import { TeacherDetails } from "./TeacherDetail";
+import { Panel } from "./Create";
 import { useDebounce } from "@/hooks";
+import { useToast } from "@/components/ui/use-toast";
+import Pagination from "@/components/pagination";
+import { downloadFile } from "@/utils/utils";
+import { ITeacher, ITeacherInfo } from "@/types/teacher.type";
+import {
+	deleteTeacher,
+	exportTeacher,
+	getAllTeacher,
+} from "@/apis/teacher.api";
 
-const roles = [
-	{ value: "1", label: "Admin" },
-	{ value: "2", label: "Giáo viên chủ nhiệm" },
-	{ value: "3", label: "Giáo viên" },
-	{ value: "4", label: "Học sinh" },
+const statusList = [
+	{ value: "1", label: "Đang giảng dạy" },
+	{ value: "2", label: "Tạm nghỉ" },
 ];
 
-export const columns: ColumnDef<IAccount>[] = [
+const columns: ColumnDef<ITeacher>[] = [
 	{
 		id: "select",
 		header: ({ table }) => (
@@ -51,9 +51,11 @@ export const columns: ColumnDef<IAccount>[] = [
 		size: 30,
 	},
 	{
-		accessorKey: "userName",
-		header: "Tài khoản",
-		cell: ({ row }) => <div>{row.getValue("userName")}</div>,
+		accessorKey: "teacherId",
+		header: "MSGV",
+		cell: ({ row }) => (
+			<TeacherDetails studentId={row.getValue("teacherId")} />
+		),
 	},
 	{
 		accessorKey: "fullName",
@@ -61,69 +63,72 @@ export const columns: ColumnDef<IAccount>[] = [
 			return <div>Họ tên</div>;
 		},
 		cell: ({ row }) => <div>{row.getValue("fullName")}</div>,
-	},
-	{
-		accessorKey: "role",
-		header: () => {
-			return <div>Chức vụ</div>;
-		},
-		cell: ({ row }) => <div>{row.getValue("role")}</div>,
-	},
-	{
-		accessorKey: "createdAt",
-		header: "Ngày tạo",
-		cell: ({ row }) => <div>{row.getValue("createdAt")}</div>,
-	},
-	{
-		accessorKey: "modifiedAt",
-		header: "Ngày cập nhật",
-		cell: ({ row }) => <div>{row.getValue("modifiedAt")}</div>,
-	},
-	{
-		accessorKey: "isActive",
-		header: "Tình trạng hoạt động",
-		cell: ({ row }) => (
-			<div>
-				{row.getValue("isActive")
-					? "Đang hoạt động"
-					: "Ngừng hoạt động"}
-			</div>
-		),
 		minSize: 200,
+	},
+	{
+		accessorKey: "dob",
+		header: "Ngày sinh",
+		cell: ({ row }) => <div>{row.getValue("dob")}</div>,
+	},
+	{
+		accessorKey: "gender",
+		header: "Giới tính",
+		cell: ({ row }) => <div>{row.getValue("gender")}</div>,
+	},
+	{
+		accessorKey: "phoneNumber",
+		header: "SDT",
+		cell: ({ row }) => <div>{row.getValue("phoneNumber")}</div>,
+	},
+	{
+		accessorKey: "level",
+		header: "Trình độ",
+		cell: ({ row }) => <div>{row.getValue("level")}</div>,
+	},
+	{
+		accessorKey: "status",
+		header: "Tình trạng giảng dạy",
+		cell: ({ row }) => <div>{row.getValue("status")}</div>,
+		size: 500,
 	},
 ];
 
-const Account = () => {
+const Teacher = () => {
 	const { toast } = useToast();
+	const [teachers, setTeachers] = useState<ITeacherInfo[]>([]);
 	const [loading, setLoading] = useState<boolean>(false);
-	const [accounts, setAccounts] = useState<IAccount[]>([]);
 	const [searchValue, setSearchValue] = useState("");
-	const [selectedRows, setSelectedRows] = useState<IAccount[]>([]);
-	const [selectedFields, setSelectedFields] = useState<string[]>([]);
+	const [selectedRows, setSelectedRows] = useState<ITeacher[]>([]);
+	const [selectedField, setSelectedField] = useState<string[]>([]);
 	const [pageSize, setPageSize] = useState<number>(10);
 	const [pageNumber, setPageNumber] = useState<number>(1);
 	const [totalPage, setTotalPage] = useState<number>(1);
+	const [loadingExport, setLoadingExport] = useState<boolean>(false);
 
 	const searchQuery = useDebounce(searchValue, 1500);
 
 	const isDisableButton =
-		selectedRows?.length <= 0 || selectedRows?.length > 1;
+		selectedRows?.length > 1 || selectedRows?.length === 0;
 
 	useEffect(() => {
 		handleGetData();
 	}, [pageNumber, pageSize, searchQuery]);
 
+	const handleChange = (value: ITeacher[]) => {
+		setSelectedRows(value);
+	};
+
 	const handleGetData = () => {
 		setLoading(true);
-		getAllAccount({
+		getAllTeacher({
 			searchValue: searchQuery,
 			pageSize: pageSize,
 			pageNumber: pageNumber,
-			roles: selectedFields?.map((i) => Number(i)),
+			status: selectedField?.map((i) => Number(i)),
 		}).then((res) => {
 			setLoading(false);
 			setTotalPage(res?.data?.totalPageCount);
-			setAccounts(res?.data?.dataList);
+			setTeachers(res?.data?.dataList);
 		});
 	};
 
@@ -137,28 +142,27 @@ const Account = () => {
 		});
 	};
 
-	const handleActive = (isActive: boolean) => {
-		activeAccount({
-			accountId: selectedRows?.[0].accountId,
-			isActive: isActive,
-		}).then((res) => {
-			refreshData(res?.data?.message);
-		});
-	};
-
 	const handleDelete = () => {
-		deleteAccount(selectedRows[0]?.accountId as string).then((res) => {
-			refreshData(res?.data?.message);
+		deleteTeacher(selectedRows?.[0]?.teacherId as string).then(() => {
+			refreshData("Xóa giáo viên thành công!");
 		});
 	};
 
-	const handleChange = (value: IAccount[]) => {
-		setSelectedRows(value);
+	const handleExport = () => {
+		setLoadingExport(true);
+		exportTeacher({
+			studentIds:
+				(selectedRows?.map((item) => item.teacherId) as string[]) ?? [],
+			status: [],
+		}).then((res) => {
+			setLoadingExport(false);
+			downloadFile(res?.data, "QuanLyGiaoVien");
+		});
 	};
 
 	return (
 		<>
-			<div className="mb-4 text-2xl font-medium">QUẢN LÝ TÀI KHOẢN</div>
+			<div className="mb-4 text-2xl font-medium">QUẢN LÝ GIÁO VIÊN</div>
 			<div className="mb-5 flex justify-between">
 				<div className="relative min-w-[295px]">
 					<Search className="absolute left-2 top-2.5 h-4 w-4 " />
@@ -170,11 +174,11 @@ const Account = () => {
 					/>
 				</div>
 				<MultiSelect
-					options={roles}
-					onValueChange={setSelectedFields}
+					options={statusList}
+					onValueChange={setSelectedField}
 					handleRetrieve={handleGetData}
-					value={selectedFields}
-					placeholder="Chức vụ"
+					value={selectedField}
+					placeholder="Tình trạng giảng dạy"
 					variant="inverted"
 					animation={2}
 					maxCount={0}
@@ -183,29 +187,35 @@ const Account = () => {
 			</div>
 			<div className="mb-5 flex justify-between">
 				<div className="flex justify-between gap-2">
-					<Button
-						onClick={() => handleActive(true)}
-						disabled={isDisableButton || selectedRows?.[0].isActive}
-					>
-						Kích hoạt
-					</Button>
-					<Button
-						onClick={() => handleActive(false)}
-						disabled={
-							isDisableButton || !selectedRows?.[0].isActive
-						}
-					>
-						Ngừng hoạt động
-					</Button>
+					<Panel
+						type="create"
+						disable={false}
+						refreshData={refreshData}
+					/>
+					{/* <Panel
+						type="edit"
+						disable={isDisableButton}
+						selectedStudent={selectedRows?.[0]}
+						refreshData={refreshData}
+					/> */}
 					<Button disabled={isDisableButton} onClick={handleDelete}>
 						Xóa
+					</Button>
+				</div>
+				<div>
+					<Button
+						className="w-[100px]"
+						onClick={handleExport}
+						loading={loadingExport}
+					>
+						Xuất file
 					</Button>
 				</div>
 			</div>
 			<div>
 				<TableDetails
 					pageSize={pageSize}
-					data={accounts}
+					data={teachers}
 					columns={columns}
 					onChange={handleChange}
 					loading={loading}
@@ -221,4 +231,4 @@ const Account = () => {
 	);
 };
 
-export default Account;
+export default Teacher;

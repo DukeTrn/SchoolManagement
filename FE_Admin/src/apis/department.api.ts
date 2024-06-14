@@ -43,10 +43,7 @@ export const getDepartmentDetail = (body: IDepartmentDetailBody, id: string) =>
 		body
 	);
 
-export const getTeacherDepartment = () =>
-	http.get<{ data: { teacherId: string; fullName: string }[] }>(
-		"teacher/filter"
-	);
+export const getTeacherDepartment = () => http.get("department/teacher-filter");
 
 export const addTeacherDepartment = (body: IAddTeacher) => {
 	return http.post("department/add-teachers", body);

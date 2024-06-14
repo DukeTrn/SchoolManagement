@@ -16,3 +16,15 @@ export type ITeacher = {
 	isLeader: boolean;
 	isViceLeader: boolean;
 };
+
+export type ITeacherInfo = Pick<
+	ITeacher,
+	| "teacherId"
+	| "fullName"
+	| "dob"
+	| "gender"
+	| "phoneNumber"
+	| "email"
+	| "level"
+	| "status"
+>;

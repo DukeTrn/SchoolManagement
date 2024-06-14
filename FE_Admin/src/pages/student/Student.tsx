@@ -163,7 +163,7 @@ const Student = () => {
 
 	return (
 		<>
-			<div className="mb-4 text-2xl font-medium">QUẢN LÝ TÀI KHOẢN</div>
+			<div className="mb-4 text-2xl font-medium">QUẢN LÝ HỌC SINH</div>
 			<div className="mb-5 flex justify-between">
 				<div className="relative min-w-[295px]">
 					<Search className="absolute left-2 top-2.5 h-4 w-4 " />
@@ -215,6 +215,7 @@ const Student = () => {
 			</div>
 			<div>
 				<TableDetails
+					pageSize={pageSize}
 					data={students}
 					columns={columns}
 					onChange={handleChange}
