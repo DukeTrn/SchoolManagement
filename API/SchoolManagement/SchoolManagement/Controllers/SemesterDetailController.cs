@@ -18,7 +18,7 @@ namespace SchoolManagement.Web.Controllers
         }
 
         /// <summary>
-        /// Get all classes in 1 semester
+        /// Danh sách các lớp trong 1 học kì - Get all classes in 1 semester
         /// </summary>
         /// <param name="semesterId"></param>
         /// <param name="queryModel"></param>
@@ -38,7 +38,7 @@ namespace SchoolManagement.Web.Controllers
         }
 
         /// <summary>
-        /// Filter for add classes into 1 semester
+        /// Filter add lớp vào học kỳ - Filter for add classes into 1 semester
         /// </summary>
         /// <param name="semesterId"></param>
         /// <returns></returns>

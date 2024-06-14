@@ -17,7 +17,7 @@ namespace SchoolManagement.Web.Controllers
         }
 
         /// <summary>
-        /// Use this api after clicking view detail of subject
+        ///  Danh sách Phân công giáo viên - Use this api after clicking view detail of subject
         /// </summary>
         /// <param name="grade"></param>
         /// <param name="semesterId"></param>

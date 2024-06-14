@@ -18,7 +18,7 @@ namespace SchoolManagement.Web.Controllers
         }
 
         /// <summary>
-        /// Get all classes of 1 grade
+        /// Danh sách các lớp theo khối - Get all classes of 1 grade
         /// </summary>
         /// <param name="grade"></param>
         /// <param name="queryModel"></param>
@@ -38,7 +38,8 @@ namespace SchoolManagement.Web.Controllers
         }
 
         /// <summary>
-        /// Filter to get available HR teacher (GVCN). Format of academicYear: 2023 - 2024
+        /// Filter GVCN chưa chủ nhiệm lớp nào - Filter to get available HR teacher (GVCN). 
+        /// Format of academicYear: 2023 - 2024
         /// </summary>
         /// <param name="grade"></param>
         /// <param name="academicYear"></param>

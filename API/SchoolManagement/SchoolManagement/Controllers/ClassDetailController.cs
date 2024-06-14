@@ -21,7 +21,7 @@ namespace SchoolManagement.Web.Controllers
         }
 
         /// <summary>
-        /// Get students of 1 class (danh sách lớp).
+        /// Get students of 1 class (danh sách học sinh trong 1 lớp).
         /// Status: 1 (active), 2 (suspended)
         /// </summary>
         /// <param name="classId"></param>
@@ -42,7 +42,7 @@ namespace SchoolManagement.Web.Controllers
         }
 
         /// <summary>
-        /// Filter (for students) to add students into class. 
+        /// Filter học sinh - Filter (for students) to add students into class. 
         /// Format of academicYear: 2023 - 2024
         /// </summary>
         /// <param name="academicYear"></param>
@@ -68,7 +68,7 @@ namespace SchoolManagement.Web.Controllers
         }
 
         /// <summary>
-        /// Add students into a class (same classId)
+        /// Thêm học sinh vào lớp - Add students into a class (same classId)
         /// </summary>
         /// <param name="models"></param>
         /// <returns></returns>

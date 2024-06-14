@@ -20,7 +20,7 @@ namespace SchoolManagement.Web.Controllers
         }
 
         /// <summary>
-        /// Get list classes by grade and semester 
+        /// Danh sách lớp - Get list classes by grade and semester 
         /// </summary>
         /// <param name="grade"></param>
         /// <param name="semesterId"></param>
@@ -45,7 +45,7 @@ namespace SchoolManagement.Web.Controllers
         }
 
         /// <summary>
-        /// Get list of students in a class in a semester
+        /// Danh sách học sinh trong 1 lớp - Get list of students in a class in a semester
         /// </summary>
         /// <param name="grade"></param>
         /// <param name="semesterId"></param>
