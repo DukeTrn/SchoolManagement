@@ -65,8 +65,6 @@ export function TableDetails(props: IProps) {
 		[loading, data]
 	);
 
-	console.log("tableData", tableData);
-
 	const table = useReactTable({
 		data: tableData,
 		columns: tableColumn,

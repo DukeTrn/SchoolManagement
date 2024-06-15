@@ -151,8 +151,7 @@ const Teacher = () => {
 	const handleExport = () => {
 		setLoadingExport(true);
 		exportTeacher({
-			teacherIds:
-				(selectedRows?.map((item) => item.teacherId) as string[]) ?? [],
+			teacherIds: selectedRows?.map((item) => item.teacherId) ?? [],
 			status: [],
 		}).then((res) => {
 			setLoadingExport(false);

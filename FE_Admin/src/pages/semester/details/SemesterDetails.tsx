@@ -1,7 +1,4 @@
-import {
-	deleteTeacherDepartment,
-	getDepartmentDetail,
-} from "@/apis/department.api";
+import { getSemesterDetails, removeSemesterDetail } from "@/apis/semester.api";
 import { MultiSelect } from "@/components/multiselect/MultiSelect";
 import Pagination from "@/components/pagination";
 import { TableDetails } from "@/components/table/Table";
@@ -10,32 +7,21 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { useDebounce } from "@/hooks";
-import { ITeacher } from "@/types/teacher.type";
 import { ColumnDef } from "@tanstack/react-table";
 import { Search } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Create } from "./Create";
-import { TeacherDetails } from "@/pages/teacher/TeacherDetail";
 
 const statusList = [
-	{ value: "1", label: "Đang giảng dạy" },
-	{ value: "2", label: "Tạm nghỉ" },
+	{ value: "10", label: "Khối 10" },
+	{ value: "11", label: "Khối 11" },
+	{ value: "12", label: "Khối 12" },
 ];
 
-type ITeacherTable = Pick<
-	ITeacher,
-	| "teacherId"
-	| "fullName"
-	| "dob"
-	| "phoneNumber"
-	| "email"
-	| "level"
-	| "status"
-	| "gender"
->;
+type ISemesterTable = Omit<ISemesterDetail, "academicYear">;
 
-const columns: ColumnDef<ITeacherTable>[] = [
+const columns: ColumnDef<ISemesterTable>[] = [
 	{
 		id: "select",
 		header: ({ table }) => (
@@ -59,59 +45,40 @@ const columns: ColumnDef<ITeacherTable>[] = [
 		),
 		enableSorting: false,
 		enableHiding: false,
-		size: 30,
+		size: 10,
 	},
 	{
-		accessorKey: "teacherId",
-		header: "MSGV",
-		cell: ({ row }) => (
-			<TeacherDetails teacherId={row.getValue("teacherId")} />
-		),
+		accessorKey: "className",
+		header: "Tên lớp",
+		cell: ({ row }) => <div>{row.getValue("className")}</div>,
 	},
 	{
-		accessorKey: "fullName",
+		accessorKey: "grade",
 		header: () => {
-			return <div>Họ tên</div>;
+			return <div>Khối</div>;
 		},
-		cell: ({ row }) => <div>{row.getValue("fullName")}</div>,
-		minSize: 200,
+		cell: ({ row }) => <div>{row.getValue("grade")}</div>,
 	},
 	{
-		accessorKey: "dob",
-		header: "Ngày sinh",
-		cell: ({ row }) => <div>{row.getValue("dob")}</div>,
+		accessorKey: "homeroomTeacherName",
+		header: "GVCN",
+		cell: ({ row }) => <div>{row.getValue("homeroomTeacherName")}</div>,
 	},
 	{
-		accessorKey: "gender",
-		header: "Giới tính",
-		cell: ({ row }) => <div>{row.getValue("gender")}</div>,
-	},
-	{
-		accessorKey: "phoneNumber",
-		header: "SDT",
-		cell: ({ row }) => <div>{row.getValue("phoneNumber")}</div>,
-	},
-	{
-		accessorKey: "email",
-		header: "Email",
-		cell: ({ row }) => <div>{row.getValue("email")}</div>,
-	},
-	{
-		accessorKey: "status",
-		header: "Tình trạng học tập",
-		cell: ({ row }) => <div>{row.getValue("status")}</div>,
-		size: 500,
+		accessorKey: "academicYear",
+		header: "Niên khoá",
+		cell: ({ row }) => <div>{row.getValue("academicYear")}</div>,
 	},
 ];
 
-const DepartmentDetail = () => {
+const SemesterDetail = () => {
 	const { id } = useParams();
 	const { toast } = useToast();
 	const [searchValue, setSearchValue] = useState("");
-	const [teachers, setTeachers] = useState<ITeacherTable[]>([]);
+	const [semesters, setSemesters] = useState<ISemesterTable[]>([]);
 	const [loading, setLoading] = useState<boolean>(false);
 	const [selectedField, setSelectedField] = useState<string[]>([]);
-	const [selectedRows, setSelectedRows] = useState<ITeacherTable[]>([]);
+	const [selectedRows, setSelectedRows] = useState<ISemesterTable[]>([]);
 	const [pageSize, setPageSize] = useState<number>(10);
 	const [pageNumber, setPageNumber] = useState<number>(1);
 	const [totalPage, setTotalPage] = useState<number>(1);
@@ -125,18 +92,18 @@ const DepartmentDetail = () => {
 
 	const handleGetData = () => {
 		setLoading(true);
-		getDepartmentDetail(
+		getSemesterDetails(
 			{
 				pageNumber: pageNumber,
 				pageSize: pageSize,
 				searchValue: searchQuery,
-				status: selectedField?.map((i) => Number(i)),
+				grades: selectedField?.map((i) => Number(i)),
 			},
 			id as string
 		).then((res) => {
 			setLoading(false);
 			setTotalPage(res?.data?.totalPageCount);
-			setTeachers(res?.data?.dataList);
+			setSemesters(res?.data?.dataList);
 		});
 	};
 
@@ -150,22 +117,19 @@ const DepartmentDetail = () => {
 		});
 	};
 
-	const handleChange = (value: ITeacherTable[]) => {
+	const handleChange = (value: ISemesterTable[]) => {
 		setSelectedRows(value);
 	};
 
 	const handleRemove = () => {
-		deleteTeacherDepartment({
-			departmentId: id as string,
-			teacherIds: selectedRows?.map((i) => i.teacherId) as string[],
-		}).then(() => {
-			refreshData("Xoá giáo viên khỏi bộ môn thành công");
+		removeSemesterDetail(selectedRows?.map((i) => i?.id!)).then(() => {
+			refreshData("Xoá lớp khỏi học kỳ thành công");
 		});
 	};
 
 	return (
 		<>
-			<div className="mb-4 text-2xl font-medium">QUẢN LÝ BỘ MÔN </div>
+			<div className="mb-4 text-2xl font-medium">QUẢN LÝ HỌC KỲ</div>
 			<div className="mb-5 flex justify-between">
 				<div className="relative min-w-[295px]">
 					<Search className="absolute left-2 top-2.5 h-4 w-4 " />
@@ -180,7 +144,7 @@ const DepartmentDetail = () => {
 					options={statusList}
 					onValueChange={setSelectedField}
 					value={selectedField}
-					placeholder="Tình trạng giảng dạy"
+					placeholder="Khối"
 					variant="inverted"
 					animation={2}
 					maxCount={0}
@@ -190,10 +154,7 @@ const DepartmentDetail = () => {
 			</div>
 			<div className="mb-5 flex justify-between">
 				<div className="flex gap-2">
-					<Create
-						departmentId={id as string}
-						refreshData={refreshData}
-					/>
+					<Create id={id as string} refreshData={refreshData} />
 					<Button onClick={handleRemove} disabled={isDisableButton}>
 						Xóa
 					</Button>
@@ -202,7 +163,7 @@ const DepartmentDetail = () => {
 			<div>
 				<TableDetails
 					pageSize={pageSize}
-					data={teachers}
+					data={semesters}
 					columns={columns}
 					onChange={handleChange}
 					loading={loading}
@@ -218,4 +179,4 @@ const DepartmentDetail = () => {
 	);
 };
 
-export default DepartmentDetail;
+export default SemesterDetail;

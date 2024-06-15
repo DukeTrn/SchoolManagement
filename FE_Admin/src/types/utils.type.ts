@@ -10,6 +10,10 @@ export interface ISuccessResponseApi<T> {
 	dataList: T;
 }
 
+export interface ISuccessGetResponseApi<T> {
+	data: T;
+	result: boolean;
+}
 export interface IUpdateResponseApi {
 	result: boolean;
 	messageType: number;

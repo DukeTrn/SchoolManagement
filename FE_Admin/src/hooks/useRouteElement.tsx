@@ -8,12 +8,22 @@ import Department from "@/pages/department";
 import DepartmentDetail from "@/pages/department/details/DepartmentDetail";
 import Teacher from "@/pages/teacher/Teacher";
 import Semester from "@/pages/semester";
+import SemesterDetail from "@/pages/semester/details/SemesterDetails";
+import NotFound from "@/pages/notfound";
 
 const useRouteElement = () => {
 	const routeElement = useRoutes([
 		{
 			path: "/",
 			element: <Navigate to={path.home} replace />,
+		},
+		{
+			path: "*",
+			element: (
+				<MainLayout>
+					<NotFound />
+				</MainLayout>
+			),
 		},
 		{
 			index: true,
@@ -69,6 +79,14 @@ const useRouteElement = () => {
 			element: (
 				<MainLayout>
 					<Semester />
+				</MainLayout>
+			),
+		},
+		{
+			path: path.semesterDetail,
+			element: (
+				<MainLayout>
+					<SemesterDetail />
 				</MainLayout>
 			),
 		},

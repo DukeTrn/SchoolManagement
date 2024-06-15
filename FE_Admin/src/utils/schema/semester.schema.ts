@@ -13,10 +13,8 @@ export const semesterSchema = yup.object({
 
 export type ISemesterSchema = yup.InferType<typeof semesterSchema>;
 
-// export const departmentDetailSchema = yup.object({
-// 	teacher: yup.array().length(1, defaultError).required(defaultError),
-// });
+export const semesterDetailSchema = yup.object({
+	class: yup.array().length(1, defaultError).required(defaultError),
+});
 
-// export type IDepartmentDetailSchema = yup.InferType<
-// 	typeof departmentDetailSchema
-// >;
+export type ISemesterDetailSchema = yup.InferType<typeof semesterDetailSchema>;

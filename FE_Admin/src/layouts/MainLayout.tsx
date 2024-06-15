@@ -24,9 +24,9 @@ const MainLayout = ({ children }: IMainLayout) => {
 				}}
 				className="items-stretch"
 			>
-				<ResizablePanel defaultValue={165} minSize={20} maxSize={25}>
+				<ResizablePanel defaultSize={150} minSize={15} maxSize={20}>
 					<div className="flex items-center justify-center">
-						<img src={Logo} width="60%" />
+						<img src={Logo} width="40%" />
 					</div>
 					<Nav links={sideBarNavs} />
 				</ResizablePanel>
