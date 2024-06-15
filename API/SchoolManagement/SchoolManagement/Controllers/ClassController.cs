@@ -41,15 +41,14 @@ namespace SchoolManagement.Web.Controllers
         /// Filter GVCN chưa chủ nhiệm lớp nào - Filter to get available HR teacher (GVCN). 
         /// Format of academicYear: 2023 - 2024
         /// </summary>
-        /// <param name="grade"></param>
         /// <param name="academicYear"></param>
         /// <returns></returns>
-        [HttpGet, Route("teacher-filter/{academicYear}/{grade}")]
-        public async ValueTask<IActionResult> GetAvailableTeachersByGradeAsync(int grade, string academicYear)
+        [HttpGet, Route("teacher-filter/{academicYear}")]
+        public async ValueTask<IActionResult> GetAvailableTeachersByGradeAsync(string academicYear)
         {
             try
             {
-                var teachers = await _service.GetAvailableTeachersByGradeAsync(grade, academicYear);
+                var teachers = await _service.GetAvailableTeachersByGradeAsync(academicYear);
                 return Ok(new
                 {
                     result = true,
@@ -116,11 +115,11 @@ namespace SchoolManagement.Web.Controllers
         }
 
         [HttpPut("{classId}")]
-        public async Task<IActionResult> UpdateClass(string classId, [FromBody] ClassUpdateModel model)
+        public async Task<IActionResult> UpdateClass(string classId, string academicYear, [FromBody] ClassUpdateModel model)
         {
             try
             {
-                await _service.UpdateClass(classId, model);
+                await _service.UpdateClass(classId, academicYear, model);
                 return Ok(new { result = true, messageType = 0 });
             }
             catch (NotFoundException)
