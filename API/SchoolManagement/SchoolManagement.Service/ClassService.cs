@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using NPOI.Util;
 using SchoolManagement.Common.Enum;
 using SchoolManagement.Common.Exceptions;
 using SchoolManagement.Database;
@@ -194,15 +195,15 @@ namespace SchoolManagement.Service
         /// </summary>
         /// <param name="grade"></param>
         /// <returns></returns>
-        public async ValueTask<IEnumerable<TeacherFilterModel>> GetAvailableTeachersByGradeAsync(int grade, string academicYear)
+        public async ValueTask<IEnumerable<TeacherFilterModel>> GetAvailableTeachersByGradeAsync(string academicYear)
         {
             try
             {
-                _logger.LogInformation($"Starting to filter available teachers for grade {grade} and academic year {academicYear}.");
+                _logger.LogInformation($"Starting to filter available teachers for academic year {academicYear}.");
 
                 // Lấy danh sách giáo viên chưa chủ nhiệm lớp nào trong khối chỉ định và niên khóa chỉ định
                 var availableTeachers = await _context.TeacherEntities
-                    .Where(t => !t.Classes.Any(c => c.Grade == grade && c.AcademicYear == academicYear))
+                    .Where(t => !t.Classes.Any(c => c.AcademicYear == academicYear))
                     .Select(t => new TeacherFilterModel
                     {
                         TeacherId = t.TeacherId,
@@ -210,7 +211,7 @@ namespace SchoolManagement.Service
                     })
                     .ToListAsync();
 
-                _logger.LogInformation($"Found {availableTeachers.Count} available teachers for grade {grade} and academic year {academicYear}.");
+                _logger.LogInformation($"Found {availableTeachers.Count} available teachers for academic year {academicYear}.");
 
                 return availableTeachers;
             }
@@ -325,7 +326,7 @@ namespace SchoolManagement.Service
         /// <param name="id"></param>
         /// <param name="model"></param>
         /// <returns></returns>
-        public async ValueTask UpdateClass(string classId, ClassUpdateModel model)
+        public async ValueTask UpdateClass(string classId, string academicYear, ClassUpdateModel model)
         {
             try
             {
@@ -338,12 +339,16 @@ namespace SchoolManagement.Service
                     throw new NotFoundException("Class not found.");
                 }
 
-                var teacherAlreadyAssigned = await _context.ClassEntities
-                    .AnyAsync(c => c.HomeroomTeacherId == model.HoomroomTeacherId && c.ClassId != classId);
-                if (teacherAlreadyAssigned)
+                // Chỉ kiểm tra nếu HomeroomTeacherId thay đổi hoặc nếu HomeroomTeacherId không phải là null hoặc rỗng
+                if (!string.IsNullOrEmpty(model.HoomroomTeacherId) && existingClass.HomeroomTeacherId != model.HoomroomTeacherId)
                 {
-                    _logger.LogWarning("Homeroom teacher with ID {HomeroomTeacherId} is already assigned to another class.", model.HoomroomTeacherId);
-                    throw new InvalidOperationException("Homeroom teacher is already assigned to another class.");
+                    var teacherAlreadyAssigned = await _context.ClassEntities
+                        .AnyAsync(c => c.HomeroomTeacherId == model.HoomroomTeacherId && c.ClassId != classId && c.AcademicYear == academicYear);
+                    if (teacherAlreadyAssigned)
+                    {
+                        _logger.LogWarning("Homeroom teacher with ID {HomeroomTeacherId} is already assigned to another class.", model.HoomroomTeacherId);
+                        throw new InvalidOperationException("Homeroom teacher is already assigned to another class.");
+                    }
                 }
 
                 existingClass.ClassName = model.ClassName;

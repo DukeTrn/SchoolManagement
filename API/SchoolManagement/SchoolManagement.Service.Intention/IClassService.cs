@@ -10,9 +10,9 @@ namespace SchoolManagement.Service.Intention
         ValueTask<IEnumerable<ClassInAcademicYearModel>> GetListClassesInAcademicYear(int grade, string academicYear);
         ValueTask<string> GetClassNameById(string classId);
         ValueTask CreateClass(ClassAddModel model);
-        ValueTask UpdateClass(string classId, ClassUpdateModel model);
+        ValueTask UpdateClass(string classId, string academicYear, ClassUpdateModel model);
         ValueTask DeleteClass(string classId);
-        ValueTask<IEnumerable<TeacherFilterModel>> GetAvailableTeachersByGradeAsync(int grade, string academicYear);
+        ValueTask<IEnumerable<TeacherFilterModel>> GetAvailableTeachersByGradeAsync(string academicYear);
 
     }
 }
