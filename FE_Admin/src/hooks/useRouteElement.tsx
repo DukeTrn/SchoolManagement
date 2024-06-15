@@ -9,6 +9,7 @@ import DepartmentDetail from "@/pages/department/details/DepartmentDetail";
 import Teacher from "@/pages/teacher/Teacher";
 import Semester from "@/pages/semester";
 import SemesterDetail from "@/pages/semester/details/SemesterDetails";
+import Classroom from "@/pages/classroom";
 import NotFound from "@/pages/notfound";
 
 const useRouteElement = () => {
@@ -87,6 +88,14 @@ const useRouteElement = () => {
 			element: (
 				<MainLayout>
 					<SemesterDetail />
+				</MainLayout>
+			),
+		},
+		{
+			path: path.classroom,
+			element: (
+				<MainLayout>
+					<Classroom />
 				</MainLayout>
 			),
 		},

@@ -11,17 +11,17 @@ interface IBodyClassroom {
 }
 type IBodyAddCLassroom = Omit<IClassroom, "classId" | "homeroomTeacherName">;
 
-export const getClassroom = (body: IBodyClassroom, id: string) =>
-	http.post<ISuccessResponseApi<IClassroom>>(`class/all/${id}`, body);
+export const getClassroom = (body: IBodyClassroom, id: number) =>
+	http.post<ISuccessResponseApi<IClassroom[]>>(`class/all/${id}`, body);
 
 export const getFreeTeacher = (academicYear: string, grade: string) =>
 	http.get<ISuccessGetResponseApi<{ teacherId: string; fullName: string }[]>>(
-		`teacher-filter/${encodeURIComponent(academicYear)}/${grade}`
+		`class/teacher-filter/${encodeURIComponent(academicYear)}/${grade}`
 	);
 
 export const getClassFilter = (academicYear: string, grade: string) =>
 	http.get<ISuccessGetResponseApi<{ classId: string; className: string }[]>>(
-		`class-filter/${encodeURIComponent(academicYear)}/${grade}`
+		`class/class-filter/${encodeURIComponent(academicYear)}/${grade}`
 	);
 
 export const createClassroom = (body: IBodyAddCLassroom) =>
@@ -30,6 +30,6 @@ export const createClassroom = (body: IBodyAddCLassroom) =>
 export const deleteClass = (id: string) => http.delete(`class/${id}`);
 
 export const updateClass = (
-	body: { clasName: string; hoomroomTeacherId: string },
+	body: { className: string; hoomroomTeacherId?: string },
 	id: string
 ) => http.put(`class/${id}`, body);

@@ -1,8 +1,8 @@
 type IClassroom = {
 	classId: string;
-	classNameslassName: string;
+	className: string;
 	academicYear: string;
 	grade: string;
-	homeroomTeacherId: string;
+	homeroomTeacherId?: string;
 	homeroomTeacherName: string;
 };
