@@ -23,7 +23,7 @@ import {
 	SheetTitle,
 	SheetTrigger,
 } from "@/components/ui/sheet";
-import { toast } from "@/components/ui/use-toast";
+import { IClassroom } from "@/types/classroom.type";
 import {
 	IClassroomSchema,
 	classroomSchema,
@@ -86,19 +86,30 @@ export function Create(props: IPanelProps) {
 
 	useEffect(() => {
 		setFreeTeacher([]);
-		console.log("currentForm", currentForm);
 		if (currentForm?.academicYear && currentForm?.grade) {
-			getFreeTeacher(currentForm?.academicYear, currentForm?.grade).then(
-				(res) => {
-					setFreeTeacher(res?.data?.data);
+			getFreeTeacher(currentForm?.academicYear).then((res) => {
+				if (res?.data?.data.length > 0) {
+					setFreeTeacher([
+						...res.data.data,
+						{
+							teacherId: selected?.homeroomTeacherId!,
+							fullName: selected?.homeroomTeacherName!,
+						},
+					]);
+				} else {
+					setFreeTeacher([
+						{
+							teacherId: selected?.homeroomTeacherId!,
+							fullName: selected?.homeroomTeacherName!,
+						},
+					]);
 				}
-			);
+			});
 		}
-	}, [currentForm?.grade, currentForm?.academicYear]);
+	}, [currentForm?.academicYear]);
 
 	const handleGetData = () => {
 		if (count === 0 && type === "edit") {
-			console.log(selected);
 			setValue("className", selected?.className!);
 			setValue("grade", String(selected?.grade!));
 			setValue("academicYear", selected?.academicYear!);
@@ -137,7 +148,8 @@ export function Create(props: IPanelProps) {
 					className: data?.className,
 					hoomroomTeacherId: data?.homeroomTeacherId as string,
 				},
-				selected?.classId!
+				selected?.classId!,
+				data?.academicYear || currentForm?.academicYear
 			)
 				.then(() => {
 					resetState();
@@ -145,7 +157,6 @@ export function Create(props: IPanelProps) {
 				})
 				.catch((error) => {
 					setLoading(false);
-
 					refreshData(error?.response?.data?.error, true);
 				});
 		}

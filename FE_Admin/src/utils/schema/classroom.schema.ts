@@ -13,10 +13,16 @@ export const classroomSchema = yup.object({
 
 export type IClassroomSchema = yup.InferType<typeof classroomSchema>;
 
-// export const departmentDetailSchema = yup.object({
-// 	teacher: yup.array().length(1, defaultError).required(defaultError),
-// });
+export const classroomStudentDetailSchema = yup.object({
+	studentsValue: yup.array().length(1, defaultError).required(defaultError),
+});
 
-// export type IDepartmentDetailSchema = yup.InferType<
-// 	typeof departmentDetailSchema
-// >;
+export type IClassroomStudentDetailSchema = yup.InferType<
+	typeof classroomStudentDetailSchema
+>;
+
+export const classroomFreeSchema = yup.object({
+	classIds: yup.string().trim().required(defaultError),
+});
+
+export type IClassroomFreeSchema = yup.InferType<typeof classroomFreeSchema>;

@@ -20,6 +20,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Link } from "react-router-dom";
+import { IClassroom } from "@/types/classroom.type";
 
 const columns: ColumnDef<IClassroom>[] = [
 	{
@@ -56,6 +57,7 @@ const columns: ColumnDef<IClassroom>[] = [
 			return (
 				<Link
 					to={row.getValue("classId")}
+					state={row.original}
 					className="cursor-pointer font-medium text-blue-600 underline"
 				>
 					{className}

@@ -13,7 +13,7 @@ import { useDebounce } from "@/hooks";
 import { ITeacher } from "@/types/teacher.type";
 import { ColumnDef } from "@tanstack/react-table";
 import { Search } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Create } from "./Create";
 import { TeacherDetails } from "@/pages/teacher/TeacherDetail";

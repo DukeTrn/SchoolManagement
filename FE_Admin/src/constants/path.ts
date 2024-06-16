@@ -8,6 +8,7 @@ const path = {
 	semester: "/semester",
 	semesterDetail: "/semester/:id",
 	classroom: "/classroom",
+	classroomDetail: "/classroom/:id",
 } as const;
 
 export default path;
