@@ -1,7 +1,7 @@
 import { createDepartment, updateDepartment } from "@/apis/department.api";
 import CommonInput from "@/components/input/CommonInput";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+
 import { Label } from "@/components/ui/label";
 import {
 	Sheet,
@@ -16,7 +16,7 @@ import {
 	departmentSchema,
 } from "@/utils/schema/department.schema";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useState, useReducer, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 
 interface IPanelProps {

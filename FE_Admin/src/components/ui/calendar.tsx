@@ -106,7 +106,7 @@ function Calendar({
 							</SelectTrigger>
 							<SelectContent>
 								<SelectGroup>
-									{options.map((option, id: number) => {
+									{options.map((option) => {
 										return (
 											<SelectItem
 												key={option.key}
@@ -124,12 +124,8 @@ function Calendar({
 						</Select>
 					);
 				},
-				IconLeft: ({ ...props }) => (
-					<ChevronLeftIcon className="h-4 w-4" />
-				),
-				IconRight: ({ ...props }) => (
-					<ChevronRightIcon className="h-4 w-4" />
-				),
+				IconLeft: () => <ChevronLeftIcon className="h-4 w-4" />,
+				IconRight: () => <ChevronRightIcon className="h-4 w-4" />,
 			}}
 			{...props}
 		/>

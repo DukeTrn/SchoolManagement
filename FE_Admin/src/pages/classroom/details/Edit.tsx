@@ -1,7 +1,6 @@
 import { getClassFilter, updateStudentClass } from "@/apis/classroom.api";
-import { MultiSelect } from "@/components/multiselect/MultiSelect";
 import { Button } from "@/components/ui/button";
-import { FormField, FormItem } from "@/components/ui/form";
+import { FormField } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
 import {
 	Select,
@@ -64,7 +63,7 @@ export function Edit({ refreshData, id, state, disable }: IPanelProps) {
 
 	const onSubmit = handleSubmit((data) => {
 		setLoading(true);
-		updateStudentClass(state?.classId, data?.classIds).then(() => {
+		updateStudentClass(id, data?.classIds).then(() => {
 			setLoading(false);
 			reset(initValues);
 			setOpenSheet(false);

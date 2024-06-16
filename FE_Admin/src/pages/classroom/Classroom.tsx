@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { TableDetails } from "@/components/table/Table";
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { MultiSelect } from "@/components/multiselect/MultiSelect";
 import { useDebounce } from "@/hooks";
 import { useToast } from "@/components/ui/use-toast";
 import Pagination from "@/components/pagination";
