@@ -10,6 +10,15 @@
         public string HomeroomTeacherName { get; set; } = string.Empty; // GVCN
     }
 
+    public class HomeroomClassDisplayModel
+    {
+        public string ClassId { get; set; } = string.Empty;
+        public string ClassName { get; set; } = string.Empty;
+        public string AcademicYear { get; set; } = string.Empty;
+        public int Grade { get; set; } // khối
+        public int TotalStudents { get; set; }
+    }
+
     public class ClassFilterModel
     {
         public string ClassId { get; set; } = string.Empty;

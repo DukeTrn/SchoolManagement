@@ -38,6 +38,26 @@ namespace SchoolManagement.Web.Controllers
         }
 
         /// <summary>
+        /// (cổng GV) Danh sách các lớp gvcn dạy
+        /// </summary>
+        /// <param name="accountId"></param>
+        /// <param name="queryModel"></param>
+        /// <returns></returns>
+        [HttpPost, Route("{accountId}/homeroom-classes")]
+        public async ValueTask<IActionResult> GetAllClassesByAccountId(Guid accountId, [FromBody] PageQueryModel queryModel)
+        {
+            try
+            {
+                var result = await _service.GetAllClassesByAccountId(accountId, queryModel);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(200, new { result = false, messageType = MessageType.Error, message = ex });
+            }
+        }
+
+        /// <summary>
         /// Filter GVCN chưa chủ nhiệm lớp nào - Filter to get available HR teacher (GVCN). 
         /// Format of academicYear: 2023 - 2024
         /// </summary>

@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using NPOI.Util;
 using SchoolManagement.Common.Enum;
 using SchoolManagement.Common.Exceptions;
 using SchoolManagement.Database;
@@ -100,6 +99,66 @@ namespace SchoolManagement.Service
                 throw;
             }
         }
+
+        public async ValueTask<PaginationModel<HomeroomClassDisplayModel>> GetAllClassesByAccountId(Guid accountId, PageQueryModel queryModel)
+        {
+            try
+            {
+                _logger.LogInformation("Start to get list of classes for account ID {AccountId}.", accountId);
+
+                int pageNumber = queryModel.PageNumber != null && queryModel.PageNumber.Value > 0 ? queryModel.PageNumber.Value : 1;
+                int pageSize = queryModel.PageSize != null && queryModel.PageSize.Value > 0 ? queryModel.PageSize.Value : 10;
+
+                // Tìm giáo viên có accountId
+                var teacher = await _context.TeacherEntities
+                    .Include(t => t.Department)
+                    .FirstOrDefaultAsync(t => t.AccountId == accountId);
+
+                if (teacher == null)
+                {
+                    _logger.LogWarning("Teacher with account ID {AccountId} not found.", accountId);
+                    throw new NotFoundException("Teacher not found.");
+                }
+
+                // Truy vấn các lớp mà giáo viên này làm chủ nhiệm
+                var query = _context.ClassEntities
+                    .Where(c => c.HomeroomTeacherId == teacher.TeacherId)
+                    .Select(c => new HomeroomClassDisplayModel
+                    {
+                        ClassId = c.ClassId,
+                        ClassName = c.ClassName,
+                        AcademicYear = c.AcademicYear,
+                        Grade = c.Grade,
+                        TotalStudents = _context.ClassDetailEntities.Count(s => s.ClassId == c.ClassId)
+                    });
+
+                // Lấy tổng số bản ghi
+                var totalCount = await query.CountAsync();
+
+                // Lấy dữ liệu theo phân trang
+                var classList = await query
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToListAsync();
+
+                // Tạo đối tượng phân trang để trả về
+                var result = new PaginationModel<HomeroomClassDisplayModel>
+                {
+                    TotalCount = totalCount,
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    DataList = classList
+                };
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occurred while getting list of classes for account ID {AccountId}. Error: {Error}", accountId, ex.Message);
+                throw;
+            }
+        }
+
 
         /// <summary>
         /// Get list classes in 1 semester. This dto is for 1st conduct and assessment display

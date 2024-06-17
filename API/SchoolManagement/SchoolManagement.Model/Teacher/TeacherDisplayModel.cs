@@ -12,6 +12,8 @@ namespace SchoolManagement.Model
         public string? Email { get; set; }
         public string Level { get; set; } = string.Empty;
         public string Status { get; set; } = string.Empty;
+        public string DepartmentId { get; set; } = string.Empty;
+        public string DepartmentName { get; set; } = string.Empty;
     }
 
     public class TeacherFullDisplayModel : TeacherDisplayModel

@@ -21,7 +21,7 @@ namespace SchoolManagement.Service
             _context = context;
         }
 
-        #region List departments
+        #region List departments & notification
         /// <summary>
         /// Get list of all departments
         /// </summary>
@@ -72,6 +72,30 @@ namespace SchoolManagement.Service
             catch(Exception ex)
             {
                 _logger.LogError("An error occured while getting list of all depts. Error: {ex}", ex);
+                throw;
+            }
+        }
+
+        public async ValueTask<string> GetNotificationInDept(string departmentId)
+        {
+            try
+            {
+                // Kiểm tra nếu departmentId là hợp lệ
+                var department = await _context.DepartmentEntities
+                    .FirstOrDefaultAsync(d => d.DepartmentId == departmentId);
+
+                if (department == null)
+                {
+                    _logger.LogWarning("Department with ID {DepartmentId} not found.", departmentId);
+                    throw new NotFoundException("Department not found.");
+                }
+
+                // Trả về thông báo của phòng ban, nếu không có, trả về chuỗi rỗng
+                return department.Notification ?? string.Empty;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occurred while getting the notification for department with ID {DepartmentId}. Error: {Error}", departmentId, ex.Message);
                 throw;
             }
         }

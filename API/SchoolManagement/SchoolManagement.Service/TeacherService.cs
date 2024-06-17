@@ -159,6 +159,107 @@ namespace SchoolManagement.Service
             }
         }
 
+        public async ValueTask<PaginationModel<TeacherDisplayModel>> GetAllTeachersInDeptByAccountId(Guid accountId, TeacherQueryModel queryModel)
+        {
+            try
+            {
+                _logger.LogInformation("Start to get all teachers in department for account ID {AccountId}.", accountId);
+
+                // Tìm giáo viên với accountId
+                var teacher = await _context.TeacherEntities
+                    .Include(t => t.Department)
+                    .FirstOrDefaultAsync(t => t.AccountId == accountId);
+
+                if (teacher == null)
+                {
+                    var errorMsg = $"Teacher with Account ID {accountId} not found!";
+                    _logger.LogWarning(errorMsg);
+                    throw new NotFoundException(errorMsg);
+                }
+
+                // Lấy DepartmentId của giáo viên
+                var departmentId = teacher.DepartmentId;
+                if (string.IsNullOrEmpty(departmentId))
+                {
+                    var errorMsg = $"Teacher with Account ID {accountId} does not belong to any department!";
+                    _logger.LogWarning(errorMsg);
+                    throw new InvalidOperationException(errorMsg);
+                }
+
+                // Bắt đầu truy vấn danh sách giáo viên trong phòng ban
+                var query = _context.TeacherEntities
+                    .Where(t => t.DepartmentId == departmentId)
+                    .AsQueryable();
+
+                // Áp dụng bộ lọc tìm kiếm (Search)
+                //if (!string.IsNullOrEmpty(queryModel.SearchValue))
+                //{
+                //    _logger.LogInformation("Add Search Value: {SearchValue}", queryModel.SearchValue);
+                //    query = query.Where(t => t.FullName.Contains(queryModel.SearchValue));
+                //}
+                FilterModel filter = new();
+                #region Search
+                if (!string.IsNullOrEmpty(queryModel.SearchValue))
+                {
+                    _logger.LogInformation("Add Search Value: {SearchValue}", queryModel.SearchValue);
+                    var searchFilter = BuildSearchFilter(queryModel.SearchValue,
+                        nameof(TeacherEntity.TeacherId),
+                        nameof(TeacherEntity.FullName),
+                        nameof(TeacherEntity.Email),
+                        nameof(TeacherEntity.Level),
+                        nameof(TeacherEntity.PhoneNumber));
+                    filter.Or.AddRange(searchFilter);
+                }
+                #endregion
+
+                
+                #region Status Filter
+                if (queryModel.Status.Count > 0)
+                {
+                    _logger.LogInformation("Add Status condition: {Status}", queryModel.Status.ToString());
+                    filter.AddAnd((TeacherEntity entity) => entity.Status, queryModel.Status);
+                }
+                #endregion
+                query = _filterBuilder.BuildFilterQuery(query, filter);
+
+                // Phân trang
+                int pageNumber = queryModel.PageNumber != null && queryModel.PageNumber.Value > 0 ? queryModel.PageNumber.Value : 1;
+                int pageSize = queryModel.PageSize != null && queryModel.PageSize.Value > 0 ? queryModel.PageSize.Value : 10;
+
+                var totalRecords = await query.CountAsync();
+
+                var teacherEntities = await query
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToListAsync();
+
+                // Chuyển đổi sang mô hình hiển thị
+                var teacherDisplayModels = teacherEntities.Select(t => new TeacherDisplayModel
+                {
+                    TeacherId = t.TeacherId,
+                    FullName = t.FullName,
+                    PhoneNumber = t.PhoneNumber,
+                    Email = t.Email,
+                    Level = t.Level,
+                    Status = TranslateStatus(t.Status),
+                    DepartmentName = t.Department.SubjectName,
+                    DepartmentId = t.Department.DepartmentId
+                }).ToList();
+
+                return new PaginationModel<TeacherDisplayModel>
+                {
+                    TotalCount = totalRecords,
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    DataList = teacherDisplayModels
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occurred while getting the list of teachers. Error: {ex}", ex.Message);
+                throw;
+            }
+        }
 
         public async ValueTask<IEnumerable<TeacherFilterModel>> GetAllTeachersFilter()
         {
