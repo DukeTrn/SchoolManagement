@@ -7,9 +7,8 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useDebounce } from "@/hooks";
 import { useToast } from "@/components/ui/use-toast";
-import Pagination from "@/components/pagination";
-import { deleteClass, getClassroom } from "@/apis/classroom.api";
-import { Create } from "./Create";
+import Create from "./Create";
+
 import {
 	Select,
 	SelectContent,
@@ -19,25 +18,16 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Link } from "react-router-dom";
-import { IClassroom } from "@/types/classroom.type";
+import { ISubject } from "@/types/assignment.type";
+import { deleteSubject, getSubjects } from "@/apis/asignment.api";
 
-const columns: ColumnDef<IClassroom>[] = [
+const columns: ColumnDef<ISubject>[] = [
 	{
 		id: "select",
-		header: ({ table }) => (
-			<Checkbox
-				checked={
-					table.getIsAllPageRowsSelected() ||
-					(table.getIsSomePageRowsSelected() && "indeterminate")
-				}
-				onCheckedChange={(value) =>
-					table.toggleAllPageRowsSelected(!!value)
-				}
-				aria-label="Select all"
-			/>
-		),
+		header: "",
 		cell: ({ row }) => (
 			<Checkbox
+				className="rounded-full"
 				checked={row.getIsSelected()}
 				onCheckedChange={(value) => row.toggleSelected(!!value)}
 				aria-label="Select row"
@@ -45,21 +35,21 @@ const columns: ColumnDef<IClassroom>[] = [
 		),
 		enableSorting: false,
 		enableHiding: false,
-		size: 30,
+		size: 10,
 	},
 	{
-		accessorKey: "classId",
-		header: "Tên lớp",
+		accessorKey: "subjectName",
+		header: "Môn học",
 		cell: ({ row }) => {
-			const className = row.original.className;
+			const id = row.original.id;
 
 			return (
 				<Link
-					to={row.getValue("classId")}
+					to={String(id)}
 					state={row.original}
 					className="cursor-pointer font-medium text-blue-600 underline"
 				>
-					{className}
+					{row.getValue("subjectName")}
 				</Link>
 			);
 		},
@@ -72,59 +62,42 @@ const columns: ColumnDef<IClassroom>[] = [
 		cell: ({ row }) => <div>{row.getValue("grade")}</div>,
 	},
 	{
-		accessorKey: "homeroomTeacherName",
-		header: "GVCN",
-		cell: ({ row }) => <div>{row.getValue("homeroomTeacherName")}</div>,
-	},
-	{
-		accessorKey: "academicYear",
-		header: "Niên khoá",
-		cell: ({ row }) => <div>{row.getValue("academicYear")}</div>,
+		accessorKey: "description",
+		header: "Mô tả",
+		cell: ({ row }) => <div>{row.getValue("description")}</div>,
 	},
 ];
 
-const Classroom = () => {
+const Assignment = () => {
 	const { toast } = useToast();
-	const [classes, setClasses] = useState<IClassroom[]>([]);
+	const [classes, setClasses] = useState<ISubject[]>([]);
 	const [loading, setLoading] = useState<boolean>(false);
 	const [searchValue, setSearchValue] = useState("");
-	const [selectedRows, setSelectedRows] = useState<IClassroom[]>([]);
+	const [selectedRow, setSelectedRow] = useState<ISubject>();
 	const [selectedField, setSelectedField] = useState<string>("10");
-	const [pageSize, setPageSize] = useState<number>(10);
-	const [pageNumber, setPageNumber] = useState<number>(1);
-	const [totalPage, setTotalPage] = useState<number>(1);
 
 	const searchQuery = useDebounce(searchValue, 1500);
 
-	const isDisableButton =
-		selectedRows?.length > 1 || selectedRows?.length === 0;
+	const isDisableButton = !selectedRow;
 
 	useEffect(() => {
 		handleGetData();
-	}, [pageNumber, pageSize, searchQuery, selectedField]);
+	}, [searchQuery, selectedField]);
 
-	const handleChange = (value: IClassroom[]) => {
-		setSelectedRows(value);
+	const handleChange = (value: ISubject[]) => {
+		setSelectedRow(value?.[0]);
 	};
 
 	const handleGetData = () => {
 		setLoading(true);
-		getClassroom(
-			{
-				searchValue: searchQuery,
-				pageSize: pageSize,
-				pageNumber: pageNumber,
-			},
-			Number(selectedField)
-		).then((res) => {
+		getSubjects(Number(selectedField)).then((res) => {
 			setLoading(false);
-			setTotalPage(res?.data?.totalPageCount);
-			setClasses(res?.data?.dataList);
+			setClasses(res?.data?.data);
 		});
 	};
 
 	const refreshData = (message: string, varient?: boolean) => {
-		setSelectedRows([]);
+		setSelectedRow(undefined);
 		handleGetData();
 		toast({
 			title: "Thông báo:",
@@ -135,9 +108,9 @@ const Classroom = () => {
 	};
 
 	const handleDelete = () => {
-		deleteClass(selectedRows?.[0]?.classId)
+		deleteSubject(selectedRow?.id!)
 			.then(() => {
-				refreshData("Xóa lớp thành công!");
+				refreshData("Xóa môn học thành công!");
 			})
 			.catch(() => {
 				toast({
@@ -151,7 +124,9 @@ const Classroom = () => {
 
 	return (
 		<>
-			<div className="mb-4 text-2xl font-medium">QUẢN LÝ LỚP HỌC</div>
+			<div className="mb-4 text-2xl font-medium">
+				QUẢN LÝ PHÂN CÔNG GIẢNG DẠY
+			</div>
 			<div className="mb-5 flex justify-between">
 				<div className="relative min-w-[295px]">
 					<Search className="absolute left-2 top-2.5 h-4 w-4 " />
@@ -188,7 +163,7 @@ const Classroom = () => {
 					<Create
 						type="edit"
 						disable={isDisableButton}
-						selected={selectedRows?.[0]}
+						selected={selectedRow}
 						refreshData={refreshData}
 					/>
 					<Button disabled={isDisableButton} onClick={handleDelete}>
@@ -198,21 +173,16 @@ const Classroom = () => {
 			</div>
 			<div>
 				<TableDetails
-					pageSize={pageSize}
+					pageSize={10}
 					data={classes}
 					columns={columns}
 					onChange={handleChange}
 					loading={loading}
-				/>
-				<Pagination
-					pageSize={pageSize}
-					onChangePage={(value) => setPageNumber(Number(value))}
-					onChangeRow={(value) => setPageSize(Number(value))}
-					totalPageCount={totalPage}
+					useRadio
 				/>
 			</div>
 		</>
 	);
 };
 
-export default Classroom;
+export default Assignment;

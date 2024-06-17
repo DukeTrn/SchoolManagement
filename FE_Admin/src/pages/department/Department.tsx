@@ -24,7 +24,7 @@ const columns: ColumnDef<IDepartment>[] = [
 		),
 		enableSorting: false,
 		enableHiding: false,
-		size: 10,
+		size: 30,
 	},
 	{
 		accessorKey: "departmentId",

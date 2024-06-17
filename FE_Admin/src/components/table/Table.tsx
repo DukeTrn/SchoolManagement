@@ -116,7 +116,8 @@ export function TableDetails(props: IProps) {
 										<TableHead
 											key={header.id}
 											style={{
-												width: header.getSize(),
+												width: header.column.columnDef
+													?.size,
 											}}
 										>
 											{header.isPlaceholder

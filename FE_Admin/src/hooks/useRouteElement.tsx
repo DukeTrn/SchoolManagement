@@ -12,6 +12,7 @@ import SemesterDetail from "@/pages/semester/details/SemesterDetails";
 import Classroom from "@/pages/classroom";
 import NotFound from "@/pages/notfound";
 import ClassroomDetail from "@/pages/classroom/details/ClassDetails";
+import Assignment from "@/pages/assignment";
 
 const useRouteElement = () => {
 	const routeElement = useRoutes([
@@ -105,6 +106,14 @@ const useRouteElement = () => {
 			element: (
 				<MainLayout>
 					<ClassroomDetail />
+				</MainLayout>
+			),
+		},
+		{
+			path: path.assignment,
+			element: (
+				<MainLayout>
+					<Assignment />
 				</MainLayout>
 			),
 		},
