@@ -56,7 +56,7 @@ export const sideBarNavs = [
 	{
 		title: "Phân công giảng dạy",
 		icon: Columns3,
-		path: "/schedule",
+		path: "/assignment",
 		variant: "ghost",
 	},
 	{

@@ -25,20 +25,10 @@ const statusList = [
 const columns: ColumnDef<IStudentClassroom>[] = [
 	{
 		id: "select",
-		header: ({ table }) => (
-			<Checkbox
-				checked={
-					table.getIsAllPageRowsSelected() ||
-					(table.getIsSomePageRowsSelected() && "indeterminate")
-				}
-				onCheckedChange={(value) =>
-					table.toggleAllPageRowsSelected(!!value)
-				}
-				aria-label="Select all"
-			/>
-		),
+		header: "",
 		cell: ({ row }) => (
 			<Checkbox
+				className="rounded-full"
 				checked={row.getIsSelected()}
 				onCheckedChange={(value) => row.toggleSelected(!!value)}
 				aria-label="Select row"
@@ -46,7 +36,7 @@ const columns: ColumnDef<IStudentClassroom>[] = [
 		),
 		enableSorting: false,
 		enableHiding: false,
-		size: 10,
+		size: 30,
 	},
 	{
 		accessorKey: "studentId",
@@ -71,6 +61,7 @@ const columns: ColumnDef<IStudentClassroom>[] = [
 				}
 			</div>
 		),
+		size: 600,
 	},
 ];
 

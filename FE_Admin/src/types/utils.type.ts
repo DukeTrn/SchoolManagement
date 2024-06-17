@@ -13,6 +13,7 @@ export interface ISuccessResponseApi<T> {
 export interface ISuccessGetResponseApi<T> {
 	data: T;
 	result: boolean;
+	messageType?: number;
 }
 export interface IUpdateResponseApi {
 	result: boolean;
