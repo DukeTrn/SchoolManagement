@@ -6,6 +6,7 @@ namespace SchoolManagement.Service.Intention
     {
         ValueTask<PaginationModel<TeacherDisplayModel>> GetAllTeachers(TeacherQueryModel queryModel);
         ValueTask<PaginationModel<TeacherDisplayModel>> GetAllTeachers(string departmentId, TeacherQueryModel queryModel);
+        ValueTask<PaginationModel<TeacherDisplayModel>> GetAllTeachersInDeptByAccountId(Guid accountId, TeacherQueryModel queryModel);
         ValueTask<IEnumerable<TeacherFilterModel>> GetAllTeachersFilter();
         ValueTask<IEnumerable<TeacherHeadsModel>> GetDepartmentHeadsAndDeputies(string departmentId);
         ValueTask<TeacherFullDisplayModel> GetTeacherById(string id);

@@ -2,6 +2,7 @@
 using SchoolManagement.Common.Enum;
 using SchoolManagement.Common.Exceptions;
 using SchoolManagement.Model;
+using SchoolManagement.Service;
 using SchoolManagement.Service.Intention;
 
 namespace SchoolManagement.Web.Controllers
@@ -64,6 +65,24 @@ namespace SchoolManagement.Web.Controllers
                     data = result,
                     messageType = 0
                 });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(200, new { result = false, messageType = MessageType.Error, message = ex });
+            }
+        }
+
+        [HttpGet("student/{studentId}/semester/{semesterId}")]
+        public async Task<IActionResult> GetConduct(string studentId, string semesterId)
+        {
+            try
+            {
+                var conduct = await _service.GetConduct(studentId, semesterId);
+                return Ok(conduct);
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {

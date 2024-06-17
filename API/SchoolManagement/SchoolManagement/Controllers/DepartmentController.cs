@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using DocumentFormat.OpenXml.Bibliography;
+using Microsoft.AspNetCore.Mvc;
 using SchoolManagement.Common.Enum;
 using SchoolManagement.Common.Exceptions;
 using SchoolManagement.Model;
+using SchoolManagement.Service;
 using SchoolManagement.Service.Intention;
 
 namespace SchoolManagement.Web.Controllers
@@ -59,6 +61,26 @@ namespace SchoolManagement.Web.Controllers
         }
 
         /// <summary>
+        /// (Cổng GV) Danh sách giáo viên trong 1 tổ - Get list of teachers in 1 department by accountId
+        /// </summary>
+        /// <param name="accountId"></param>
+        /// <param name="queryModel"></param>
+        /// <returns></returns>
+        [HttpPost, Route("{accountId}/teachers")]
+        public async ValueTask<IActionResult> GetAllTeachers(Guid accountId, [FromBody] TeacherQueryModel queryModel)
+        {
+            try
+            {
+                var result = await _teacherService.GetAllTeachersInDeptByAccountId(accountId, queryModel);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(200, new { result = false, messageType = MessageType.Error, message = ex });
+            }
+        }
+
+        /// <summary>
         /// Trưởng/phó bộ môn - Get heads and deputies in 1 department
         /// Role: 1 (regular), 2 (deputy - phó bộ môn), 3 (head - trưởng bộ môn)
         /// </summary>
@@ -85,6 +107,34 @@ namespace SchoolManagement.Web.Controllers
             catch (NotFoundException)
             {
                 // Xử lý ngoại lệ và trả về lỗi nếu có
+                return NotFound(new { result = false, messageType = MessageType.Error, message = $"Không tìm thấy tổ bộ môn với ID {departmentId} này!" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(200, new { result = false, messageType = MessageType.Error, message = ex });
+            }
+        }
+
+        /// <summary>
+        /// (Cổng GV) Thông báo
+        /// </summary>
+        /// <param name="departmentId"></param>
+        /// <returns></returns>
+        [HttpGet("{departmentId}/notification")]
+        public async Task<IActionResult> GetNotificationInDept(string departmentId)
+        {
+            try
+            {
+                var notification = await _service.GetNotificationInDept(departmentId);
+                return Ok(new
+                {
+                    result = true,
+                    data = notification,
+                    messageType = 0
+                });
+            }
+            catch (NotFoundException)
+            {
                 return NotFound(new { result = false, messageType = MessageType.Error, message = $"Không tìm thấy tổ bộ môn với ID {departmentId} này!" });
             }
             catch (Exception ex)

@@ -10,5 +10,6 @@ namespace SchoolManagement.Service.Intention
         ValueTask DeleteConduct(Guid conductId);
         ValueTask<ConductForClassStatisticModel> GetConductClassStatistic(int grade, string semesterId, string classId);
         ValueTask<ConductForSemesterStatisticModel> GetConductSemesterStatistic(int grade, string semesterId);
+        ValueTask<ConductInSemesterModel> GetConduct(string studentId, string semesterId);
     }
 }

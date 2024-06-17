@@ -94,6 +94,39 @@ namespace SchoolManagement.Service
             }
         }
 
+        public async ValueTask<ConductInSemesterModel> GetConduct(string studentId, string semesterId)
+        {
+            try
+            {
+                _logger.LogInformation("Fetching conduct for student ID {StudentId} in semester ID {SemesterId}.", studentId, semesterId);
+
+                // Truy vấn cơ sở dữ liệu để lấy thông tin về hạnh kiểm
+                var conductEntity = await _context.ConductEntities
+                    .FirstOrDefaultAsync(c => c.StudentId == studentId && c.SemesterId == semesterId);
+
+                if (conductEntity == null)
+                {
+                    _logger.LogWarning("No conduct record found for student ID {StudentId} in semester ID {SemesterId}.", studentId, semesterId);
+                    throw new NotFoundException("Conduct record not found.");
+                }
+
+                // Chuyển đổi từ ConductEntity sang ConductInSemesterModel
+                var conductModel = new ConductInSemesterModel
+                {
+                    ConductId = conductEntity.ConductId,
+                    ConductName = conductEntity.ConductName,
+                    Feedback = conductEntity.Feedback
+                };
+
+                _logger.LogInformation("Successfully retrieved conduct for student ID {StudentId} in semester ID {SemesterId}.", studentId, semesterId);
+                return conductModel;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occurred while fetching conduct for student ID {StudentId} in semester ID {SemesterId}. Error: {Error}", studentId, semesterId, ex.Message);
+                throw;
+            }
+        }
 
 
         /// <summary>

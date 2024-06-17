@@ -2,6 +2,7 @@
 using SchoolManagement.Common.Enum;
 using SchoolManagement.Common.Exceptions;
 using SchoolManagement.Model;
+using SchoolManagement.Service;
 using SchoolManagement.Service.Intention;
 
 namespace SchoolManagement.Web.Controllers

@@ -13,6 +13,7 @@ namespace SchoolManagement.Service.Intention
         ValueTask UpdateClass(string classId, string academicYear, ClassUpdateModel model);
         ValueTask DeleteClass(string classId);
         ValueTask<IEnumerable<TeacherFilterModel>> GetAvailableTeachersByGradeAsync(string academicYear);
+        ValueTask<PaginationModel<HomeroomClassDisplayModel>> GetAllClassesByAccountId(Guid accountId, PageQueryModel queryModel);
 
     }
 }

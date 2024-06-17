@@ -47,15 +47,17 @@ namespace SchoolManagement.Service
                 var query = _context.ClassDetailEntities
                     .Where(cd => cd.ClassId == classId)
                     .Include(cd => cd.Student) // Include Student entity
+                    .Include(cd => cd.Class)
                     .OrderBy(cd => cd.Student.FullName)
                     .Select(cd => new ClassDetailDisplayModel
                     {
                         ClassDetailId = cd.ClassDetailId,
+                        Grade = cd.Class.Grade,
                         Number = 0, // Sẽ được gán sau khi áp dụng phân trang
                         StudentId = cd.Student.StudentId,
                         FullName = cd.Student.FullName,
                         PhoneNumber = cd.Student.PhoneNumber,
-                        Status = cd.Student.Status // Assuming Student entity has a Status property
+                        Status = cd.Student.Status,
                     });
 
 

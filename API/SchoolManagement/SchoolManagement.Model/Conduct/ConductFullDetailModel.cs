@@ -1,4 +1,6 @@
-﻿namespace SchoolManagement.Model
+﻿using SchoolManagement.Common.Enum;
+
+namespace SchoolManagement.Model
 {
     public class ConductFullDetailModel 
     {
@@ -8,5 +10,12 @@
         public Guid? ConductId { get; set; }
         public string? ConductName { get; set; } = string.Empty;
         public string? Feedback { get; set; } = string.Empty;
+    }
+
+    public class ConductInSemesterModel
+    {
+        public Guid ConductId { get; set; }
+        public ConductType? ConductName { get; set; }
+        public string? Feedback { get; set; }
     }
 }
