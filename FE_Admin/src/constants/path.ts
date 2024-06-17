@@ -1,4 +1,5 @@
 const path = {
+	login: "/login",
 	home: "/home",
 	account: "/account",
 	student: "/student",
@@ -10,6 +11,7 @@ const path = {
 	classroom: "/classroom",
 	classroomDetail: "/classroom/:id",
 	assignment: "/assignment",
+	assignmentDetail: "assignment/:id",
 } as const;
 
 export default path;

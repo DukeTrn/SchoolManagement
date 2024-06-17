@@ -7,12 +7,17 @@ import {
 import { sideBarNavs } from "@/constants/nav";
 
 import Logo from "@/assets/Logo.jpg";
+import { IAppState, useAppSelector } from "@/redux/store";
 
 interface IMainLayout {
 	children: React.ReactNode;
 }
 
 const MainLayout = ({ children }: IMainLayout) => {
+	const { role } = useAppSelector((state: IAppState) => state.users);
+	const navs = sideBarNavs?.filter(
+		(i) => i.role === role || i.role === "All"
+	);
 	return (
 		<div className="h-screen">
 			<ResizablePanelGroup
@@ -28,7 +33,7 @@ const MainLayout = ({ children }: IMainLayout) => {
 					<div className="flex items-center justify-center">
 						<img src={Logo} width="40%" />
 					</div>
-					<Nav links={sideBarNavs} />
+					<Nav links={navs} />
 				</ResizablePanel>
 				<ResizableHandle withHandle />
 

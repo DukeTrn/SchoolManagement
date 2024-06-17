@@ -1,27 +1,24 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface User {
-	id: string;
-	name: string;
-	email: string;
+	accoundId: string | null;
+	role: string | null;
 }
-const initialState: Array<User> = [
-	{
-		id: "1",
-		name: "John Doe",
-		email: "john@test.com",
-	},
-];
+const initialState: User = {
+	accoundId: localStorage.getItem("accoundId") || null,
+	role: localStorage.getItem("role") || null,
+};
 export const userSlice = createSlice({
 	name: "users",
 	initialState,
 	reducers: {
-		addUser: (state, action: PayloadAction<User>) => {
-			state.push(action.payload);
+		setUserAccount: (state, action: PayloadAction<User>) => {
+			state.accoundId = action.payload.accoundId;
+			state.role = action.payload.role;
 		},
 	},
 });
-export const { addUser } = userSlice.actions;
+export const { setUserAccount } = userSlice.actions;
 
 const userReducer = userSlice.reducer;
 export default userReducer;

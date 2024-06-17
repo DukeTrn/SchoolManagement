@@ -30,3 +30,10 @@ export const downloadFile = (res: string, name: string) => {
 	document.body.appendChild(link);
 	link.click();
 };
+
+export const userRole = {
+	admin: "Admin",
+	gvcn: "HomeroomTeacher",
+	gv: "Teacher",
+	hs: "Student",
+};

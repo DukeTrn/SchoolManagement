@@ -65,6 +65,7 @@ const columns: ColumnDef<ISubject>[] = [
 		accessorKey: "description",
 		header: "Mô tả",
 		cell: ({ row }) => <div>{row.getValue("description")}</div>,
+		size: 600,
 	},
 ];
 
@@ -79,6 +80,54 @@ const Assignment = () => {
 	const searchQuery = useDebounce(searchValue, 1500);
 
 	const isDisableButton = !selectedRow;
+
+	const columns: ColumnDef<ISubject>[] = [
+		{
+			id: "select",
+			header: "",
+			cell: ({ row }) => (
+				<Checkbox
+					className="rounded-full"
+					checked={row.getIsSelected()}
+					onCheckedChange={(value) => row.toggleSelected(!!value)}
+					aria-label="Select row"
+				/>
+			),
+			enableSorting: false,
+			enableHiding: false,
+			size: 10,
+		},
+		{
+			accessorKey: "subjectName",
+			header: "Môn học",
+			cell: ({ row }) => {
+				const id = row.original.id;
+
+				return (
+					<Link
+						to={String(id)}
+						state={{ ...row.original, selectedField }}
+						className="cursor-pointer font-medium text-blue-600 underline"
+					>
+						{row.getValue("subjectName")}
+					</Link>
+				);
+			},
+		},
+		{
+			accessorKey: "grade",
+			header: () => {
+				return <div>Khối</div>;
+			},
+			cell: ({ row }) => <div>{row.getValue("grade")}</div>,
+		},
+		{
+			accessorKey: "description",
+			header: "Mô tả",
+			cell: ({ row }) => <div>{row.getValue("description")}</div>,
+			size: 600,
+		},
+	];
 
 	useEffect(() => {
 		handleGetData();
