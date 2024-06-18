@@ -7,6 +7,7 @@ using SchoolManagement.Common.Extensions;
 using SchoolManagement.Database;
 using SchoolManagement.Entity;
 using SchoolManagement.Model;
+using SchoolManagement.Model.Student;
 using SchoolManagement.Service.Intention;
 using SchoolManagement.Service.Intention.Data;
 using SchoolManagement.Share;
@@ -160,14 +161,14 @@ namespace SchoolManagement.Service
             try
             {
                 _logger.LogInformation("Start to get a student by account id.");
-                var student = await _context.StudentEntities.FirstOrDefaultAsync(s => s.AccountId == accountId);
+                var student = await _context.StudentEntities
+                    .Include(s => s.Account)
+                    .FirstOrDefaultAsync(s => s.AccountId == accountId);
                 if (student == null)
                 {
                     throw new NotFoundException($"Student with ID {accountId} not found.");
                 }
 
-                // Chuyển đổi StudentEntity thành StudentFullDetailModel (nếu cần)
-                // Map properties from student entity to display model
                 var detailModel = student.ToFullDetailModel();
 
                 return detailModel;
@@ -508,8 +509,51 @@ namespace SchoolManagement.Service
         }
         #endregion
 
-        // Check data (related to class detail entity)
-        
+        public async ValueTask<IEnumerable<StudentInClassModel>> GetStudentInClasses(Guid accountId)
+        {
+            try
+            {
+                _logger.LogInformation("Fetching classes for student with account ID {AccountId}.", accountId);
+
+                // Tìm kiếm học sinh với accountId
+                var student = await _context.StudentEntities
+                    .Include(s => s.Account)
+                    .FirstOrDefaultAsync(s => s.AccountId == accountId);
+
+                if (student == null)
+                {
+                    _logger.LogWarning("No student found with account ID {AccountId}.", accountId);
+                    throw new NotFoundException("Student not found.");
+                }
+
+                // Lấy danh sách các lớp mà học sinh đã tham gia
+                var studentClasses = await _context.ClassDetailEntities
+                    .Where(cd => cd.StudentId == student.StudentId)
+                    .Include(cd => cd.Class)
+                    .ThenInclude(c => c.HomeroomTeacher)
+                    .Select(cd => new StudentInClassModel
+                    {
+                        ClassDetailId = cd.ClassDetailId,
+                        ClassId = cd.Class.ClassId,
+                        ClassName = cd.Class.ClassName,
+                        Grade = cd.Class.Grade,
+                        HomeroomTeacherName = cd.Class.HomeroomTeacher.FullName,
+                        TotalStudents = cd.Class.ClassDetails.Count,
+                        AcademicYear = cd.Class.AcademicYear
+                    })
+                    .ToListAsync();
+
+                _logger.LogInformation("Successfully retrieved {ClassCount} classes for student with account ID {AccountId}.", studentClasses.Count, accountId);
+                return studentClasses;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occurred while fetching classes for student with account ID {AccountId}. Error: {Error}", accountId, ex.Message);
+                throw;
+            }
+        }
+
+
         /// <summary>
         /// Search function
         /// </summary>

@@ -26,6 +26,7 @@
         public string MotherPhoneNumber { get; set; } = string.Empty;
         public string? MotherEmail { get; set; }
         public string AcademicYear { get; set; } = string.Empty; // niên khóa (2023-2026)
+        public string UserName { get; set; } = string.Empty;
     }
 
     public class StudentFilterModel

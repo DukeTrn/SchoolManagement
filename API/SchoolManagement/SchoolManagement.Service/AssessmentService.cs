@@ -189,6 +189,102 @@ namespace SchoolManagement.Service
             }
         }
 
+        public async ValueTask<AssessmentScoreDisplayModel> GetListScoresOfSingleSubject(int subjectId, int grade, string semesterId, string classDetailId)
+        {
+            try
+            {
+                _logger.LogInformation("Fetching scores for Subject ID {SubjectId}, Grade {Grade}, Semester ID {SemesterId}, Class Detail ID {ClassDetailId}.",
+                    subjectId, grade, semesterId, classDetailId);
+
+                // Truy vấn tất cả các đánh giá liên quan đến môn học, lớp chi tiết và học kỳ
+                var assessments = await _context.AssessmentEntities
+                    .Include(a => a.Subject) // Bao gồm thông tin Subject để lấy tên môn học
+                    .Where(a => a.SubjectId == subjectId
+                                && a.SemesterId == semesterId
+                                && a.ClassDetailId == classDetailId)
+                    .ToListAsync();
+
+                // Kiểm tra nếu không có đánh giá nào được tìm thấy
+                if (!assessments.Any())
+                {
+                    _logger.LogWarning("No assessments found for Subject ID {SubjectId}, Semester ID {SemesterId}, Class Detail ID {ClassDetailId}.",
+                        subjectId, semesterId, classDetailId);
+                    return new AssessmentScoreDisplayModel
+                    {
+                        ClassDetailId = classDetailId,
+                        SubjectId = subjectId,
+                        SubjectName = string.Empty,
+                        Weight1 = new List<ScoreModel>(),
+                        Weight2 = new List<ScoreModel>(),
+                        Weight3 = new List<ScoreModel>(),
+                        Average = 0
+                    };
+                }
+
+                // Lấy tên môn học
+                var subjectName = assessments.First().Subject.SubjectName;
+
+                // Phân loại điểm theo trọng số
+                var weight1Scores = assessments
+                    .Where(a => a.Weight == 1)
+                    .Select(a => new ScoreModel
+                    {
+                        AssessmentId = a.AssessmentId,
+                        Score = a.Score,
+                        Feedback = a.Feedback
+                    })
+                    .ToList();
+
+                var weight2Scores = assessments
+                    .Where(a => a.Weight == 2)
+                    .Select(a => new ScoreModel
+                    {
+                        AssessmentId = a.AssessmentId,
+                        Score = a.Score,
+                        Feedback = a.Feedback
+                    })
+                    .ToList();
+
+                var weight3Scores = assessments
+                    .Where(a => a.Weight == 3)
+                    .Select(a => new ScoreModel
+                    {
+                        AssessmentId = a.AssessmentId,
+                        Score = a.Score,
+                        Feedback = a.Feedback
+                    })
+                    .ToList();
+
+                // Tính toán điểm trung bình
+                var totalScore = assessments.Sum(a => a.Score * a.Weight);
+                var totalWeight = assessments.Sum(a => a.Weight);
+                var averageScore = totalWeight != 0 ? Math.Round(totalScore / totalWeight, 2) : 0;
+
+                // Tạo đối tượng kết quả
+                var result = new AssessmentScoreDisplayModel
+                {
+                    ClassDetailId = classDetailId,
+                    SubjectId = subjectId,
+                    SubjectName = subjectName,
+                    Weight1 = weight1Scores,
+                    Weight2 = weight2Scores,
+                    Weight3 = weight3Scores,
+                    Average = averageScore
+                };
+
+                _logger.LogInformation("Successfully fetched scores for Subject ID {SubjectId}, Grade {Grade}, Semester ID {SemesterId}, Class Detail ID {ClassDetailId}.",
+                    subjectId, grade, semesterId, classDetailId);
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occurred while fetching scores for Subject ID {SubjectId}, Grade {Grade}, Semester ID {SemesterId}, Class Detail ID {ClassDetailId}. Error: {Error}",
+                    subjectId, grade, semesterId, classDetailId, ex.Message);
+                throw;
+            }
+        }
+
 
         /// <summary>
         /// Get average score for each semester

@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MathNet.Numerics.Distributions;
+using Microsoft.AspNetCore.Mvc;
 using SchoolManagement.Common.Enum;
 using SchoolManagement.Common.Exceptions;
 using SchoolManagement.Model;
+using SchoolManagement.Service;
 using SchoolManagement.Service.Intention;
 using SchoolManagement.Service.Intention.Data;
 
@@ -135,6 +137,34 @@ namespace SchoolManagement.Controllers
             }
         }
         #endregion
+
+        /// <summary>
+        /// (Cổng HS) Danh sách các lớp mà học sinh đã học
+        /// </summary>
+        /// <param name="accountId"></param>
+        /// <returns></returns>
+        [HttpGet("student/{accountId}/classes")]
+        public async Task<IActionResult> GetStudentInClasses(Guid accountId)
+        {
+            try
+            {
+                var classes = await _service.GetStudentInClasses(accountId);
+                return Ok(new
+                {
+                    result = true,
+                    data = classes,
+                    messageType = 0
+                });
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+        }
 
         /// <summary>
         /// Create a new student

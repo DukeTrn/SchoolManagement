@@ -14,6 +14,7 @@ namespace SchoolManagement.Service.Intention
         ValueTask DeleteClass(string classId);
         ValueTask<IEnumerable<TeacherFilterModel>> GetAvailableTeachersByGradeAsync(string academicYear);
         ValueTask<PaginationModel<HomeroomClassDisplayModel>> GetAllClassesByAccountId(Guid accountId, PageQueryModel queryModel);
+        ValueTask<PaginationModel<NormalClassDisplayModel>> GetClassesAssignedForTeacher(Guid accountId, string semesterId, PageModel queryModel);
 
     }
 }
