@@ -78,7 +78,7 @@ export const sideBarNavs = [
 	{
 		title: "Hạnh kiểm",
 		icon: AlignEndHorizontal,
-		path: "/study",
+		path: "/conduct",
 		variant: "ghost",
 		role: userRole.admin,
 	},

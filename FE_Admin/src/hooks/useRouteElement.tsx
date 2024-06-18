@@ -17,6 +17,9 @@ import AssignmentDetails from "@/pages/assignment/detail/AssignmentDetail";
 import { IAppState, useAppSelector } from "@/redux/store";
 import Login from "@/pages/login";
 import { userRole } from "@/utils/utils";
+import Study from "@/pages/study";
+import StudyClassDetail from "@/pages/study/ClassDetail";
+import StudyStudentDetail from "@/pages/study/StudentDetail";
 
 const ProtectedRoute = () => {
 	const { accoundId, role } = useAppSelector(
@@ -140,6 +143,30 @@ const useRouteElement = () => {
 					element: isAdmin && (
 						<MainLayout>
 							<AssignmentDetails />
+						</MainLayout>
+					),
+				},
+				{
+					path: path.study,
+					element: isAdmin && (
+						<MainLayout>
+							<Study />
+						</MainLayout>
+					),
+				},
+				{
+					path: path.studyClass,
+					element: isAdmin && (
+						<MainLayout>
+							<StudyClassDetail />
+						</MainLayout>
+					),
+				},
+				{
+					path: path.studyStudent,
+					element: isAdmin && (
+						<MainLayout>
+							<StudyStudentDetail />
 						</MainLayout>
 					),
 				},
