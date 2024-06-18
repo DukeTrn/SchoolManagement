@@ -110,4 +110,11 @@ export const sideBarNavs = [
 		variant: "ghost",
 		role: [userRole.gv, userRole.gvcn],
 	},
+	{
+		title: "Hồ sơ học sinh",
+		icon: School,
+		path: "/student-info",
+		variant: "ghost",
+		role: [userRole.hs, userRole.hs],
+	},
 ];

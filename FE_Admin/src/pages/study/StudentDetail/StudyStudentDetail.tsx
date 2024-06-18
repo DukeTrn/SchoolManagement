@@ -1,4 +1,3 @@
-import React from "react";
 import { useEffect, useState } from "react";
 import { getStudyStudentDetail } from "@/apis/study.api";
 import { useLocation } from "react-router-dom";
@@ -167,12 +166,12 @@ const StudyStudentDetail = () => {
 	return (
 		<>
 			<div className="mb-4 text-2xl font-medium">{`KẾT QUẢ HỌC TẬP HỌC SINH ${state.fullName.toUpperCase()} `}</div>
-			<div className="mt-2 h-5 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">
-				{`Học lực :${academicPerformance(
+			<div className=" [&>[role=checkbox]]:translate-y-[2px]text-sm mt-2 h-5 px-2 text-left align-middle text-sm font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">
+				{`Học lực: ${academicPerformance(
 					Number(formatNumberWithCommas(mean(point)))
 				)}`}
 			</div>
-			<div className="mb-5 mt-2 h-5 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">
+			<div className="mb-5 mt-2 h-5 px-2 text-left align-middle text-sm font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">
 				{`Điểm TB: ${formatNumberWithCommas(mean(point))}`}
 			</div>
 			<div>
@@ -183,19 +182,19 @@ const StudyStudentDetail = () => {
 					//onChange={handleChange}
 					loading={loading}
 				/>
-				<div className="mt-2 h-5 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">
+				<div className="mt-2 h-5 px-2 text-left align-middle text-sm font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">
 					Chú Thích
 				</div>
-				<div className="mt-2 h-5 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">
+				<div className="mt-2 h-5 px-2 text-left align-middle text-sm font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">
 					• ĐĐGtx: Điểm Đánh Giá thường xuyên
 				</div>
-				<div className="mt-2 h-5 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">
+				<div className="mt-2 h-5 px-2 text-left align-middle text-sm font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">
 					• ĐĐGgk: Điểm Đánh Giá giữa kỳ
 				</div>
-				<div className="mt-2 h-5 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">
+				<div className="mt-2 h-5 px-2 text-left align-middle text-sm font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">
 					• ĐĐGck: Điểm Đánh Giá cuối kỳ
 				</div>
-				<div className="mt-2 h-5 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">
+				<div className="mt-2 h-5 px-2 text-left align-middle text-sm text-sm font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">
 					• ĐTBmhk: Điểm Trung Bình môn học kỳ
 				</div>
 				<Pagination

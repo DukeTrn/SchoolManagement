@@ -23,6 +23,7 @@ import StudyStudentDetail from "@/pages/study/StudentDetail";
 import Conduct from "@/pages/conduct";
 import ConductClass from "@/pages/conduct/detail";
 import TeacherInfo from "@/pages/teacherinfo";
+import StudentInfo from "@/pages/studentInfo";
 
 const ProtectedRoute = () => {
 	const { accoundId } = useAppSelector((state: IAppState) => state.users);
@@ -37,6 +38,7 @@ const useRouteElement = () => {
 	const { role } = useAppSelector((state: IAppState) => state.users);
 	const isAdmin = role === userRole.admin;
 	const isTeacher = role === userRole.gv || userRole.gvcn;
+	const isStudent = role === userRole.hs;
 
 	const routeElement = useRoutes([
 		{
@@ -189,6 +191,14 @@ const useRouteElement = () => {
 					element: isTeacher && (
 						<MainLayout>
 							<TeacherInfo />
+						</MainLayout>
+					),
+				},
+				{
+					path: path.studentInfo,
+					element: isStudent && (
+						<MainLayout>
+							<StudentInfo />
 						</MainLayout>
 					),
 				},

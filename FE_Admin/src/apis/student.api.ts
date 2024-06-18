@@ -1,5 +1,8 @@
 import { IStudent, IStudentInfo } from "@/types/student.type";
-import { ISuccessResponseApi } from "@/types/utils.type";
+import {
+	ISuccessResponseApi,
+	ISuccessGetResponseApi,
+} from "@/types/utils.type";
 import http from "@/utils/http";
 
 interface IStudentBody {
@@ -44,3 +47,6 @@ export const exportStudent = (body: {
 	http.post("/student/export", body, {
 		responseType: "blob",
 	});
+
+export const StudentFilterDetail = (id: string) =>
+	http.get<ISuccessGetResponseApi<IStudent>>(`student/student/${id}`);
