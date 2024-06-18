@@ -23,7 +23,7 @@ export const updateSubject = (body: ISubjectBody, id: number) =>
 
 export const deleteSubject = (id: number) => http.delete(`subject/${id}`);
 
-export const getStudentAssignment = (
+export const getTeacherAssignment = (
 	body: { searchValue: string },
 	grade: number,
 	semesterId: string,

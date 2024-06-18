@@ -1,7 +1,7 @@
 import path from "@/constants/path";
 import MainLayout from "@/layouts/MainLayout";
 import Home from "@/pages/home";
-import { Navigate, useRoutes } from "react-router-dom";
+import { Navigate, Outlet, useRoutes } from "react-router-dom";
 import Account from "@/pages/account";
 import Student from "@/pages/student";
 import Department from "@/pages/department";
@@ -13,12 +13,137 @@ import Classroom from "@/pages/classroom";
 import NotFound from "@/pages/notfound";
 import ClassroomDetail from "@/pages/classroom/details/ClassDetails";
 import Assignment from "@/pages/assignment";
+import AssignmentDetails from "@/pages/assignment/detail/AssignmentDetail";
+import { IAppState, useAppSelector } from "@/redux/store";
+import Login from "@/pages/login";
+import { userRole } from "@/utils/utils";
+
+const ProtectedRoute = () => {
+	const { accoundId, role } = useAppSelector(
+		(state: IAppState) => state.users
+	);
+	return accoundId ? <Outlet /> : <Navigate to={path.login} />;
+};
+const RejectedRoute = () => {
+	const { accoundId, role } = useAppSelector(
+		(state: IAppState) => state.users
+	);
+	return !accoundId ? <Outlet /> : <Navigate to={path.home} />;
+};
 
 const useRouteElement = () => {
+	const { accoundId, role } = useAppSelector(
+		(state: IAppState) => state.users
+	);
+	const isAdmin = role === userRole.admin;
+
 	const routeElement = useRoutes([
 		{
-			path: "/",
-			element: <Navigate to={path.home} replace />,
+			path: "",
+			element: <ProtectedRoute />,
+			children: [
+				{
+					path: "/",
+					element: <Navigate to={path.home} replace />,
+				},
+				{
+					index: true,
+					path: path.home,
+					element: (
+						<MainLayout>
+							<Home />
+						</MainLayout>
+					),
+				},
+				{
+					path: path.account,
+					element: isAdmin && (
+						<MainLayout>
+							<Account />
+						</MainLayout>
+					),
+				},
+				{
+					path: path.student,
+					element: isAdmin && (
+						<MainLayout>
+							<Student />
+						</MainLayout>
+					),
+				},
+				{
+					path: path.department,
+					element: isAdmin && (
+						<MainLayout>
+							<Department />
+						</MainLayout>
+					),
+				},
+				{
+					path: path.departmentDetails,
+					element: isAdmin && (
+						<MainLayout>
+							<DepartmentDetail />
+						</MainLayout>
+					),
+				},
+				{
+					path: path.teacher,
+					element: isAdmin && (
+						<MainLayout>
+							<Teacher />
+						</MainLayout>
+					),
+				},
+				{
+					path: path.semester,
+					element: isAdmin && (
+						<MainLayout>
+							<Semester />
+						</MainLayout>
+					),
+				},
+				{
+					path: path.semesterDetail,
+					element: isAdmin && (
+						<MainLayout>
+							<SemesterDetail />
+						</MainLayout>
+					),
+				},
+				{
+					path: path.classroom,
+					element: isAdmin && (
+						<MainLayout>
+							<Classroom />
+						</MainLayout>
+					),
+				},
+				{
+					path: path.classroomDetail,
+					element: isAdmin && (
+						<MainLayout>
+							<ClassroomDetail />
+						</MainLayout>
+					),
+				},
+				{
+					path: path.assignment,
+					element: isAdmin && (
+						<MainLayout>
+							<Assignment />
+						</MainLayout>
+					),
+				},
+				{
+					path: path.assignmentDetail,
+					element: isAdmin && (
+						<MainLayout>
+							<AssignmentDetails />
+						</MainLayout>
+					),
+				},
+			],
 		},
 		{
 			path: "*",
@@ -29,93 +154,14 @@ const useRouteElement = () => {
 			),
 		},
 		{
-			index: true,
-			path: path.home,
-			element: (
-				<MainLayout>
-					<Home />
-				</MainLayout>
-			),
-		},
-		{
-			path: path.account,
-			element: (
-				<MainLayout>
-					<Account />
-				</MainLayout>
-			),
-		},
-		{
-			path: path.student,
-			element: (
-				<MainLayout>
-					<Student />
-				</MainLayout>
-			),
-		},
-		{
-			path: path.department,
-			element: (
-				<MainLayout>
-					<Department />
-				</MainLayout>
-			),
-		},
-		{
-			path: path.departmentDetails,
-			element: (
-				<MainLayout>
-					<DepartmentDetail />
-				</MainLayout>
-			),
-		},
-		{
-			path: path.teacher,
-			element: (
-				<MainLayout>
-					<Teacher />
-				</MainLayout>
-			),
-		},
-		{
-			path: path.semester,
-			element: (
-				<MainLayout>
-					<Semester />
-				</MainLayout>
-			),
-		},
-		{
-			path: path.semesterDetail,
-			element: (
-				<MainLayout>
-					<SemesterDetail />
-				</MainLayout>
-			),
-		},
-		{
-			path: path.classroom,
-			element: (
-				<MainLayout>
-					<Classroom />
-				</MainLayout>
-			),
-		},
-		{
-			path: path.classroomDetail,
-			element: (
-				<MainLayout>
-					<ClassroomDetail />
-				</MainLayout>
-			),
-		},
-		{
-			path: path.assignment,
-			element: (
-				<MainLayout>
-					<Assignment />
-				</MainLayout>
-			),
+			path: "",
+			element: <RejectedRoute />,
+			children: [
+				{
+					path: path.login,
+					element: <Login />,
+				},
+			],
 		},
 	]);
 	return routeElement;
