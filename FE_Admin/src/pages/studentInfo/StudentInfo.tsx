@@ -109,6 +109,67 @@ const StudentInfo = () => {
 									<div>{info?.address}</div>
 								</div>
 							</div>
+
+							<div className="mt-10">
+								<div className="mb-4 flex items-center ">
+									<div className="flex w-[400px] gap-3">
+										<div className="font-medium">
+											Họ và tên bố:
+										</div>
+										<div>{info?.fatherName}</div>
+									</div>
+									<div className="flex gap-3 ">
+										<div className="font-medium">
+											Họ và tên mẹ:
+										</div>
+										<div>{info?.motherName}</div>
+									</div>
+								</div>
+
+								<div className="mb-4 flex items-center ">
+									<div className="flex w-[400px] gap-3">
+										<div className="font-medium">
+											Nghề nghiệp bố:
+										</div>
+										<div>{info?.fatherJob}</div>
+									</div>
+									<div className="flex gap-3 ">
+										<div className="font-medium">
+											Nghề nghiệp mẹ:
+										</div>
+										<div>{info?.motherJob}</div>
+									</div>
+								</div>
+
+								<div className="mb-4 flex items-center ">
+									<div className="flex w-[400px] gap-3">
+										<div className="font-medium">
+											Số điện thoại bố:
+										</div>
+										<div>{info?.fatherPhoneNumber}</div>
+									</div>
+									<div className="flex gap-3 ">
+										<div className="font-medium">
+											Số điện thoại mẹ:
+										</div>
+										<div>{info?.motherPhoneNumber}</div>
+									</div>
+								</div>
+								<div className="mb-4 flex items-center ">
+									<div className="flex w-[400px] gap-3">
+										<div className="font-medium">
+											Email bố:
+										</div>
+										<div>{info?.fatherEmail}</div>
+									</div>
+									<div className="flex gap-3 ">
+										<div className="font-medium">
+											Email mẹ:
+										</div>
+										<div>{info?.motherEmail}</div>
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
