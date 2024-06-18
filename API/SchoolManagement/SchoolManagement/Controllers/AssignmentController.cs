@@ -68,7 +68,7 @@ namespace SchoolManagement.Web.Controllers
         /// <param name="assignmentId"></param>
         /// <param name="classId"></param>
         /// <returns></returns>
-        [HttpPut, Route("update/{assignmentId}")]
+        [HttpPut, Route("update/{assignmentId}/{classId}")]
         public async Task<IActionResult> UpdateAssignment(Guid assignmentId, string classId)
         {
             try
