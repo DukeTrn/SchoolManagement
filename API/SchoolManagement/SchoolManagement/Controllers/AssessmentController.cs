@@ -77,7 +77,7 @@ namespace SchoolManagement.Web.Controllers
         }
 
         /// <summary>
-        /// Bảng điểm học sinh - List subjects and scores of 1 student
+        /// Bảng điểm tất cả các môn của học sinh - List subjects and scores of 1 student
         /// </summary>
         /// <param name="grade"></param>
         /// <param name="semesterId"></param>
@@ -89,6 +89,42 @@ namespace SchoolManagement.Web.Controllers
             try
             {
                 var result = await _assessmentService.GetListSubjectAndScore(grade, semesterId, classDetailId);
+                return Ok(new
+                {
+                    result = true,
+                    data = result,
+                    messageType = 0
+                });
+            }
+            catch (NotFoundException)
+            {
+                return NotFound(new
+                {
+                    result = false,
+                    messageType = MessageType.Error,
+                    message = $"Không tìm thấy học kì {semesterId} hoặc id {classDetailId} này!"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(200, new { result = false, messageType = MessageType.Error, message = ex });
+            }
+        }
+
+        /// <summary>
+        /// (Cổng GV) Bảng điểm 1 môn của học sinh - List scores of 1 subject of 1 student
+        /// </summary>
+        /// <param name="subjectId"></param>
+        /// <param name="grade"></param>
+        /// <param name="semesterId"></param>
+        /// <param name="classDetailId"></param>
+        /// <returns></returns>
+        [HttpPost, Route("{grade}/{semesterId}/{classDetailId}/{subjectId}/score")]
+        public async ValueTask<IActionResult> GetListScoresOfSingleSubject(int subjectId, int grade, string semesterId, string classDetailId)
+        {
+            try
+            {
+                var result = await _assessmentService.GetListScoresOfSingleSubject(subjectId, grade, semesterId, classDetailId);
                 return Ok(new
                 {
                     result = true,

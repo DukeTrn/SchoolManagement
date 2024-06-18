@@ -38,7 +38,8 @@ namespace SchoolManagement.Share
             MotherJob = entity.MotherJob,
             MotherPhoneNumber = entity.MotherPhoneNumber,
             MotherEmail = entity.MotherEmail,
-            AcademicYear = entity.AcademicYear
+            AcademicYear = entity.AcademicYear,
+            UserName = entity.Account.UserName
         };
 
         private static string TranslateStatus(StudentStatusType status)

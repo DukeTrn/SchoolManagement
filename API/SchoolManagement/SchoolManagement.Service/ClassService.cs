@@ -100,6 +100,13 @@ namespace SchoolManagement.Service
             }
         }
 
+        /// <summary>
+        /// Get classes belong to HR teacher
+        /// </summary>
+        /// <param name="accountId"></param>
+        /// <param name="queryModel"></param>
+        /// <returns></returns>
+        /// <exception cref="NotFoundException"></exception>
         public async ValueTask<PaginationModel<HomeroomClassDisplayModel>> GetAllClassesByAccountId(Guid accountId, PageQueryModel queryModel)
         {
             try
@@ -158,6 +165,65 @@ namespace SchoolManagement.Service
                 throw;
             }
         }
+
+        public async ValueTask<PaginationModel<NormalClassDisplayModel>> GetClassesAssignedForTeacher(Guid accountId, string semesterId, PageModel queryModel)
+        {
+            try
+            {
+                _logger.LogInformation("Fetching classes assigned for teacher with account ID {AccountId} for semester {SemesterId}.", accountId, semesterId);
+
+                // Tìm kiếm giáo viên với accountId
+                var teacher = await _context.TeacherEntities
+                    .Include(t => t.Account)
+                    .FirstOrDefaultAsync(t => t.AccountId == accountId);
+
+                if (teacher == null)
+                {
+                    _logger.LogWarning("No teacher found with account ID {AccountId}.", accountId);
+                    throw new NotFoundException("Teacher not found.");
+                }
+
+                // Lấy danh sách các lớp mà giáo viên giảng dạy trong học kỳ cụ thể
+                var assignedClassesQuery = _context.AssignmentEntities
+                    .Where(a => a.TeacherId == teacher.TeacherId && a.SemesterId == semesterId)
+                    .Select(a => new NormalClassDisplayModel
+                    {
+                        ClassId = a.Class.ClassId,
+                        ClassName = a.Class.ClassName,
+                        AcademicYear = a.Class.AcademicYear,
+                        Grade = a.Class.Grade,
+                        SubjectId = a.SubjectId,
+                        SubjectName = a.Subject.SubjectName,
+                        TotalStudents = a.Class.ClassDetails.Count
+                    })
+                    .Distinct(); // Loại bỏ các lớp trùng lặp trong trường hợp giáo viên dạy nhiều môn cùng lớp;
+
+                int pageNumber = queryModel.PageNumber != null && queryModel.PageNumber.Value > 0 ? queryModel.PageNumber.Value : 1;
+                int pageSize = queryModel.PageSize != null && queryModel.PageSize.Value > 0 ? queryModel.PageSize.Value : 10;
+
+                var totalCount = await assignedClassesQuery.CountAsync();
+                var assignedClasses = await assignedClassesQuery
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToListAsync();
+
+                _logger.LogInformation("Successfully retrieved {ClassCount} classes assigned for teacher with account ID {AccountId} for semester {SemesterId}.", assignedClasses.Count, accountId, semesterId);
+
+                return new PaginationModel<NormalClassDisplayModel>
+                {
+                    TotalCount = totalCount,
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    DataList = assignedClasses
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occurred while fetching classes assigned for teacher with account ID {AccountId} for semester {SemesterId}. Error: {Error}", accountId, semesterId, ex.Message);
+                throw;
+            }
+        }
+
 
 
         /// <summary>

@@ -18,6 +18,11 @@
         public int Grade { get; set; } // khối
         public int TotalStudents { get; set; }
     }
+    public class NormalClassDisplayModel : HomeroomClassDisplayModel 
+    { 
+        public int SubjectId { get; set; }
+        public string SubjectName { get; set; } = string.Empty;
+    }
 
     public class ClassFilterModel
     {

@@ -1,5 +1,6 @@
 ﻿using SchoolManagement.Entity;
 using SchoolManagement.Model;
+using SchoolManagement.Model.Student;
 using System.Data;
 
 namespace SchoolManagement.Service.Intention
@@ -14,6 +15,7 @@ namespace SchoolManagement.Service.Intention
         ValueTask UpdateStudent(string id, StudentUpdateModel model);
         ValueTask DeleteStudent(string id);
         Task<byte[]> ExportToExcelAsync(StudentExportQueryModel queryModel);
+        ValueTask<IEnumerable<StudentInClassModel>> GetStudentInClasses(Guid accountId);
 
         // will delete
         ValueTask CreateDemoStudent(StudentAddModel model);
