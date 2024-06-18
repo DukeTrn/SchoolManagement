@@ -16,7 +16,7 @@ interface IMainLayout {
 const MainLayout = ({ children }: IMainLayout) => {
 	const { role } = useAppSelector((state: IAppState) => state.users);
 	const navs = sideBarNavs?.filter(
-		(i) => i.role === role || i.role === "All"
+		(i) => i.role.includes(role!) || i.role.includes("All")
 	);
 	return (
 		<div className="h-screen">

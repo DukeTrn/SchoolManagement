@@ -22,25 +22,21 @@ import StudyClassDetail from "@/pages/study/ClassDetail";
 import StudyStudentDetail from "@/pages/study/StudentDetail";
 import Conduct from "@/pages/conduct";
 import ConductClass from "@/pages/conduct/detail";
+import TeacherInfo from "@/pages/teacherinfo";
 
 const ProtectedRoute = () => {
-	const { accoundId, role } = useAppSelector(
-		(state: IAppState) => state.users
-	);
+	const { accoundId } = useAppSelector((state: IAppState) => state.users);
 	return accoundId ? <Outlet /> : <Navigate to={path.login} />;
 };
 const RejectedRoute = () => {
-	const { accoundId, role } = useAppSelector(
-		(state: IAppState) => state.users
-	);
+	const { accoundId } = useAppSelector((state: IAppState) => state.users);
 	return !accoundId ? <Outlet /> : <Navigate to={path.home} />;
 };
 
 const useRouteElement = () => {
-	const { accoundId, role } = useAppSelector(
-		(state: IAppState) => state.users
-	);
+	const { role } = useAppSelector((state: IAppState) => state.users);
 	const isAdmin = role === userRole.admin;
+	const isTeacher = role === userRole.gv || userRole.gvcn;
 
 	const routeElement = useRoutes([
 		{
@@ -185,6 +181,14 @@ const useRouteElement = () => {
 					element: isAdmin && (
 						<MainLayout>
 							<ConductClass />
+						</MainLayout>
+					),
+				},
+				{
+					path: path.teacherInfo,
+					element: isTeacher && (
+						<MainLayout>
+							<TeacherInfo />
 						</MainLayout>
 					),
 				},

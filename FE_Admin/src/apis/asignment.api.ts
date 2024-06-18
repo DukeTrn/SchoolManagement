@@ -26,19 +26,19 @@ export const deleteSubject = (id: number) => http.delete(`subject/${id}`);
 export const getTeacherAssignment = (
 	body: { searchValue: string },
 	grade: number,
-	semesterId: string,
-	subjectId: number
+	subjectId: number,
+	semesterId: string
 ) =>
 	http.post<ISuccessGetResponseApi<IAssignmentDisplay[]>>(
-		`assignment/all/${grade}/${semesterId}/${subjectId}`,
+		`assignment/all/${grade}/${subjectId}/${semesterId}`,
 		body
 	);
 
 export const createAssignment = (body: IAssignmentAdd) =>
 	http.post("assignment/create", body);
 
-export const updateAssignment = (assignmentId: string) =>
-	http.put(`assignment/update/${assignmentId}`);
+export const updateAssignment = (assignmentId: string, classId: string) =>
+	http.put(`assignment/update/${assignmentId}/${classId}`);
 
 export const deleteAssignment = (assignmentId: string) =>
 	http.delete(`assignment/${assignmentId}`);

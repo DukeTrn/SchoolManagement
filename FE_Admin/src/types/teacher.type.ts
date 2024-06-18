@@ -15,6 +15,7 @@ export type ITeacher = {
 	timeEnd?: string;
 	isLeader: boolean;
 	isViceLeader: boolean;
+	departmentName?: string;
 };
 
 export type ITeacherInfo = Pick<
