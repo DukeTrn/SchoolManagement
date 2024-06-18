@@ -1,5 +1,8 @@
 import { ITeacher, ITeacherInfo } from "@/types/teacher.type";
-import { ISuccessResponseApi } from "@/types/utils.type";
+import {
+	ISuccessGetResponseApi,
+	ISuccessResponseApi,
+} from "@/types/utils.type";
 import http from "@/utils/http";
 
 interface ITeacherBody {
@@ -44,3 +47,11 @@ export const exportTeacher = (body: {
 	http.post("/teacher/export", body, {
 		responseType: "blob",
 	});
+
+export const getTeacherFilter = () =>
+	http.get<ISuccessGetResponseApi<{ teacherId: string; fullName: string }[]>>(
+		"teacher/filter"
+	);
+
+export const getTeacherFilterDetail = (id: string) =>
+	http.get<ISuccessGetResponseApi<ITeacher>>(`teacher/teacher/${id}`);

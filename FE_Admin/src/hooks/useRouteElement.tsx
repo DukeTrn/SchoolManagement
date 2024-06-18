@@ -17,25 +17,28 @@ import AssignmentDetails from "@/pages/assignment/detail/AssignmentDetail";
 import { IAppState, useAppSelector } from "@/redux/store";
 import Login from "@/pages/login";
 import { userRole } from "@/utils/utils";
+import Study from "@/pages/study";
+import StudyClassDetail from "@/pages/study/ClassDetail";
+import StudyStudentDetail from "@/pages/study/StudentDetail";
+import Conduct from "@/pages/conduct";
+import ConductClass from "@/pages/conduct/detail";
+import TeacherInfo from "@/pages/teacherinfo";
+import StudentInfo from "@/pages/studentInfo";
 
 const ProtectedRoute = () => {
-	const { accoundId, role } = useAppSelector(
-		(state: IAppState) => state.users
-	);
+	const { accoundId } = useAppSelector((state: IAppState) => state.users);
 	return accoundId ? <Outlet /> : <Navigate to={path.login} />;
 };
 const RejectedRoute = () => {
-	const { accoundId, role } = useAppSelector(
-		(state: IAppState) => state.users
-	);
+	const { accoundId } = useAppSelector((state: IAppState) => state.users);
 	return !accoundId ? <Outlet /> : <Navigate to={path.home} />;
 };
 
 const useRouteElement = () => {
-	const { accoundId, role } = useAppSelector(
-		(state: IAppState) => state.users
-	);
+	const { role } = useAppSelector((state: IAppState) => state.users);
 	const isAdmin = role === userRole.admin;
+	const isTeacher = role === userRole.gv || userRole.gvcn;
+	const isStudent = role === userRole.hs;
 
 	const routeElement = useRoutes([
 		{
@@ -140,6 +143,62 @@ const useRouteElement = () => {
 					element: isAdmin && (
 						<MainLayout>
 							<AssignmentDetails />
+						</MainLayout>
+					),
+				},
+				{
+					path: path.study,
+					element: isAdmin && (
+						<MainLayout>
+							<Study />
+						</MainLayout>
+					),
+				},
+				{
+					path: path.studyClass,
+					element: isAdmin && (
+						<MainLayout>
+							<StudyClassDetail />
+						</MainLayout>
+					),
+				},
+				{
+					path: path.studyStudent,
+					element: isAdmin && (
+						<MainLayout>
+							<StudyStudentDetail />
+						</MainLayout>
+					),
+				},
+				{
+					path: path.conduct,
+					element: isAdmin && (
+						<MainLayout>
+							<Conduct />
+						</MainLayout>
+					),
+				},
+				{
+					path: path.conductClass,
+					element: isAdmin && (
+						<MainLayout>
+							<ConductClass />
+						</MainLayout>
+					),
+				},
+				{
+					path: path.teacherInfo,
+					element: isTeacher && (
+						<MainLayout>
+							<TeacherInfo />
+						</MainLayout>
+					),
+				},
+				{
+					path: path.studentInfo,
+					element: isStudent && (
+						<MainLayout>
+							<StudentInfo />
 						</MainLayout>
 					),
 				},

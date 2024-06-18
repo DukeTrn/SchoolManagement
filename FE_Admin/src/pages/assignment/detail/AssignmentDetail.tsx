@@ -16,9 +16,14 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { IAssignmentDisplay } from "@/types/assignment.type";
-import { deleteAssignment, getTeacherAssignment } from "@/apis/asignment.api";
-import { useLocation } from "react-router-dom";
+import {
+	deleteAssignment,
+	getTeacherAssignment,
+	updateAssignment,
+} from "@/apis/asignment.api";
+import { useLocation, useParams } from "react-router-dom";
 import { getAllSemesters } from "@/apis/semester.api";
+import { Create } from "./Create";
 
 const columns: ColumnDef<IAssignmentDisplay>[] = [
 	{
@@ -71,6 +76,7 @@ const columns: ColumnDef<IAssignmentDisplay>[] = [
 ];
 
 const AssignmentDetails = () => {
+	const { id } = useParams();
 	const location = useLocation();
 	console.log(location);
 	const state = location?.state;
@@ -87,7 +93,9 @@ const AssignmentDetails = () => {
 	const isDisableButton = !selectedRow;
 
 	useEffect(() => {
-		handleGetData();
+		if (selectedField) {
+			handleGetData();
+		}
 	}, [searchQuery, selectedField]);
 
 	useEffect(() => {
@@ -112,8 +120,8 @@ const AssignmentDetails = () => {
 				searchValue: searchQuery,
 			},
 			Number(state?.selectedField),
-			"20212",
-			state?.id
+			state?.id,
+			selectedField!
 		).then((res) => {
 			setLoading(false);
 			setTeachers(res?.data?.data);
@@ -181,17 +189,28 @@ const AssignmentDetails = () => {
 			</div>
 			<div className="mb-5 flex justify-between">
 				<div className="flex justify-between gap-2">
-					{/* <Create
+					<Create
 						type="create"
 						disable={false}
 						refreshData={refreshData}
+						academicYear={selectedField as string}
+						grade={Number(state?.selectedField)}
+						semesterId={selectedField!}
+						subjectId={id!}
 					/>
-					<Create
-						type="edit"
-						disable={isDisableButton}
-						selected={selectedRow}
-						refreshData={refreshData}
-					/> */}
+					<Button
+						disabled={isDisableButton}
+						onClick={() => {
+							updateAssignment(
+								selectedRow?.assignmentId!,
+								selectedRow?.classId!
+							).then(() => {
+								refreshData("Cập nhật giáo viên thành công!");
+							});
+						}}
+					>
+						Chuyển lớp
+					</Button>
 					<Button disabled={isDisableButton} onClick={handleDelete}>
 						Xóa
 					</Button>

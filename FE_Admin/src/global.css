@@ -64,4 +64,11 @@
     content:" *";
     color: #E11D48;
   }
+  .text-primary {
+    color: #E11D48;
+  }
+  .bg-primary {
+    background-color: #E11D48;
+  }
+
 }
