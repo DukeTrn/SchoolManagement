@@ -20,6 +20,8 @@ import { userRole } from "@/utils/utils";
 import Study from "@/pages/study";
 import StudyClassDetail from "@/pages/study/ClassDetail";
 import StudyStudentDetail from "@/pages/study/StudentDetail";
+import Conduct from "@/pages/conduct";
+import ConductClass from "@/pages/conduct/detail";
 
 const ProtectedRoute = () => {
 	const { accoundId, role } = useAppSelector(
@@ -167,6 +169,22 @@ const useRouteElement = () => {
 					element: isAdmin && (
 						<MainLayout>
 							<StudyStudentDetail />
+						</MainLayout>
+					),
+				},
+				{
+					path: path.conduct,
+					element: isAdmin && (
+						<MainLayout>
+							<Conduct />
+						</MainLayout>
+					),
+				},
+				{
+					path: path.conductClass,
+					element: isAdmin && (
+						<MainLayout>
+							<ConductClass />
 						</MainLayout>
 					),
 				},

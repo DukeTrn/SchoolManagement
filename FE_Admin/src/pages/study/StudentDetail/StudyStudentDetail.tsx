@@ -1,12 +1,12 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import { getStudyStudentDetail } from "@/apis/study.api";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import Pagination from "@/components/pagination";
 import { ColumnDef } from "@tanstack/react-table";
 import { IClass } from "@/types/study.type";
 import { TableDetails } from "@/components/table/Table";
-import { round, mean } from "lodash";
+import { mean } from "lodash";
 
 const StudyStudentDetail = () => {
 	const location = useLocation();

@@ -15,6 +15,8 @@ const path = {
 	studyStudent: "/study/:id/:id1",
 	assignment: "/assignment",
 	assignmentDetail: "assignment/:id",
+	conduct: "/conduct",
+	conductClass: "/conduct/:id",
 } as const;
 
 export default path;

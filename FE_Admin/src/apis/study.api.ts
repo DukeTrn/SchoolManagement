@@ -1,10 +1,4 @@
-import { IStudy, IClass } from "@/types/study.type";
-import { IClassroom, IStudentClassroom } from "@/types/classroom.type";
-
-import {
-	ISuccessGetResponseApi,
-	ISuccessResponseApi,
-} from "@/types/utils.type";
+import { ISuccessGetResponseApi } from "@/types/utils.type";
 import http from "@/utils/http";
 
 interface IBodyClassroom {
@@ -12,10 +6,6 @@ interface IBodyClassroom {
 	pageSize: number;
 	pageNumber: number;
 }
-type IClassDetailBody = IBodyClassroom & { status: number[] };
-
-export const getStudentByAcademicYear = (body: IBodyClassroom, id: number) =>
-	http.post<ISuccessResponseApi<IClassroom[]>>(`class/all/${id}`, body);
 
 export const getStudyInfo = (academicYear: string, grade: number) =>
 	http.post<

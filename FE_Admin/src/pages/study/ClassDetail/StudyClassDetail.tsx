@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getStudyClassDetail } from "@/apis/study.api";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Pagination from "@/components/pagination";
 import { ColumnDef } from "@tanstack/react-table";
 import { IClass } from "@/types/study.type";

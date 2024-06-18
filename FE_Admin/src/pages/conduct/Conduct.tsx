@@ -1,3 +1,8 @@
+import { getConductInfo } from "@/apis/conduct.api";
+import { IConduct } from "@/types/conduct.type";
+import { ColumnDef } from "@tanstack/react-table";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import {
 	Select,
 	SelectContent,
@@ -6,38 +11,40 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { useEffect, useState } from "react";
-import { IClassroom } from "@/types/classroom.type";
-import { getStudyInfo } from "@/apis/study.api";
-import { ColumnDef } from "@tanstack/react-table";
-import { IStudy } from "@/types/study.type";
-import { Link } from "react-router-dom";
 import { TableDetails } from "@/components/table/Table";
 import Pagination from "@/components/pagination";
 
-const academicYears = [
-	"2017 - 2018",
-	"2018 - 2019",
-	"2019 - 2020",
-	"2020 - 2021",
-	"2021 - 2022",
-	"2022 - 2023",
-	"2023 - 2024",
-	"2024 - 2025",
+const Semester = [
+	"20171",
+	"20172",
+	"20181",
+	"20182",
+	"20191",
+	"20192",
+	"20201",
+	"20202",
+	"20211",
+	"20212",
+	"20221",
+	"20222",
+	"20231",
+	"20232",
+	"20241",
+	"20242",
+	"20251",
+	"20252",
 ];
 
-const Study = () => {
-	const [selectedField, setSelectedField] = useState<string>("10");
-	const [loading, setLoading] = useState<boolean>(false);
+const Conduct = () => {
 	const [pageSize, setPageSize] = useState<number>(10);
 	const [pageNumber, setPageNumber] = useState<number>(1);
 	const [totalPage, setTotalPage] = useState<number>(1);
-	const [year, setYear] = useState<string>("2019 - 2020");
-	const [classroom, setClassroom] = useState<
-		{ classId: string; className: string; homeroomTeacherName: string }[]
-	>([]);
+	const [loading, setLoading] = useState<boolean>(false);
+	const [selectedField, setSelectedField] = useState<string>("10");
+	const [semester, setSemester] = useState<string>("20191");
+	const [conduct, setConduct] = useState<any>([]);
 
-	const columns: ColumnDef<IStudy>[] = [
+	const columns: ColumnDef<IConduct>[] = [
 		{
 			accessorKey: "classId",
 			header: "Tên lớp",
@@ -46,7 +53,7 @@ const Study = () => {
 				return (
 					<Link
 						to={row.getValue("classId")}
-						state={{ ...row.original, year, selectedField }}
+						state={{ ...row.original, semester, selectedField }}
 						className="cursor-pointer font-medium text-blue-600 underline"
 					>
 						{className}
@@ -55,11 +62,11 @@ const Study = () => {
 			},
 		},
 		{
-			accessorKey: "description",
+			accessorKey: "totalStudents",
 			header: () => {
-				return <div>Mô tả</div>;
+				return <div>Sĩ số</div>;
 			},
-			cell: ({ row }) => <div>{row.getValue("description")}</div>,
+			cell: ({ row }) => <div>{row.getValue("totalStudents")}</div>,
 			minSize: 200,
 		},
 		{
@@ -67,16 +74,21 @@ const Study = () => {
 			header: "GVCN",
 			cell: ({ row }) => <div>{row.getValue("homeroomTeacherName")}</div>,
 		},
+		{
+			accessorKey: "academicYear",
+			header: "Niên khóa",
+			cell: ({ row }) => <div>{row.getValue("academicYear")}</div>,
+		},
 	];
 
 	useEffect(() => {
 		handleGetData();
-	}, [pageNumber, pageSize, selectedField, year]);
+	}, [pageNumber, pageSize, selectedField, semester]);
 
 	const handleGetData = () => {
 		setLoading(true);
-		getStudyInfo(year, Number(selectedField)).then((res) => {
-			setClassroom(res?.data?.data);
+		getConductInfo(Number(selectedField), semester).then((res) => {
+			setConduct(res?.data?.data);
 			setLoading(false);
 		});
 	};
@@ -85,13 +97,16 @@ const Study = () => {
 		<>
 			<div className="mb-4 text-2xl font-medium">QUẢN LÝ HỌC TẬP</div>
 			<div className="mb-5 flex justify-end gap-5">
-				<Select value={year} onValueChange={(value) => setYear(value)}>
+				<Select
+					value={semester}
+					onValueChange={(value) => setSemester(value)}
+				>
 					<SelectTrigger className="w-[200px]">
 						<SelectValue placeholder="Chọn niên khoá" />
 					</SelectTrigger>
 					<SelectContent className="w-full">
 						<SelectGroup>
-							{academicYears?.map((value) => (
+							{Semester?.map((value) => (
 								<SelectItem value={value} key={value}>
 									{value}
 								</SelectItem>
@@ -120,7 +135,7 @@ const Study = () => {
 			<div>
 				<TableDetails
 					pageSize={pageSize}
-					data={classroom}
+					data={conduct}
 					columns={columns}
 					//onChange={handleChange}
 					loading={loading}
@@ -135,4 +150,5 @@ const Study = () => {
 		</>
 	);
 };
-export default Study;
+
+export default Conduct;
