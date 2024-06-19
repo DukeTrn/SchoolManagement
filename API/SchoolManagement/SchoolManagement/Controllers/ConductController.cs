@@ -91,7 +91,7 @@ namespace SchoolManagement.Web.Controllers
         }
 
         /// <summary>
-        /// ConductType (Hạnh kiểm): 1 (tốt), 2 (khá), 3 (TB), 4 (yếu)
+        /// ConductType (Hạnh kiểm): 0 (null), 1 (tốt), 2 (khá), 3 (TB), 4 (yếu)
         /// </summary>
         /// <param name="id"></param>
         /// <param name="model"></param>

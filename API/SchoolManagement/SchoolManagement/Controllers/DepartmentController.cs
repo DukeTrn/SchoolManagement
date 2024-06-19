@@ -74,9 +74,17 @@ namespace SchoolManagement.Web.Controllers
                 var result = await _teacherService.GetAllTeachersInDeptByAccountId(accountId, queryModel);
                 return Ok(result);
             }
+            catch (NotFoundException)
+            {
+                return BadRequest(new { result = false, messageType = MessageType.Error, message = $"Không tìm thấy giáo viên accountId {accountId} này" });
+            }
+            catch (InvalidOperationException)
+            {
+                return BadRequest(new { result = false, messageType = MessageType.Error, message = $"Giáo viên với accountId {accountId} này chưa nằm trong tổ bộ môn nào" });
+            }
             catch (Exception ex)
             {
-                return StatusCode(200, new { result = false, messageType = MessageType.Error, message = ex });
+                return BadRequest(new { result = false, messageType = MessageType.Error, message = ex });
             }
         }
 
@@ -276,7 +284,7 @@ namespace SchoolManagement.Web.Controllers
             {
                 await _service.RemoveTeachersFromDepartment(model);
                 return Ok(new { result = true, messageType = MessageType.Information, message = "Xóa thành công giáo viên khỏi bộ môn!" });
-            }
+            }           
             catch (Exception ex)
             {
                 return BadRequest(new { result = false, messageType = MessageType.Error, message = ex.Message });

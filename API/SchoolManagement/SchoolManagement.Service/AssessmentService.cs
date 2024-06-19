@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using SchoolManagement.Common.Enum;
 using SchoolManagement.Common.Exceptions;
 using SchoolManagement.Database;
 using SchoolManagement.Entity;
@@ -12,11 +13,15 @@ namespace SchoolManagement.Service
     {
         private readonly ILogger<AssessmentEntity> _logger;
         private readonly SchoolManagementDbContext _context;
+        private readonly IConductService _conductService;
 
-        public AssessmentService(ILogger<AssessmentEntity> logger, SchoolManagementDbContext context)
+        public AssessmentService(ILogger<AssessmentEntity> logger, 
+            SchoolManagementDbContext context,
+            IConductService conductService)
         {
             _logger = logger;
             _context = context;
+            _conductService = conductService;
         }
 
         /// <summary>
@@ -287,7 +292,7 @@ namespace SchoolManagement.Service
 
 
         /// <summary>
-        /// Get average score for each semester
+        /// Get average score for each semester (might have bug about Conduct at GetConductByClassDetailId)
         /// </summary>
         /// <param name="grade"></param>
         /// <param name="semesterId"></param>
@@ -355,46 +360,30 @@ namespace SchoolManagement.Service
                 var totalAverage = averageScores.Any() ? averageScores.Average(score => score.Average) : 0;
 
                 // Tính toán AcademicPerform
-                string academicPerform;
-                if (totalAverage >= 8 &&
-                    averageScores.All(s => s.Average >= 6.5M) &&
-                    (averageScores.Any(s => s.SubjectName.Contains("Đại số & Giải tích") && s.Average >= 8) ||
-                     averageScores.Any(s => s.SubjectName.Contains("Ngữ văn") && s.Average >= 8.0M)))
+                string academicPerform = CalculateSemesterAcademicPerform(totalAverage, averageScores);
+
+                // Lấy thông tin hạnh kiểm của học sinh trong học kì này
+                var conductEntity = await _conductService.GetConductByClassDetailId(classDetailId, semesterId);
+
+                if (conductEntity == null)
                 {
-                    academicPerform = "Giỏi";
+                    var errorMsg = $"Không tìm thấy thông tin hạnh kiểm của học sinh trong học kì {semesterId} này!";
+                    _logger.LogWarning(errorMsg);
+                    throw new NotFoundException(errorMsg);
                 }
-                else if (totalAverage >= 6.5M && totalAverage < 8 &&
-                    averageScores.All(s => s.Average >= 5) &&
-                    (averageScores.Any(s => s.SubjectName.Contains("Đại số & Giải tích") && s.Average >= 6.5M && s.Average < 8) ||
-                     averageScores.Any(s => s.SubjectName.Contains("Ngữ văn") && s.Average >= 6.5M && s.Average < 8)))
-                {
-                    academicPerform = "Khá";
-                }
-                else if (totalAverage >= 5 && totalAverage < 6.5M &&
-                    averageScores.All(s => s.Average >= 3.5M) &&
-                    (averageScores.Any(s => s.SubjectName.Contains("Đại số & Giải tích") && s.Average >= 5 && s.Average < 6.5M) ||
-                     averageScores.Any(s => s.SubjectName.Contains("Ngữ văn") && s.Average >= 5 && s.Average < 6.5M)))
-                {
-                    academicPerform = "Trung bình Khá";
-                }
-                else if (totalAverage >= 3.5M && totalAverage < 5 &&
-                    averageScores.All(s => s.Average >= 2) &&
-                    (averageScores.Any(s => s.SubjectName.Contains("Đại số & Giải tích") && s.Average >= 3.5M && s.Average < 5) ||
-                     averageScores.Any(s => s.SubjectName.Contains("Ngữ văn") && s.Average >= 3.5M && s.Average < 5)))
-                {
-                    academicPerform = "Trung bình";
-                }
-                else
-                {
-                    academicPerform = "Yếu";
-                }
+
+                // Tính toán Title
+                string title = CalculateSemesterTitle(totalAverage, averageScores, academicPerform, conductEntity.ConductName);
 
                 return new AverageScoreModel
                 {
                     ClassDetailId = classDetailId,
                     TotalAverage = Math.Round(totalAverage, 1),
                     AcademicPerform = academicPerform,
-                    Subjects = averageScores
+                    Subjects = averageScores,
+                    Title = title,
+                    ConductId = conductEntity.ConductId,
+                    ConductName = conductEntity.ConductName,
                 };
             }
             catch (Exception ex)
@@ -404,12 +393,98 @@ namespace SchoolManagement.Service
             }
         }
 
+        /// <summary>
+        /// Calculate to get academic for each semester
+        /// </summary>
+        /// <param name="totalAverage"></param>
+        /// <param name="averageScores"></param>
+        /// <returns></returns>
+        private string CalculateSemesterAcademicPerform(decimal totalAverage, List<AverageEachSubjectModel> averageScores)
+        {
+            if (totalAverage >= 8 &&
+                averageScores.All(s => s.Average >= 6.5M) &&
+                (averageScores.Any(s => s.SubjectName.Contains("Đại số & Giải tích") && s.Average >= 8) ||
+                 averageScores.Any(s => s.SubjectName.Contains("Ngữ văn") && s.Average >= 8.0M)))
+            {
+                return "Giỏi";
+            }
+            else if (totalAverage >= 6.5M && totalAverage < 8 &&
+                averageScores.All(s => s.Average >= 5) &&
+                (averageScores.Any(s => s.SubjectName.Contains("Đại số & Giải tích") && s.Average >= 6.5M && s.Average < 8) ||
+                 averageScores.Any(s => s.SubjectName.Contains("Ngữ văn") && s.Average >= 6.5M && s.Average < 8)))
+            {
+                return "Khá";
+            }
+            else if (totalAverage >= 5 && totalAverage < 6.5M &&
+                averageScores.All(s => s.Average >= 3.5M) &&
+                (averageScores.Any(s => s.SubjectName.Contains("Đại số & Giải tích") && s.Average >= 5 && s.Average < 6.5M) ||
+                 averageScores.Any(s => s.SubjectName.Contains("Ngữ văn") && s.Average >= 5 && s.Average < 6.5M)))
+            {
+                return "Trung bình";
+            }
+            else if (totalAverage >= 3.5M && totalAverage < 5 &&
+                averageScores.All(s => s.Average >= 2) &&
+                (averageScores.Any(s => s.SubjectName.Contains("Đại số & Giải tích") && s.Average >= 3.5M && s.Average < 5) ||
+                 averageScores.Any(s => s.SubjectName.Contains("Ngữ văn") && s.Average >= 3.5M && s.Average < 5)))
+            {
+                return "Yếu";
+            }
+            else
+            {
+                return "Kém";
+            }
+        }
+
+        /// <summary>
+        /// Calculate to get Title (danh hiệu) based on academic performance and conduct for each semester
+        /// </summary>
+        /// <param name="academicPerform"></param>
+        /// <param name="conductName"></param>
+        /// <returns></returns>
+        private string CalculateSemesterTitle(decimal totalAverage, List<AverageEachSubjectModel> averageScores, string academicPerform, ConductType? conductName)
+        {
+            if (totalAverage >= 9 &&
+                averageScores.All(s => s.Average >= 8) &&
+                conductName == ConductType.VeryGood)
+            {
+                return "Học sinh Xuất sắc";
+            }
+            else if (academicPerform == "Giỏi" && (conductName == ConductType.VeryGood || conductName == ConductType.Good))
+            {
+                return "Học sinh Giỏi";
+            }
+            else if (academicPerform == "Khá" && (conductName != ConductType.Weak))
+            {
+                return "Học sinh Khá";
+            }
+            else if (academicPerform == "Trung bình" && (conductName != ConductType.Weak))
+            {
+                return "Học sinh Trung bình";
+            }
+            else if (academicPerform == "Yếu" && (conductName == ConductType.Weak || conductName == ConductType.Average))
+            {
+                return "Học sinh Yếu";
+            }
+            else if (conductName == ConductType.Null)
+            {
+                return string.Empty;
+            }
+            else if (academicPerform == "Kém" && (conductName == ConductType.Weak))
+            {
+                return "Học sinh Kém";
+            }
+            else
+            {
+                return string.Empty;
+            }
+        }
+
 
         public async ValueTask<AverageScoreForAcademicYearModel> GetAverageScoreForAcademicYear(int grade, string classDetailId, string academicYear)
         {
             try
             {
-                // Kiểm tra tính hợp lệ của classDetailId
+                // Check classDetailId
                 var classDetailExist = await _context.ClassDetailEntities.AnyAsync(s => s.ClassDetailId == classDetailId);
                 if (!classDetailExist)
                 {
@@ -418,7 +493,7 @@ namespace SchoolManagement.Service
                     throw new NotFoundException(errorMsg);
                 }
 
-                // Truy vấn tất cả các môn học trong cùng một khối
+                // All subjects in 1 grade
                 var subjects = await _context.SubjectEntities.Where(s => s.Grade == grade).ToListAsync();
 
                 // Truy vấn các học kỳ theo năm học
@@ -436,6 +511,10 @@ namespace SchoolManagement.Service
 
                 var firstSemesterId = semesters[0].SemesterId;
                 var secondSemesterId = semesters[1].SemesterId;
+
+                // Get conducts
+                var firstSemesterConduct = await _conductService.GetConductByClassDetailId(classDetailId, firstSemesterId);
+                var secondSemesterConduct = await _conductService.GetConductByClassDetailId(classDetailId, secondSemesterId);
 
                 // Tạo danh sách để lưu trữ điểm trung bình của từng môn trong cả hai học kỳ
                 var subjectAverages = new List<AverageEachSemesterModel>();
@@ -477,14 +556,123 @@ namespace SchoolManagement.Service
                 var totalSecondAverage = subjectAverages.Any() ? Math.Round(subjectAverages.Average(s => s.SecondSemester), 1) : 0;
                 var totalAverage = subjectAverages.Any() ? Math.Round(subjectAverages.Average(s => s.Average), 1) : 0;
 
-                return new AverageScoreForAcademicYearModel
+                #region Academic Performance
+                string academicPerform;
+
+                if (totalAverage >= 8 &&
+                    subjectAverages.All(s => s.Average >= 6.5M) &&
+                    (subjectAverages.Any(s => s.SubjectName.Contains("Đại số & Giải tích") && s.Average >= 8) ||
+                     subjectAverages.Any(s => s.SubjectName.Contains("Ngữ văn") && s.Average >= 8.0M)))
+                {
+                    academicPerform = "Giỏi";
+                }
+                else if (totalAverage >= 6.5M && totalAverage < 8 &&
+                    subjectAverages.All(s => s.Average >= 5) &&
+                    (subjectAverages.Any(s => s.SubjectName.Contains("Đại số & Giải tích") && s.Average >= 6.5M && s.Average < 8) ||
+                     subjectAverages.Any(s => s.SubjectName.Contains("Ngữ văn") && s.Average >= 6.5M && s.Average < 8)))
+                {
+                    academicPerform = "Khá";
+                }
+                else if (totalAverage >= 5 && totalAverage < 6.5M &&
+                    subjectAverages.All(s => s.Average >= 3.5M) &&
+                    (subjectAverages.Any(s => s.SubjectName.Contains("Đại số & Giải tích") && s.Average >= 5 && s.Average < 6.5M) ||
+                     subjectAverages.Any(s => s.SubjectName.Contains("Ngữ văn") && s.Average >= 5 && s.Average < 6.5M)))
+                {
+                    academicPerform = "Trung bình";
+                }
+                else if (totalAverage >= 3.5M && totalAverage < 5 &&
+                    subjectAverages.All(s => s.Average >= 2) &&
+                    (subjectAverages.Any(s => s.SubjectName.Contains("Đại số & Giải tích") && s.Average >= 3.5M && s.Average < 5) ||
+                     subjectAverages.Any(s => s.SubjectName.Contains("Ngữ văn") && s.Average >= 3.5M && s.Average < 5)))
+                {
+                    academicPerform = "Yếu";
+                }
+                else
+                {
+                    academicPerform = "Kém";
+                }
+                #endregion
+
+                #region Conduct
+                ConductType conduct;
+
+                if ((firstSemesterConduct.ConductName == ConductType.VeryGood || firstSemesterConduct.ConductName == ConductType.Good) &&
+                    (secondSemesterConduct.ConductName == ConductType.VeryGood))
+                {
+                    conduct = ConductType.VeryGood;
+                }
+                else if ((firstSemesterConduct.ConductName != ConductType.Weak && secondSemesterConduct.ConductName == ConductType.Good) ||
+                         (firstSemesterConduct.ConductName == ConductType.VeryGood && secondSemesterConduct.ConductName == ConductType.Average) ||
+                         ((firstSemesterConduct.ConductName == ConductType.Weak || firstSemesterConduct.ConductName != ConductType.Average) && secondSemesterConduct.ConductName == ConductType.VeryGood))
+                {
+                    conduct = ConductType.Good;
+                }
+                else if ((firstSemesterConduct.ConductName != ConductType.VeryGood && secondSemesterConduct.ConductName == ConductType.Average) ||
+                         (firstSemesterConduct.ConductName == ConductType.Weak && secondSemesterConduct.ConductName == ConductType.Good))
+                {
+                    conduct = ConductType.Average;
+                }
+                else if (firstSemesterConduct == null || secondSemesterConduct == null)
+                {
+                    conduct = ConductType.Null;
+                }
+                else
+                {
+                    conduct = ConductType.Weak;
+                }
+                #endregion
+
+                #region Title
+                string title;
+
+                if (totalAverage >= 9 &&
+                    subjectAverages.All(s => s.Average >= 8) &&
+                    conduct == ConductType.VeryGood)
+                {
+                    title = "Học sinh Xuất sắc";
+                }
+                else if (academicPerform == "Giỏi" && (conduct == ConductType.VeryGood || conduct == ConductType.Good))
+                {
+                    title = "Học sinh Giỏi";
+                }
+                else if (academicPerform == "Khá" && (conduct != ConductType.Weak))
+                {
+                    title = "Học sinh Khá";
+                }
+                else if (academicPerform == "Trung bình" && (conduct != ConductType.Weak))
+                {
+                    title = "Học sinh Trung bình";
+                }
+                else if (academicPerform == "Yếu" && (conduct == ConductType.Weak || conduct == ConductType.Average))
+                {
+                    title = "Học sinh Yếu";
+                }
+                else if (conduct == ConductType.Null)
+                {
+                    title = string.Empty;
+                }
+                else if (academicPerform == "Kém" && (conduct == ConductType.Weak))
+                {
+                    title = "Học sinh Kém";
+                }
+                else
+                {
+                    title = string.Empty;
+                }
+                #endregion
+
+                var model = new AverageScoreForAcademicYearModel()
                 {
                     ClassDetailId = classDetailId,
                     TotalFirstAverage = totalFirstAverage,
                     TotalSecondAverage = totalSecondAverage,
                     TotalAverage = totalAverage,
-                    Subjects = subjectAverages
+                    Subjects = subjectAverages,
+                    AcademicPerform = academicPerform,
+                    ConductName = conduct,
+                    Title = title,
                 };
+                return model;
             }
             catch (Exception ex)
             {
