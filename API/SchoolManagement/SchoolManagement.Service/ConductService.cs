@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using MathNet.Numerics.Distributions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SchoolManagement.Common.Enum;
 using SchoolManagement.Common.Exceptions;
@@ -45,7 +46,7 @@ namespace SchoolManagement.Service
                         StudentId = cd.StudentId,
                         StudentName = cd.Student.FullName,
                     })
-                    .ToListAsync();
+                    .ToListAsync(); 
 
                 // Duyệt qua từng sinh viên và kiểm tra xem họ đã có conduct chưa
                 foreach (var student in classStudents)
@@ -104,18 +105,21 @@ namespace SchoolManagement.Service
                 var conductEntity = await _context.ConductEntities
                     .FirstOrDefaultAsync(c => c.StudentId == studentId && c.SemesterId == semesterId);
 
+                //if (conductEntity == null)
+                //{
+                //    _logger.LogWarning("No conduct record found for student ID {StudentId} in semester ID {SemesterId}.", studentId, semesterId);
+                //    throw new NotFoundException("Conduct record not found.");
+                //}
                 if (conductEntity == null)
                 {
-                    _logger.LogWarning("No conduct record found for student ID {StudentId} in semester ID {SemesterId}.", studentId, semesterId);
-                    throw new NotFoundException("Conduct record not found.");
+                    await CreateConduct(studentId, semesterId);
                 }
-
                 // Chuyển đổi từ ConductEntity sang ConductInSemesterModel
                 var conductModel = new ConductInSemesterModel
                 {
                     ConductId = conductEntity.ConductId,
-                    ConductName = conductEntity.ConductName,
-                    Feedback = conductEntity.Feedback
+                    ConductName = conductEntity.ConductName == ConductType.Null ? ConductType.Null : conductEntity.ConductName,
+                    Feedback = conductEntity.Feedback == string.Empty ? null : conductEntity.Feedback,
                 };
 
                 _logger.LogInformation("Successfully retrieved conduct for student ID {StudentId} in semester ID {SemesterId}.", studentId, semesterId);
@@ -124,6 +128,63 @@ namespace SchoolManagement.Service
             catch (Exception ex)
             {
                 _logger.LogError("An error occurred while fetching conduct for student ID {StudentId} in semester ID {SemesterId}. Error: {Error}", studentId, semesterId, ex.Message);
+                throw;
+            }
+        }
+
+        public async ValueTask<ConductInSemesterModel> GetConductByClassDetailId(string classDetailId, string semesterId)
+        {
+            try
+            {
+                var classDetailExist = await _context.ClassDetailEntities.AnyAsync(s => s.ClassDetailId == classDetailId);
+                if (!classDetailExist)
+                {
+                    var errorMsg = $"Không tìm thấy Class Detail ID {classDetailId} này!";
+                    _logger.LogWarning(errorMsg);
+                    throw new NotFoundException(errorMsg);
+                }
+
+                var semesterExist = await _context.SemesterEntities.AnyAsync(s => s.SemesterId == semesterId);
+                if (!semesterExist)
+                {
+                    var errorMsg = $"Không tìm thấy mã học kì {semesterId} này!";
+                    _logger.LogWarning(errorMsg);
+                    throw new NotFoundException(errorMsg);
+                }
+
+                var conductEntity = await _context.ConductEntities
+                    .Where(c => c.Student.ClassDetails.Any(cd => cd.ClassDetailId == classDetailId) && c.SemesterId == semesterId)
+                    .FirstOrDefaultAsync();
+
+                var student = await _context.StudentEntities
+                    .Where(s => s.ClassDetails.Any(s => s.ClassDetailId == classDetailId))
+                    .FirstOrDefaultAsync();
+
+                if (conductEntity == null)
+                {
+                    //var errorMsg = $"Không tìm thấy thông tin hạnh kiểm cho Class Detail ID {classDetailId} trong học kì {semesterId} này!";
+                    //_logger.LogWarning(errorMsg);
+                    //throw new NotFoundException(errorMsg);
+                    await CreateConduct(student.StudentId, semesterId);
+                }
+
+                var conductInSemesterModel = new ConductInSemesterModel
+                {
+                    ConductId = conductEntity.ConductId,
+                    ConductName = conductEntity.ConductName == ConductType.Null ? ConductType.Null : conductEntity.ConductName,
+                    Feedback = conductEntity.Feedback == string.Empty ? null : conductEntity.Feedback,
+                };
+
+                return conductInSemesterModel;
+            }
+            catch (NotFoundException ex)
+            {
+                _logger.LogError("Not Found: {ex}", ex.Message);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occurred while getting the conduct information. Error: {ex}", ex.Message);
                 throw;
             }
         }
@@ -163,6 +224,7 @@ namespace SchoolManagement.Service
                 var conduct = new ConductEntity
                 {
                     ConductId = Guid.NewGuid(), // Tạo mới conductId
+                    ConductName = ConductType.Null,
                     StudentId = studentId,
                     SemesterId = semesterId
                     // Thêm các trường khác nếu cần

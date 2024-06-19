@@ -11,5 +11,6 @@ namespace SchoolManagement.Service.Intention
         ValueTask<ConductForClassStatisticModel> GetConductClassStatistic(int grade, string semesterId, string classId);
         ValueTask<ConductForSemesterStatisticModel> GetConductSemesterStatistic(int grade, string semesterId);
         ValueTask<ConductInSemesterModel> GetConduct(string studentId, string semesterId);
+        ValueTask<ConductInSemesterModel> GetConductByClassDetailId(string classDetailId, string semesterId);
     }
 }
