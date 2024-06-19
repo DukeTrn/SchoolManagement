@@ -5,11 +5,10 @@ import Pagination from "@/components/pagination";
 import { ColumnDef } from "@tanstack/react-table";
 import { IClass } from "@/types/study.type";
 import { TableDetails } from "@/components/table/Table";
-import { mean } from "lodash";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 
-const StudyStudentDetail = () => {
+export default function StudentDetailInfo() {
 	const location = useLocation();
 	const navigation = useNavigate();
 	const state = location?.state;
@@ -18,7 +17,7 @@ const StudyStudentDetail = () => {
 	const [pageNumber, setPageNumber] = useState<number>(1);
 	const [totalPage] = useState<number>(1);
 	const [student, setStudent] = useState<any>([]);
-	const [point, setPoint] = useState<any>();
+	const [semester] = useState<string>(`${state.academicYear.split(" ")[0]}1`);
 	const columns: ColumnDef<IClass>[] = [
 		{
 			accessorKey: "subjectName",
@@ -92,79 +91,18 @@ const StudyStudentDetail = () => {
 		},
 	];
 
-	const formatNumberWithCommas = (
-		inputNumber: number | null | undefined,
-		decimalPlaces: number = 2
-	) => {
-		if (inputNumber === undefined || inputNumber === null) {
-			return "";
-		}
-		const isNegative = inputNumber < 0;
-		const absoluteNumber = Math.abs(inputNumber);
-
-		let formattedDecimalNumber = 0;
-
-		const multiplier = Math.pow(10, decimalPlaces);
-		formattedDecimalNumber =
-			Math.round(absoluteNumber * multiplier) / multiplier;
-
-		let formattedNumber = formattedDecimalNumber.toFixed(decimalPlaces);
-
-		const parts = formattedNumber.split(".");
-		let integerPart = parts[0];
-		let decimalPart = parts[1] || "";
-
-		let formattedInteger = "";
-		let count = 0;
-
-		for (let i = integerPart.length - 1; i >= 0; i--) {
-			formattedInteger = integerPart[i] + formattedInteger;
-			count++;
-			if (count % 3 === 0 && i !== 0) {
-				formattedInteger = "," + formattedInteger;
-			}
-		}
-
-		if (decimalPart.length > 0) {
-			formattedInteger += "." + decimalPart;
-		}
-
-		return isNegative && formattedDecimalNumber !== 0
-			? "-" + formattedInteger
-			: formattedInteger;
-	};
-
-	const academicPerformance = (value: number) => {
-		switch (true) {
-			case value >= 8:
-				return "Tốt";
-			case value < 8 && value >= 6.5:
-				return "Khá";
-			case value < 6.5 && value >= 3.5:
-				return "Đạt";
-			default:
-				return "Chưa Đạt";
-		}
-	};
-
 	useEffect(() => {
 		handleGetData();
 	}, [pageNumber, pageSize]);
 	const handleGetData = () => {
 		setLoading(true);
-		getStudyStudentDetail(
-			state.grade,
-			state.semester,
-			state.classDetailId
-		).then((res) => {
-			setStudent(res.data?.data);
-			setLoading(false);
-		});
+		getStudyStudentDetail(state.grade, semester, state.classDetailId).then(
+			(res) => {
+				setStudent(res.data?.data);
+				setLoading(false);
+			}
+		);
 	};
-	useEffect(() => {
-		const b = student.map((item: any) => item.average) as number[];
-		setPoint(b);
-	}, [student]);
 
 	return (
 		<>
@@ -173,14 +111,6 @@ const StudyStudentDetail = () => {
 					<ArrowLeft />
 				</Button>
 				<div className="mb-4 text-2xl font-medium">{`KẾT QUẢ HỌC TẬP HỌC SINH ${state.fullName.toUpperCase()} `}</div>
-			</div>
-			<div className=" [&>[role=checkbox]]:translate-y-[2px]text-sm mt-2 h-5 px-2 text-left align-middle text-sm font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">
-				{`Học lực: ${academicPerformance(
-					Number(formatNumberWithCommas(mean(point)))
-				)}`}
-			</div>
-			<div className="mb-5 mt-2 h-5 px-2 text-left align-middle text-sm font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">
-				{`Điểm TB: ${formatNumberWithCommas(mean(point))}`}
 			</div>
 			<div>
 				<TableDetails
@@ -214,6 +144,4 @@ const StudyStudentDetail = () => {
 			</div>
 		</>
 	);
-};
-
-export default StudyStudentDetail;
+}

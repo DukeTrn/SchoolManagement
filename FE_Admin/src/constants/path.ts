@@ -21,9 +21,13 @@ const path = {
 
 	//teacher
 	teacherInfo: "/teacher-info",
+	teacherDepartment: "teacher-department",
 
 	//student
 	studentInfo: "/student-info",
+	studentClass: "/student-class",
+	studentClassDetail: "/student-class/:id",
+	studentClassDetailInfo: "/student-class/:id/:id1",
 } as const;
 
 export default path;

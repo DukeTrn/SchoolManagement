@@ -1,14 +1,17 @@
 import { useEffect, useState } from "react";
 import { getConductClass } from "@/apis/conduct.api";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Pagination from "@/components/pagination";
 import { ColumnDef } from "@tanstack/react-table";
 import { IClass } from "@/types/study.type";
 import { TableDetails } from "@/components/table/Table";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 
 const ConductClass = () => {
 	const location = useLocation();
 	const state = location?.state;
+	const navigation = useNavigate();
 	const [classInfo, setClassInfo] = useState<{
 		classDetailId: string;
 		studentId: string;
@@ -16,12 +19,11 @@ const ConductClass = () => {
 		conductId: string;
 		conductName: string;
 		feedback: string;
-	}>([]);
-	console.log(state);
+	}>();
 	const [loading, setLoading] = useState<boolean>(false);
 	const [pageSize, setPageSize] = useState<number>(10);
 	const [pageNumber, setPageNumber] = useState<number>(1);
-	const [totalPage, setTotalPage] = useState<number>(1);
+	const [totalPage] = useState<number>(1);
 
 	const columns: ColumnDef<IClass>[] = [
 		{
@@ -67,8 +69,12 @@ const ConductClass = () => {
 	};
 	return (
 		<>
-			<div className="mb-4 text-2xl font-medium">{`QUẢN LÝ HẠNH KIỂM LỚP ${state.className}`}</div>
-
+			<div className="mb-5 flex justify-start gap-5">
+				<Button onClick={() => navigation(-1)}>
+					<ArrowLeft />
+				</Button>
+				<div className="mb-4 text-2xl font-medium">{`QUẢN LÝ HẠNH KIỂM LỚP ${state.className}`}</div>
+			</div>
 			<div>
 				<TableDetails
 					pageSize={pageSize}

@@ -38,7 +38,7 @@ const Semester = [
 const Conduct = () => {
 	const [pageSize, setPageSize] = useState<number>(10);
 	const [pageNumber, setPageNumber] = useState<number>(1);
-	const [totalPage, setTotalPage] = useState<number>(1);
+	const [totalPage] = useState<number>(1);
 	const [loading, setLoading] = useState<boolean>(false);
 	const [selectedField, setSelectedField] = useState<string>("10");
 	const [semester, setSemester] = useState<string>("20191");
@@ -95,7 +95,7 @@ const Conduct = () => {
 
 	return (
 		<>
-			<div className="mb-4 text-2xl font-medium">QUẢN LÝ HỌC TẬP</div>
+			<div className="mb-4 text-2xl font-medium">QUẢN LÝ HẠNH KIỂM</div>
 			<div className="mb-5 flex justify-end gap-5">
 				<Select
 					value={semester}

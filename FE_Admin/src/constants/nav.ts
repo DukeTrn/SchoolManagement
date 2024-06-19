@@ -92,7 +92,7 @@ export const sideBarNavs = [
 	{
 		title: "Tổ bộ môn",
 		icon: Component,
-		path: "/teacher-group",
+		path: "/teacher-department",
 		variant: "ghost",
 		role: [userRole.gv, userRole.gvcn],
 	},
@@ -114,6 +114,13 @@ export const sideBarNavs = [
 		title: "Hồ sơ học sinh",
 		icon: School,
 		path: "/student-info",
+		variant: "ghost",
+		role: [userRole.hs, userRole.hs],
+	},
+	{
+		title: "Thông tin lớp học",
+		icon: School,
+		path: "/student-class",
 		variant: "ghost",
 		role: [userRole.hs, userRole.hs],
 	},

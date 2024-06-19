@@ -50,3 +50,6 @@ export const exportStudent = (body: {
 
 export const StudentFilterDetail = (id: string) =>
 	http.get<ISuccessGetResponseApi<IStudent>>(`student/student/${id}`);
+
+export const StudentClassDetail = (id: string) =>
+	http.get<ISuccessGetResponseApi<IStudent>>(`student/student/${id}/classes`);
