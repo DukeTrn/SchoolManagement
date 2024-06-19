@@ -7,7 +7,6 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { useEffect, useState } from "react";
-import { IClassroom } from "@/types/classroom.type";
 import { getStudyInfo } from "@/apis/study.api";
 import { ColumnDef } from "@tanstack/react-table";
 import { IStudy } from "@/types/study.type";
@@ -31,7 +30,7 @@ const Study = () => {
 	const [loading, setLoading] = useState<boolean>(false);
 	const [pageSize, setPageSize] = useState<number>(10);
 	const [pageNumber, setPageNumber] = useState<number>(1);
-	const [totalPage, setTotalPage] = useState<number>(1);
+	const [totalPage] = useState<number>(1);
 	const [year, setYear] = useState<string>("2019 - 2020");
 	const [classroom, setClassroom] = useState<
 		{ classId: string; className: string; homeroomTeacherName: string }[]

@@ -38,7 +38,7 @@ const Semester = [
 const Conduct = () => {
 	const [pageSize, setPageSize] = useState<number>(10);
 	const [pageNumber, setPageNumber] = useState<number>(1);
-	const [totalPage, setTotalPage] = useState<number>(1);
+	const [totalPage] = useState<number>(1);
 	const [loading, setLoading] = useState<boolean>(false);
 	const [selectedField, setSelectedField] = useState<string>("10");
 	const [semester, setSemester] = useState<string>("20191");

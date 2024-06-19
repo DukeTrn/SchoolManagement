@@ -1,9 +1,4 @@
-import { getTeacherDetail } from "@/apis/teacher.api";
-import {
-	getHeadOfDepartment,
-	getNotifyDepartment,
-} from "@/apis/teacher.info.api";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { getNotifyDepartment } from "@/apis/teacher.info.api";
 import { Button } from "@/components/ui/button";
 import {
 	Sheet,

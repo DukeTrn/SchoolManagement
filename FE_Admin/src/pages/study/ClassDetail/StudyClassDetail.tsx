@@ -55,7 +55,7 @@ const StudyClassDetail = () => {
 	const [loading, setLoading] = useState<boolean>(false);
 	const [pageSize, setPageSize] = useState<number>(10);
 	const [pageNumber, setPageNumber] = useState<number>(1);
-	const [totalPage, setTotalPage] = useState<number>(1);
+	const [totalPage] = useState<number>(1);
 
 	const columns: ColumnDef<IClass>[] = [
 		{

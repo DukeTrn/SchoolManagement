@@ -1,6 +1,4 @@
-import { getTeacherDetail } from "@/apis/teacher.api";
 import { getHeadOfDepartment } from "@/apis/teacher.info.api";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
 	Sheet,
@@ -16,6 +14,7 @@ interface IStudentDetailsProps {
 }
 type IHeadOfDepartmentInfo = {
 	role: number;
+
 	teacherId: string;
 	fullName: string;
 };

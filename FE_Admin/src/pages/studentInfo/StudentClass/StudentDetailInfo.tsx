@@ -5,7 +5,6 @@ import Pagination from "@/components/pagination";
 import { ColumnDef } from "@tanstack/react-table";
 import { IClass } from "@/types/study.type";
 import { TableDetails } from "@/components/table/Table";
-import { mean } from "lodash";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 
@@ -16,12 +15,9 @@ export default function StudentDetailInfo() {
 	const [loading, setLoading] = useState<boolean>(false);
 	const [pageSize, setPageSize] = useState<number>(10);
 	const [pageNumber, setPageNumber] = useState<number>(1);
-	const [totalPage, setTotalPage] = useState<number>(1);
+	const [totalPage] = useState<number>(1);
 	const [student, setStudent] = useState<any>([]);
-	const [point, setPoint] = useState<any>();
-	const [semester, setSemester] = useState<string>(
-		`${state.academicYear.split(" ")[0]}1`
-	);
+	const [semester] = useState<string>(`${state.academicYear.split(" ")[0]}1`);
 	const columns: ColumnDef<IClass>[] = [
 		{
 			accessorKey: "subjectName",
@@ -95,61 +91,6 @@ export default function StudentDetailInfo() {
 		},
 	];
 
-	const formatNumberWithCommas = (
-		inputNumber: number | null | undefined,
-		decimalPlaces: number = 2
-	) => {
-		if (inputNumber === undefined || inputNumber === null) {
-			return "";
-		}
-		const isNegative = inputNumber < 0;
-		const absoluteNumber = Math.abs(inputNumber);
-
-		let formattedDecimalNumber = 0;
-
-		const multiplier = Math.pow(10, decimalPlaces);
-		formattedDecimalNumber =
-			Math.round(absoluteNumber * multiplier) / multiplier;
-
-		let formattedNumber = formattedDecimalNumber.toFixed(decimalPlaces);
-
-		const parts = formattedNumber.split(".");
-		let integerPart = parts[0];
-		let decimalPart = parts[1] || "";
-
-		let formattedInteger = "";
-		let count = 0;
-
-		for (let i = integerPart.length - 1; i >= 0; i--) {
-			formattedInteger = integerPart[i] + formattedInteger;
-			count++;
-			if (count % 3 === 0 && i !== 0) {
-				formattedInteger = "," + formattedInteger;
-			}
-		}
-
-		if (decimalPart.length > 0) {
-			formattedInteger += "." + decimalPart;
-		}
-
-		return isNegative && formattedDecimalNumber !== 0
-			? "-" + formattedInteger
-			: formattedInteger;
-	};
-
-	const academicPerformance = (value: number) => {
-		switch (true) {
-			case value >= 8:
-				return "Tốt";
-			case value < 8 && value >= 6.5:
-				return "Khá";
-			case value < 6.5 && value >= 3.5:
-				return "Đạt";
-			default:
-				return "Chưa Đạt";
-		}
-	};
-
 	useEffect(() => {
 		handleGetData();
 	}, [pageNumber, pageSize]);
@@ -162,10 +103,6 @@ export default function StudentDetailInfo() {
 			}
 		);
 	};
-	useEffect(() => {
-		const b = student.map((item: any) => item.average) as number[];
-		setPoint(b);
-	}, [student]);
 
 	return (
 		<>
