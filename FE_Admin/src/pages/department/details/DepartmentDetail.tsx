@@ -14,7 +14,7 @@ import { ITeacher } from "@/types/teacher.type";
 import { ColumnDef } from "@tanstack/react-table";
 import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { Create } from "./Create";
 import { TeacherDetails } from "@/pages/teacher/TeacherDetail";
 
@@ -105,6 +105,7 @@ const columns: ColumnDef<ITeacherTable>[] = [
 ];
 
 const DepartmentDetail = () => {
+	const location = useLocation();
 	const { id } = useParams();
 	const { toast } = useToast();
 	const [searchValue, setSearchValue] = useState("");
@@ -118,6 +119,8 @@ const DepartmentDetail = () => {
 
 	const searchQuery = useDebounce(searchValue, 1500);
 	const isDisableButton = selectedRows?.length === 0;
+
+	console.log(location);
 
 	useEffect(() => {
 		handleGetData();
@@ -165,7 +168,9 @@ const DepartmentDetail = () => {
 
 	return (
 		<>
-			<div className="mb-4 text-2xl font-medium">QUẢN LÝ BỘ MÔN </div>
+			<div className="mb-4 text-2xl font-medium uppercase">
+				QUẢN LÝ BỘ MÔN {location.state.subjectName}
+			</div>
 			<div className="mb-5 flex justify-between">
 				<div className="relative min-w-[295px]">
 					<Search className="absolute left-2 top-2.5 h-4 w-4 " />

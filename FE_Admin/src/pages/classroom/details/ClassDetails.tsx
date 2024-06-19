@@ -127,7 +127,7 @@ const ClassroomDetail = () => {
 	return (
 		<>
 			<div className="mb-4 text-2xl font-medium">
-				QUẢN LÝ BỘ HỌC SINH LỚP HỌC
+				QUẢN LÝ HỌC SINH LỚP {location.state.className}
 			</div>
 			<div className="mb-5 flex justify-between">
 				<div className="relative min-w-[295px]">

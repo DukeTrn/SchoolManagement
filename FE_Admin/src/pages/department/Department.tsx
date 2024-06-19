@@ -35,6 +35,7 @@ const columns: ColumnDef<IDepartment>[] = [
 			<Link
 				to={row.getValue("departmentId")}
 				className="cursor-pointer font-medium text-blue-600 underline"
+				state={row.original}
 			>
 				{row.getValue("departmentId")}
 			</Link>
