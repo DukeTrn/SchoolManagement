@@ -92,7 +92,7 @@ export const sideBarNavs = [
 	{
 		title: "Tổ bộ môn",
 		icon: Component,
-		path: "/teacher-group",
+		path: "/teacher-department",
 		variant: "ghost",
 		role: [userRole.gv, userRole.gvcn],
 	},

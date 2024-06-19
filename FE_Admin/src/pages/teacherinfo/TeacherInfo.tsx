@@ -87,13 +87,13 @@ const TeacherInfo = () => {
 									<div className="font-medium">
 										Ngày sinh:
 									</div>
-									<div>xxx</div>
+									<div>{info?.dob}</div>
 								</div>
 								<div className="flex gap-3 ">
 									<div className="font-medium">
 										Giới tính:
 									</div>
-									<div>xxx</div>
+									<div>{info?.gender}</div>
 								</div>
 							</div>
 							<div className="mb-4 flex items-center ">

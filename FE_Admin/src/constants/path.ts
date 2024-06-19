@@ -21,6 +21,7 @@ const path = {
 
 	//teacher
 	teacherInfo: "/teacher-info",
+	teacherDepartment: "teacher-department",
 
 	//student
 	studentInfo: "/student-info",

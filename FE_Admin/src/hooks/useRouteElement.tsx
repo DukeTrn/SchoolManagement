@@ -25,6 +25,7 @@ import ConductClass from "@/pages/conduct/detail";
 import TeacherInfo from "@/pages/teacherinfo";
 import StudentInfo from "@/pages/studentInfo";
 import StudentClass from "@/pages/studentInfo/StudentClass/StudentClass";
+import TeacherDepartment from "@/pages/teacherDepartment";
 
 const ProtectedRoute = () => {
 	const { accoundId } = useAppSelector((state: IAppState) => state.users);
@@ -192,6 +193,14 @@ const useRouteElement = () => {
 					element: isTeacher && (
 						<MainLayout>
 							<TeacherInfo />
+						</MainLayout>
+					),
+				},
+				{
+					path: path.teacherDepartment,
+					element: isTeacher && (
+						<MainLayout>
+							<TeacherDepartment />
 						</MainLayout>
 					),
 				},
