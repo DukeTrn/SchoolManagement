@@ -24,6 +24,7 @@ import Conduct from "@/pages/conduct";
 import ConductClass from "@/pages/conduct/detail";
 import TeacherInfo from "@/pages/teacherinfo";
 import StudentInfo from "@/pages/studentInfo";
+import StudentClass from "@/pages/studentInfo/StudentClass/StudentClass";
 
 const ProtectedRoute = () => {
 	const { accoundId } = useAppSelector((state: IAppState) => state.users);
@@ -206,7 +207,7 @@ const useRouteElement = () => {
 					path: path.studentClass,
 					element: isStudent && (
 						<MainLayout>
-							<StudentInfo />
+							<StudentClass />
 						</MainLayout>
 					),
 				},

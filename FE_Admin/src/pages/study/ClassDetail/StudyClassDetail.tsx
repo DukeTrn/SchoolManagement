@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getStudyClassDetail } from "@/apis/study.api";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Pagination from "@/components/pagination";
 import { ColumnDef } from "@tanstack/react-table";
 import { IClass } from "@/types/study.type";
@@ -13,6 +13,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 
 const Semester = [
 	"20171",
@@ -37,6 +38,7 @@ const Semester = [
 
 const StudyClassDetail = () => {
 	const location = useLocation();
+	const navigation = useNavigate();
 	const state = location?.state;
 	const [student, setStudent] = useState<
 		{
@@ -53,6 +55,7 @@ const StudyClassDetail = () => {
 	const [pageSize, setPageSize] = useState<number>(10);
 	const [pageNumber, setPageNumber] = useState<number>(1);
 	const [totalPage, setTotalPage] = useState<number>(1);
+	const classId = state.classId;
 
 	const columns: ColumnDef<IClass>[] = [
 		{
@@ -63,7 +66,7 @@ const StudyClassDetail = () => {
 				return (
 					<Link
 						to={row.getValue("classDetailId")}
-						state={{ ...row.original, semester }}
+						state={{ ...row.original, semester, classId }}
 						className="cursor-pointer font-medium text-blue-600 underline"
 					>
 						{fullName}
@@ -114,7 +117,10 @@ const StudyClassDetail = () => {
 	};
 	return (
 		<>
-			<div className="mb-4 text-2xl font-medium">{`QUẢN LÝ HỌC TẬP LỚP ${state.className} NIÊN KHÓA ${state.year}`}</div>
+			<div className="mb-5 flex justify-start gap-5">
+				<Button onClick={() => navigation(-1)}>{`<`}</Button>
+				<div className="mb-4 text-2xl font-medium">{`QUẢN LÝ HỌC TẬP LỚP ${state.className} NIÊN KHÓA ${state.year}`}</div>
+			</div>
 			<div className="mb-5 flex justify-end">
 				<Select
 					value={semester}

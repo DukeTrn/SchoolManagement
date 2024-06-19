@@ -95,7 +95,7 @@ const Conduct = () => {
 
 	return (
 		<>
-			<div className="mb-4 text-2xl font-medium">QUẢN LÝ HỌC TẬP</div>
+			<div className="mb-4 text-2xl font-medium">QUẢN LÝ HẠNH KIỂM</div>
 			<div className="mb-5 flex justify-end gap-5">
 				<Select
 					value={semester}

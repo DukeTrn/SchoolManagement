@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
 import { getStudyStudentDetail } from "@/apis/study.api";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Pagination from "@/components/pagination";
 import { ColumnDef } from "@tanstack/react-table";
 import { IClass } from "@/types/study.type";
 import { TableDetails } from "@/components/table/Table";
 import { mean } from "lodash";
+import { Button } from "@/components/ui/button";
 
 const StudyStudentDetail = () => {
 	const location = useLocation();
+	const navigation = useNavigate();
 	const state = location?.state;
 	const [loading, setLoading] = useState<boolean>(false);
 	const [pageSize, setPageSize] = useState<number>(10);
@@ -165,7 +167,10 @@ const StudyStudentDetail = () => {
 
 	return (
 		<>
-			<div className="mb-4 text-2xl font-medium">{`KẾT QUẢ HỌC TẬP HỌC SINH ${state.fullName.toUpperCase()} `}</div>
+			<div className="mb-5 flex justify-start gap-5">
+				<Button onClick={() => navigation(-1)}>{`<`}</Button>
+				<div className="mb-4 text-2xl font-medium">{`KẾT QUẢ HỌC TẬP HỌC SINH ${state.fullName.toUpperCase()} `}</div>
+			</div>
 			<div className=" [&>[role=checkbox]]:translate-y-[2px]text-sm mt-2 h-5 px-2 text-left align-middle text-sm font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">
 				{`Học lực: ${academicPerformance(
 					Number(formatNumberWithCommas(mean(point)))
