@@ -6,6 +6,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { IClass } from "@/types/study.type";
 import { TableDetails } from "@/components/table/Table";
 import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 
 const ConductClass = () => {
 	const location = useLocation();
@@ -69,7 +70,9 @@ const ConductClass = () => {
 	return (
 		<>
 			<div className="mb-5 flex justify-start gap-5">
-				<Button onClick={() => navigation(-1)}>{`<`}</Button>
+				<Button onClick={() => navigation(-1)}>
+					<ArrowLeft />
+				</Button>
 				<div className="mb-4 text-2xl font-medium">{`QUẢN LÝ HẠNH KIỂM LỚP ${state.className}`}</div>
 			</div>
 			<div>

@@ -7,6 +7,7 @@ import { IClass } from "@/types/study.type";
 import { TableDetails } from "@/components/table/Table";
 import { mean } from "lodash";
 import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 
 const StudyStudentDetail = () => {
 	const location = useLocation();
@@ -168,7 +169,9 @@ const StudyStudentDetail = () => {
 	return (
 		<>
 			<div className="mb-5 flex justify-start gap-5">
-				<Button onClick={() => navigation(-1)}>{`<`}</Button>
+				<Button onClick={() => navigation(-1)}>
+					<ArrowLeft />
+				</Button>
 				<div className="mb-4 text-2xl font-medium">{`KẾT QUẢ HỌC TẬP HỌC SINH ${state.fullName.toUpperCase()} `}</div>
 			</div>
 			<div className=" [&>[role=checkbox]]:translate-y-[2px]text-sm mt-2 h-5 px-2 text-left align-middle text-sm font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">
