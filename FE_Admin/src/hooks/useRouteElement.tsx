@@ -202,6 +202,14 @@ const useRouteElement = () => {
 						</MainLayout>
 					),
 				},
+				{
+					path: path.studentClass,
+					element: isStudent && (
+						<MainLayout>
+							<StudentInfo />
+						</MainLayout>
+					),
+				},
 			],
 		},
 		{

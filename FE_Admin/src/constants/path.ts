@@ -24,6 +24,7 @@ const path = {
 
 	//student
 	studentInfo: "/student-info",
+	studentClass: "/student-class",
 } as const;
 
 export default path;
