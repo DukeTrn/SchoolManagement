@@ -101,25 +101,28 @@ namespace SchoolManagement.Service
             {
                 _logger.LogInformation("Fetching conduct for student ID {StudentId} in semester ID {SemesterId}.", studentId, semesterId);
 
-                // Truy vấn cơ sở dữ liệu để lấy thông tin về hạnh kiểm
                 var conductEntity = await _context.ConductEntities
                     .FirstOrDefaultAsync(c => c.StudentId == studentId && c.SemesterId == semesterId);
 
-                //if (conductEntity == null)
-                //{
-                //    _logger.LogWarning("No conduct record found for student ID {StudentId} in semester ID {SemesterId}.", studentId, semesterId);
-                //    throw new NotFoundException("Conduct record not found.");
-                //}
                 if (conductEntity == null)
                 {
                     await CreateConduct(studentId, semesterId);
+
+                    // Re-query
+                    conductEntity = await _context.ConductEntities
+                        .FirstOrDefaultAsync(c => c.StudentId == studentId && c.SemesterId == semesterId);
+
+                    if (conductEntity == null)
+                    {
+                        throw new InvalidOperationException("Failed to create or retrieve the conduct entity.");
+                    }
                 }
-                // Chuyển đổi từ ConductEntity sang ConductInSemesterModel
+
                 var conductModel = new ConductInSemesterModel
                 {
                     ConductId = conductEntity.ConductId,
                     ConductName = conductEntity.ConductName == ConductType.Null ? ConductType.Null : conductEntity.ConductName,
-                    Feedback = conductEntity.Feedback == string.Empty ? null : conductEntity.Feedback,
+                    Feedback = conductEntity.Feedback == string.Empty ? "" : conductEntity.Feedback,
                 };
 
                 _logger.LogInformation("Successfully retrieved conduct for student ID {StudentId} in semester ID {SemesterId}.", studentId, semesterId);
@@ -166,13 +169,22 @@ namespace SchoolManagement.Service
                     //_logger.LogWarning(errorMsg);
                     //throw new NotFoundException(errorMsg);
                     await CreateConduct(student.StudentId, semesterId);
+
+                    // Re-query
+                    conductEntity = await _context.ConductEntities
+                        .FirstOrDefaultAsync(c => c.StudentId == student.StudentId && c.SemesterId == semesterId);
+
+                    if (conductEntity == null)
+                    {
+                        throw new InvalidOperationException("Failed to create or retrieve the conduct entity.");
+                    }
                 }
 
                 var conductInSemesterModel = new ConductInSemesterModel
                 {
                     ConductId = conductEntity.ConductId,
                     ConductName = conductEntity.ConductName == ConductType.Null ? ConductType.Null : conductEntity.ConductName,
-                    Feedback = conductEntity.Feedback == string.Empty ? null : conductEntity.Feedback,
+                    Feedback = conductEntity.Feedback == string.Empty ? "" : conductEntity.Feedback,
                 };
 
                 return conductInSemesterModel;
