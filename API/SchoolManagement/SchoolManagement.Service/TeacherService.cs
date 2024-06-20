@@ -212,7 +212,7 @@ namespace SchoolManagement.Service
                 }
                 #endregion
 
-                
+
                 #region Status Filter
                 if (queryModel.Status.Count > 0)
                 {
@@ -481,7 +481,7 @@ namespace SchoolManagement.Service
                 _logger.LogError("An error occured while updating a teacher. Error: {ex}", ex);
                 throw;
             }
-        }    
+        }
         #endregion
 
         #region Delete
@@ -611,7 +611,75 @@ namespace SchoolManagement.Service
         }
         #endregion
 
-        // Check data??
+        /// <summary>
+        /// Use this method to update roll for his/her account (teacher or HR teacher)
+        /// </summary>
+        /// <param name="teacherId"></param>
+        /// <param name="newRole"></param>
+        /// <returns></returns>
+        /// <exception cref="NotFoundException"></exception>
+        public async ValueTask UpdateTeacherRoll(string teacherId, RoleType newRole)
+        {
+            try
+            {
+                _logger.LogInformation("Updating role to {NewRole} for teacher ID {TeacherId}.", newRole.ToString(), teacherId);
+
+                var teacherEntity = await _context.TeacherEntities
+                    .FirstOrDefaultAsync(t => t.TeacherId == teacherId);
+
+                if (teacherEntity == null)
+                {
+                    var errorMsg = $"Không tìm thấy giáo viên với ID {teacherId}.";
+                    _logger.LogWarning(errorMsg);
+                    throw new NotFoundException(errorMsg);
+                }
+
+                var accountId = teacherEntity.AccountId;
+                if (accountId == null)
+                {
+                    var errorMsg = $"Không tìm thấy tài khoản cho giáo viên với ID {teacherId}.";
+                    _logger.LogWarning(errorMsg);
+                    throw new NotFoundException(errorMsg);
+                }
+
+                var accountEntity = await _context.AccountEntities
+                    .FirstOrDefaultAsync(a => a.AccountId == accountId);
+
+                if (accountEntity == null)
+                {
+                    var errorMsg = $"Không tìm thấy tài khoản với ID {accountId} liên kết với giáo viên.";
+                    _logger.LogWarning(errorMsg);
+                    throw new NotFoundException(errorMsg);
+                }
+
+                // Kiểm tra xem có cần cập nhật vai trò không
+                if (accountEntity.Role != newRole)
+                {
+                    accountEntity.Role = newRole;
+
+                    _logger.LogInformation("Updating role for account ID {AccountId} to {NewRole}.", accountId, newRole);
+
+                    _context.AccountEntities.Update(accountEntity);
+                    await _context.SaveChangesAsync();
+
+                    _logger.LogInformation("Successfully updated role to {NewRole} for teacher ID {TeacherId}.", newRole, teacherId);
+                }
+                else
+                {
+                    _logger.LogInformation("The role for teacher ID {TeacherId} is already set to {NewRole}. No update needed.", teacherId, newRole);
+                }
+            }
+            catch (DbUpdateException dbEx)
+            {
+                _logger.LogError("A database update error occurred while updating role to {NewRole} for teacher ID {TeacherId}. Error: {Error}", newRole, teacherId, dbEx.Message);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occurred while updating role to {NewRole} for teacher ID {TeacherId}. Error: {Error}", newRole, teacherId, ex.Message);
+                throw;
+            }
+        }
 
 
         /// <summary>
