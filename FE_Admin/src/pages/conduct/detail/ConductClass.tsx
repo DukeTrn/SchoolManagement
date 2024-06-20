@@ -12,14 +12,16 @@ const ConductClass = () => {
 	const location = useLocation();
 	const state = location?.state;
 	const navigation = useNavigate();
-	const [classInfo, setClassInfo] = useState<{
-		classDetailId: string;
-		studentId: string;
-		studentName: string;
-		conductId: string;
-		conductName: string;
-		feedback: string;
-	}>();
+	const [classInfo, setClassInfo] = useState<
+		{
+			classDetailId: string;
+			studentId: string;
+			studentName: string;
+			conductId: string;
+			conductName: string;
+			feedback: string;
+		}[]
+	>();
 	const [loading, setLoading] = useState<boolean>(false);
 	const [pageSize, setPageSize] = useState<number>(10);
 	const [pageNumber, setPageNumber] = useState<number>(1);

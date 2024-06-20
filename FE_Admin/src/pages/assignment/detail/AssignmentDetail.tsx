@@ -156,8 +156,8 @@ const AssignmentDetails = () => {
 
 	return (
 		<>
-			<div className="mb-4 text-2xl font-medium">
-				QUẢN LÝ PHÂN CÔNG GIẢNG DẠY
+			<div className="mb-4 text-2xl font-medium uppercase">
+				QUẢN LÝ PHÂN CÔNG GIẢNG DẠY môn {location?.state.subjectName}
 			</div>
 			<div className="mb-5 flex justify-between">
 				<div className="relative min-w-[295px]">
