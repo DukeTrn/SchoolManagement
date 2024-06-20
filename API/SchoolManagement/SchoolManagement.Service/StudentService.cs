@@ -1,6 +1,7 @@
 ﻿using ClosedXML.Excel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Identity.Client;
 using SchoolManagement.Common.Enum;
 using SchoolManagement.Common.Exceptions;
 using SchoolManagement.Common.Extensions;
@@ -131,7 +132,9 @@ namespace SchoolManagement.Service
             try
             {
                 _logger.LogInformation("Start to get a student by id.");
-                var student = await _context.StudentEntities.FindAsync(studentId);
+                var student = await _context.StudentEntities
+                    .Include(s => s.Account)
+                    .FirstOrDefaultAsync(s => s.StudentId == studentId);
                 if (student == null)
                 {
                     throw new NotFoundException($"Student with ID {studentId} not found.");
