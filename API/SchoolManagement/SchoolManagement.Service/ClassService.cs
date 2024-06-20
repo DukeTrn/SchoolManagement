@@ -15,12 +15,17 @@ namespace SchoolManagement.Service
         private readonly ILogger<ClassService> _logger;
         private readonly SchoolManagementDbContext _context;
         private readonly IEntityFilterService<ClassEntity> _filterBuilder;
+        private readonly ITeacherService _teacherService;
 
-        public ClassService(ILogger<ClassService> logger, SchoolManagementDbContext context, IEntityFilterService<ClassEntity> filterBuilder)
+        public ClassService(ILogger<ClassService> logger, 
+            SchoolManagementDbContext context, 
+            IEntityFilterService<ClassEntity> filterBuilder,
+            ITeacherService teacherService)
         {
             _logger = logger;
             _context = context;
             _filterBuilder = filterBuilder;
+            _teacherService = teacherService;
         }
 
         /// <summary>
@@ -401,48 +406,85 @@ namespace SchoolManagement.Service
         {
             try
             {
-                _logger.LogInformation("Start to create new class in {grade}.",model.Grade);
-                // Logic for academic year
-                //var prefixClassId = GenerateClassId(model.ClassName, model.Semester, model.AcademicYear);
+                _logger.LogInformation("Starting to create new class in grade {Grade} for academic year {AcademicYear}.", model.Grade, model.AcademicYear);
+
+                // Generate the prefix for the ClassId
                 var prefixClassId = GenerateClassId(model.ClassName, model.AcademicYear);
-                var existClass = await _context.ClassEntities.FirstOrDefaultAsync(s => s.ClassId == prefixClassId && s.Grade == model.Grade);
+                var existClass = await _context.ClassEntities
+                    .FirstOrDefaultAsync(s => s.ClassId == prefixClassId && s.Grade == model.Grade);
+
                 if (existClass != null)
                 {
-                    _logger.LogInformation("Class ID has already existed");
+                    _logger.LogWarning("Class ID {ClassId} already exists for grade {Grade}.", prefixClassId, model.Grade);
                     throw ExistRecordException.ExistsRecord("Class ID already exists");
                 }
 
-                // Kiểm tra xem HomeroomTeacherId đã được sử dụng ở lớp khác chưa
+                // Check if HomeroomTeacherId is already assigned to another class
                 var isHomeroomTeacherInUse = await _context.ClassEntities
                     .AnyAsync(c => c.HomeroomTeacherId == model.HomeroomTeacherId && c.Grade == model.Grade && c.AcademicYear == model.AcademicYear);
 
                 if (isHomeroomTeacherInUse)
                 {
-                    _logger.LogInformation("Homeroom teacher with ID {HomeroomTeacherId} is already assigned to another class.", model.HomeroomTeacherId);
+                    _logger.LogWarning("Homeroom teacher with ID {HomeroomTeacherId} is already assigned to another class in grade {Grade} for academic year {AcademicYear}.",
+                                        model.HomeroomTeacherId, model.Grade, model.AcademicYear);
                     throw new InvalidOperationException($"Homeroom teacher with ID {model.HomeroomTeacherId} is already assigned to another class");
                 }
 
-                var newClass = new ClassEntity()
+                // Begin transaction
+                using (var transaction = await _context.Database.BeginTransactionAsync())
                 {
-                    ClassId = prefixClassId,
-                    ClassName = model.ClassName,
-                    AcademicYear = model.AcademicYear,
-                    Grade = model.Grade,
-                    CreatedAt = DateTime.Now,
-                    ModifiedAt = null,
-                    HomeroomTeacherId = model.HomeroomTeacherId,
-                };
+                    try
+                    {
+                        // Update teacher's role to HomeroomTeacher
+                        await _teacherService.UpdateTeacherRoll(model.HomeroomTeacherId, RoleType.HomeroomTeacher);
+                        _logger.LogInformation("Updated role to HomeroomTeacher for teacher ID {HomeroomTeacherId}.", model.HomeroomTeacherId);
 
-                _context.ClassEntities.Add(newClass);
-                await _context.SaveChangesAsync();
+                        // Create new class entity
+                        var newClass = new ClassEntity()
+                        {
+                            ClassId = prefixClassId,
+                            ClassName = model.ClassName,
+                            AcademicYear = model.AcademicYear,
+                            Grade = model.Grade,
+                            CreatedAt = DateTime.UtcNow,
+                            ModifiedAt = null,
+                            HomeroomTeacherId = model.HomeroomTeacherId,
+                        };
 
+                        _context.ClassEntities.Add(newClass);
+                        await _context.SaveChangesAsync();
+                        _logger.LogInformation("Successfully created class ID {ClassId} for grade {Grade} in academic year {AcademicYear}.", prefixClassId, model.Grade, model.AcademicYear);
+
+                        // Commit transaction
+                        await transaction.CommitAsync();
+                        _logger.LogInformation("Transaction committed successfully.");
+                    }
+                    catch (Exception ex)
+                    {
+                        // Rollback transaction if any error occurs
+                        await transaction.RollbackAsync();
+                        _logger.LogError("An error occurred while creating new class. Transaction rolled back. Error: {Error}", ex.Message);
+                        throw;
+                    }
+                }
+            }
+            catch (ExistRecordException ex)
+            {
+                _logger.LogWarning("Failed to create class. Error: {Error}", ex.Message);
+                throw;
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogWarning("Invalid operation while creating class. Error: {Error}", ex.Message);
+                throw;
             }
             catch (Exception ex)
             {
-                _logger.LogError("An error occured while creating new Class. Error: {ex}", ex.Message);
+                _logger.LogError("An unexpected error occurred while creating new class. Error: {Error}", ex.Message);
                 throw;
             }
         }
+
         #endregion
 
         #region Update
@@ -465,33 +507,76 @@ namespace SchoolManagement.Service
                     throw new NotFoundException("Class not found.");
                 }
 
-                // Chỉ kiểm tra nếu HomeroomTeacherId thay đổi hoặc nếu HomeroomTeacherId không phải là null hoặc rỗng
-                if (!string.IsNullOrEmpty(model.HoomroomTeacherId) && existingClass.HomeroomTeacherId != model.HoomroomTeacherId)
+                // Check if the HomeroomTeacherId is changing
+                var isHomeroomTeacherChanging = !string.IsNullOrEmpty(model.HoomroomTeacherId) &&
+                                                existingClass.HomeroomTeacherId != model.HoomroomTeacherId;
+
+                // Begin transaction to ensure data integrity
+                using (var transaction = await _context.Database.BeginTransactionAsync())
                 {
-                    var teacherAlreadyAssigned = await _context.ClassEntities
-                        .AnyAsync(c => c.HomeroomTeacherId == model.HoomroomTeacherId && c.ClassId != classId && c.AcademicYear == academicYear);
-                    if (teacherAlreadyAssigned)
+                    try
                     {
-                        _logger.LogWarning("Homeroom teacher with ID {HomeroomTeacherId} is already assigned to another class.", model.HoomroomTeacherId);
-                        throw new InvalidOperationException("Homeroom teacher is already assigned to another class.");
+                        if (isHomeroomTeacherChanging)
+                        {
+                            // Check if the new HomeroomTeacherId is already assigned to another class
+                            var teacherAlreadyAssigned = await _context.ClassEntities
+                                .AnyAsync(c => c.HomeroomTeacherId == model.HoomroomTeacherId && c.ClassId != classId && c.AcademicYear == academicYear);
+                            if (teacherAlreadyAssigned)
+                            {
+                                _logger.LogWarning("Homeroom teacher with ID {HomeroomTeacherId} is already assigned to another class.", model.HoomroomTeacherId);
+                                throw new InvalidOperationException("Homeroom teacher is already assigned to another class.");
+                            }
+
+                            // Update the old HomeroomTeacher's role back to Teacher
+                            if (!string.IsNullOrEmpty(existingClass.HomeroomTeacherId))
+                            {
+                                await _teacherService.UpdateTeacherRoll(existingClass.HomeroomTeacherId, RoleType.Teacher);
+                                _logger.LogInformation("Updated role to Teacher for previous homeroom teacher ID {OldHomeroomTeacherId}.", existingClass.HomeroomTeacherId);
+                            }
+
+                            // Update the new HomeroomTeacher's role to HomeroomTeacher
+                            await _teacherService.UpdateTeacherRoll(model.HoomroomTeacherId, RoleType.HomeroomTeacher);
+                            _logger.LogInformation("Updated role to HomeroomTeacher for new homeroom teacher ID {NewHomeroomTeacherId}.", model.HoomroomTeacherId);
+                        }
+
+                        // Update class information
+                        existingClass.ClassName = model.ClassName;
+                        existingClass.HomeroomTeacherId = model.HoomroomTeacherId;
+                        existingClass.ModifiedAt = DateTime.UtcNow;
+
+                        _context.ClassEntities.Update(existingClass);
+                        await _context.SaveChangesAsync();
+
+                        // Commit transaction
+                        await transaction.CommitAsync();
+                        _logger.LogInformation("Class with ID {ClassId} updated successfully.", classId);
+                    }
+                    catch (Exception ex)
+                    {
+                        // Rollback transaction if any error occurs
+                        await transaction.RollbackAsync();
+                        _logger.LogError("An error occurred while updating class with ID {ClassId}. Transaction rolled back. Error: {Error}", classId, ex.Message);
+                        throw;
                     }
                 }
-
-                existingClass.ClassName = model.ClassName;
-                existingClass.HomeroomTeacherId = model.HoomroomTeacherId;
-                existingClass.ModifiedAt = DateTime.Now;
-
-                _context.ClassEntities.Update(existingClass);
-                await _context.SaveChangesAsync();
-
-                _logger.LogInformation("Class with ID {ClassId} updated successfully.", classId);
+            }
+            catch (NotFoundException ex)
+            {
+                _logger.LogWarning("Failed to update class. Class not found. Error: {Error}", ex.Message);
+                throw;
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogWarning("Invalid operation while updating class. Error: {Error}", ex.Message);
+                throw;
             }
             catch (Exception ex)
             {
-                _logger.LogError("An error occurred while updating class with ID {ClassId}. Error: {Error}", classId, ex.Message);
+                _logger.LogError("An unexpected error occurred while updating class with ID {ClassId}. Error: {Error}", classId, ex.Message);
                 throw;
             }
         }
+
         #endregion
 
         /// <summary>

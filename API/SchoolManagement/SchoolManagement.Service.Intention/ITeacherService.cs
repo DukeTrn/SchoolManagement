@@ -1,4 +1,5 @@
-﻿using SchoolManagement.Model;
+﻿using SchoolManagement.Common.Enum;
+using SchoolManagement.Model;
 
 namespace SchoolManagement.Service.Intention
 {
@@ -15,5 +16,6 @@ namespace SchoolManagement.Service.Intention
         ValueTask UpdateTeacher(string id, TeacherUpdateModel model);
         ValueTask DeleteTeacher(string id);
         Task<byte[]> ExportToExcelAsync(TeacherExportQueryModel queryModel);
+        ValueTask UpdateTeacherRoll(string teacherId, RoleType newRole);
     }
 }
