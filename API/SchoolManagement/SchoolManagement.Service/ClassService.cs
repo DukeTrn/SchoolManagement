@@ -82,7 +82,8 @@ namespace SchoolManagement.Service
                         HomeroomTeacherId = c.HomeroomTeacherId,
                         HomeroomTeacherName = c.HomeroomTeacher.FullName // Map the teacher's name
                     })
-                    .OrderByDescending(c => c.ClassId)
+                    .OrderByDescending(c => c.AcademicYear)
+                    .ThenBy(c => c.ClassName)
                     .ToListAsync();
 
                 return new PaginationModel<ClassDisplayModel>
