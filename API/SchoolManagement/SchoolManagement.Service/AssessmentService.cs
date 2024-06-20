@@ -612,7 +612,7 @@ namespace SchoolManagement.Service
                 {
                     conduct = ConductType.Average;
                 }
-                else if (firstSemesterConduct == null || secondSemesterConduct == null)
+                else if (firstSemesterConduct.ConductName == ConductType.Null || secondSemesterConduct.ConductName == ConductType.Null)
                 {
                     conduct = ConductType.Null;
                 }
