@@ -64,7 +64,7 @@ namespace SchoolManagement.Web.Controllers
         /// <param name="semesterId"></param>
         /// <param name="queryModel"></param>
         /// <returns></returns>
-        [HttpPost, Route("{accountId}/teaching-classes")]
+        [HttpPost, Route("{accountId}/{semesterId}/teaching-classes")]
         public async ValueTask<IActionResult> GetClassesAssignedForTeacher(Guid accountId, string semesterId, [FromBody] PageModel queryModel)
         {
             try
