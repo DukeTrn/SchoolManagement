@@ -1,4 +1,4 @@
-import { ITeacherInfo } from "@/types/teacher.info.type";
+import { ITeacherInfo, ITeacherClass } from "@/types/teacher.info.type";
 import {
 	ISuccessGetResponseApi,
 	ISuccessResponseApi,
