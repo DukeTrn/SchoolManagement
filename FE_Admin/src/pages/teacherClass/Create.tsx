@@ -189,30 +189,35 @@ export function Create(props: IPanelProps) {
 					itemEdit3.push(data[key]);
 				}
 			}
-			for (let i = 0; i < itemEdit1.length; i++) {
-				if (
-					Number(itemEdit1[i]) !== itemWeight1[i] &&
-					item1[i]?.assessmentId
-				) {
-					body.push({
-						assessmentId: item1[i].assessmentId,
-						score: itemEdit1[i],
-						feedback: item1[i].feedback,
-					});
+			if (itemEdit1.length) {
+				for (let i = 0; i < itemEdit1.length; i++) {
+					if (
+						Number(itemEdit1[i]) !== itemWeight1[i] &&
+						item1[i]?.assessmentId
+					) {
+						body.push({
+							assessmentId: item1[i].assessmentId,
+							score: itemEdit1[i],
+							feedback: item1[i].feedback,
+						});
+					}
 				}
 			}
-			for (let i = 0; i < itemEdit2.length; i++) {
-				if (
-					Number(itemEdit2[i]) !== itemWeight2[i] &&
-					item2[i]?.assessmentId
-				) {
-					body.push({
-						assessmentId: item2[i].assessmentId,
-						score: itemEdit2[i],
-						feedback: item2[i].feedback,
-					});
+			if (itemEdit2.length) {
+				for (let i = 0; i < itemEdit2.length; i++) {
+					if (
+						Number(itemEdit2[i]) !== itemWeight2[i] &&
+						item2[i]?.assessmentId
+					) {
+						body.push({
+							assessmentId: item2[i].assessmentId,
+							score: itemEdit2[i],
+							feedback: item2[i].feedback,
+						});
+					}
 				}
 			}
+
 			if (
 				Number(itemEdit3[0]) !== itemWeight3[0] &&
 				item3[0]?.assessmentId
@@ -228,12 +233,12 @@ export function Create(props: IPanelProps) {
 		if (type === "create") {
 			createTeacher(body as any).then(() => {
 				resetState();
-				refreshData("Thêm thành công!");
+				refreshData("Thêm điểm thành công!");
 			});
 		} else {
 			updateTeacher(body as any).then(() => {
 				resetState();
-				refreshData("Cập nhật tổ bộ môn thành công!");
+				refreshData("Cập nhật điểm thành công!");
 			});
 		}
 	});
