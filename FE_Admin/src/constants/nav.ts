@@ -99,14 +99,14 @@ export const sideBarNavs = [
 	{
 		title: "Giáo viên chủ nhiệm",
 		icon: ContactRound,
-		path: "/teacher-home",
+		path: "/teacher-homeroom",
 		variant: "ghost",
 		role: [userRole.gvcn],
 	},
 	{
 		title: "Lớp giảng dạy",
 		icon: School,
-		path: "/teacher-home",
+		path: "/teacher-class",
 		variant: "ghost",
 		role: [userRole.gv, userRole.gvcn],
 	},

@@ -45,6 +45,7 @@ export default function Create(props: IPanelProps) {
 	});
 
 	useEffect(() => {
+		reset(initValues);
 		setCount(0);
 	}, [selected]);
 

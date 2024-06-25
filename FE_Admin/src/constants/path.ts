@@ -23,6 +23,9 @@ const path = {
 	teacherInfo: "/teacher-info",
 	teacherDepartment: "/teacher-department",
 	teacherClass: "/teacher-class",
+	teacherClassDetail: "/teacher-class/:id",
+	teacherStudentDetail: "/teacher-class/:id/:id1",
+	teacherHomeroom: "/teacher-homeroom",
 
 	//student
 	studentInfo: "/student-info",
