@@ -230,30 +230,32 @@ namespace SchoolManagement.Service
                     throw new NotFoundException($"Account with ID {accountId} not found.");
                 }
 
-                // Kiểm tra mật khẩu cũ
-                if (!BCrypt.Net.BCrypt.Verify(model.OldPassword, account.Password))
+                bool isOldPasswordCorrect = account.Password == model.OldPassword;
+                bool isOldPasswordHashedCorrect = BCrypt.Net.BCrypt.Verify(model.OldPassword, account.PasswordHashed);
+
+                if (!isOldPasswordCorrect && !isOldPasswordHashedCorrect)
                 {
                     _logger.LogWarning($"Old password provided is incorrect for account with ID {accountId}.");
                     throw new UnauthorizedAccessException("Old password provided is incorrect.");
                 }
 
-                // Mật khẩu mới phải khác mật khẩu cũ
                 if (model.NewPassword == model.OldPassword)
                 {
                     _logger.LogWarning($"New password must be different from old password for account with ID {accountId}.");
                     throw new ArgumentException("New password must be different from old password.");
                 }
 
-                // Xác nhận mật khẩu mới
                 if (model.NewPassword != model.ConfirmPassword)
                 {
                     _logger.LogWarning($"New password and confirm password do not match for account with ID {accountId}.");
                     throw new ArgumentException("New password and confirm password do not match.");
                 }
 
-                // Mã hóa mật khẩu mới
                 string hashedPassword = BCrypt.Net.BCrypt.HashPassword(model.NewPassword);
-                account.Password = hashedPassword;
+
+                account.Password = model.NewPassword;
+                account.PasswordHashed = hashedPassword;
+
                 account.ModifiedAt = DateTime.UtcNow;
 
                 _context.AccountEntities.Update(account);
