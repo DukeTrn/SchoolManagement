@@ -238,6 +238,10 @@ namespace SchoolManagement.Web.Controllers
         {
             try
             {
+                if (models == null || models.Count == 0)
+                {
+                    return BadRequest(new { message = "Assessment data is required." });
+                }
                 await _assessmentService.UpdateAssessment(models);
                 return Ok(new
                 {
