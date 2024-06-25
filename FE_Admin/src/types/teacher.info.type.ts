@@ -20,3 +20,18 @@ export type ITeacherClass = {
 	grade: number;
 	totalStudents: number;
 };
+
+export interface ITeacherCreateScore {
+	score: number;
+	weight: number;
+	feedback: string;
+	semesterId: string;
+	subjectId: number;
+	classDetailId: string;
+}
+
+export interface ITeacherUpdateScore {
+	assessmentId: string;
+	score: number;
+	feedback: string;
+}
