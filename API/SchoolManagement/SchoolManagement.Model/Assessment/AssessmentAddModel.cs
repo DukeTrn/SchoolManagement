@@ -12,6 +12,7 @@
     }
     public class AssessmentUpdateModel
     {
+        public Guid AssessmentId { get; set; }
         public decimal Score { get; set; }
         public string? Feedback { get; set; } = string.Empty;
     }

@@ -10,7 +10,7 @@ namespace SchoolManagement.Service.Intention
         ValueTask<AverageScoreModel> GetAverageScoresForSemester(int grade, string semesterId, string classDetailId);
         ValueTask<AverageScoreForAcademicYearModel> GetAverageScoreForAcademicYear(int grade, string classDetailId, string academicYear);
         ValueTask CreateAssessments(List<AssessmentAddModel> models);
-        ValueTask UpdateAssessment(Guid id, AssessmentUpdateModel model);
+        ValueTask UpdateAssessment(List<AssessmentUpdateModel> models);
         ValueTask DeleteAssessment(Guid id);
         ValueTask<AssessmentForClassStatisticModel> GetAssessmentsStatistic(int grade, string semesterId, string classId, int subjectId);
         ValueTask<AssessmentForSemStatisticModel> GetAssessmentsStatisticForSem(int grade, string semesterId, int subjectId);

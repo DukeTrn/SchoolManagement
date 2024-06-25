@@ -233,12 +233,12 @@ namespace SchoolManagement.Web.Controllers
             }
         }
 
-        [HttpPut("{assessmentId}")]
-        public async ValueTask<ActionResult> UpdateConduct(Guid assessmentId, [FromBody] AssessmentUpdateModel model)
+        [HttpPut("update")]
+        public async ValueTask<ActionResult> UpdateConduct([FromBody] List<AssessmentUpdateModel> models)
         {
             try
             {
-                await _assessmentService.UpdateAssessment(assessmentId, model);
+                await _assessmentService.UpdateAssessment(models);
                 return Ok(new
                 {
                     result = true,
@@ -247,7 +247,7 @@ namespace SchoolManagement.Web.Controllers
             }
             catch (NotFoundException)
             {
-                return NotFound(new { result = false, messageType = MessageType.Error, message = $"Không tìm thấy bài kiểm tra với ID {assessmentId} này!" });
+                return NotFound(new { result = false, messageType = MessageType.Error, message = $"Không tìm thấy bài kiểm tra với 1 trong các ID này!" });
             }
             catch (Exception ex)
             {
