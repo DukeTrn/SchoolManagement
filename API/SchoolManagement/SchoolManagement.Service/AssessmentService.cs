@@ -713,34 +713,54 @@ namespace SchoolManagement.Service
             }
         }
 
-        public async ValueTask UpdateAssessment(Guid id, AssessmentUpdateModel model)
+        public async ValueTask UpdateAssessment(List<AssessmentUpdateModel> models)
         {
-            try
+            if (models == null || !models.Any())
             {
-                // Tìm bản ghi đánh giá cần cập nhật
-                var assessment = await _context.AssessmentEntities.FindAsync(id);
-
-                // Nếu không tìm thấy bản ghi, throw exception
-                if (assessment == null)
-                {
-                    throw new NotFoundException($"Assessment with ID {id} not found.");
-                }
-
-                // Cập nhật thông tin từ model vào bản ghi tìm được
-                assessment.Score = model.Score;
-                assessment.Feedback = model.Feedback;
-                assessment.ModifiedAt = DateTime.Now;
-
-                // Cập nhật bản ghi trong DbContext và lưu vào cơ sở dữ liệu
-                _context.AssessmentEntities.Update(assessment);
-                await _context.SaveChangesAsync();
+                _logger.LogWarning("No assessments provided for update.");
+                throw new ArgumentException("No assessments provided for update.");
             }
-            catch (Exception ex)
+
+            using (var transaction = await _context.Database.BeginTransactionAsync())
             {
-                _logger.LogError("An error occurred while updating assessment. Error: {ex}", ex.Message);
-                throw;
+                try
+                {
+                    foreach (var model in models)
+                    {
+                        _logger.LogInformation("Updating assessment with ID {AssessmentId}.", model.AssessmentId);
+
+                        var assessmentEntity = await _context.AssessmentEntities
+                            .FirstOrDefaultAsync(a => a.AssessmentId == model.AssessmentId);
+
+                        if (assessmentEntity == null)
+                        {
+                            var errorMsg = $"Không tìm thấy đánh giá với ID {model.AssessmentId}.";
+                            _logger.LogWarning(errorMsg);
+                            throw new NotFoundException(errorMsg);
+                        }
+
+                        // Update score
+                        assessmentEntity.Score = model.Score;
+                        assessmentEntity.Feedback = string.IsNullOrEmpty(model.Feedback) ? "" : model.Feedback;
+
+                        _context.AssessmentEntities.Update(assessmentEntity);
+                    }
+
+                    await _context.SaveChangesAsync();
+
+                    await transaction.CommitAsync();
+
+                    _logger.LogInformation("Successfully updated all assessments.");
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    _logger.LogError("An error occurred while updating assessments. Transaction rolled back. Error: {Error}", ex.Message);
+                    throw;
+                }
             }
         }
+
 
 
         public async ValueTask DeleteAssessment(Guid id)
