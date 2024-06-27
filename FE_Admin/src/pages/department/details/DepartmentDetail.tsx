@@ -14,9 +14,10 @@ import { ITeacher } from "@/types/teacher.type";
 import { ColumnDef } from "@tanstack/react-table";
 import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams, useNavigate } from "react-router-dom";
 import { Create } from "./Create";
 import { TeacherDetails } from "@/pages/teacher/TeacherDetail";
+import { ArrowLeft } from "lucide-react";
 
 const statusList = [
 	{ value: "1", label: "Đang giảng dạy" },
@@ -106,6 +107,7 @@ const columns: ColumnDef<ITeacherTable>[] = [
 
 const DepartmentDetail = () => {
 	const location = useLocation();
+	const navigation = useNavigate();
 	const { id } = useParams();
 	const { toast } = useToast();
 	const [searchValue, setSearchValue] = useState("");
@@ -168,8 +170,13 @@ const DepartmentDetail = () => {
 
 	return (
 		<>
-			<div className="mb-4 text-2xl font-medium uppercase">
-				QUẢN LÝ BỘ MÔN {location.state.subjectName}
+			<div className="mb-5 flex justify-start gap-5">
+				<Button onClick={() => navigation(-1)}>
+					<ArrowLeft />
+				</Button>
+				<div className="mb-4 text-2xl font-medium uppercase">
+					QUẢN LÝ BỘ MÔN {location.state.subjectName}
+				</div>
 			</div>
 			<div className="mb-5 flex justify-between">
 				<div className="relative min-w-[295px]">

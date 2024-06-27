@@ -12,9 +12,10 @@ import { IClassroom, IStudentClassroom } from "@/types/classroom.type";
 import { ColumnDef } from "@tanstack/react-table";
 import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams, useNavigate } from "react-router-dom";
 import { Create } from "./Create";
 import { Edit } from "./Edit";
+import { ArrowLeft } from "lucide-react";
 
 const statusList = [
 	{ value: "1", label: "Đang học" },
@@ -68,6 +69,7 @@ const columns: ColumnDef<IStudentClassroom>[] = [
 const ClassroomDetail = () => {
 	const location = useLocation();
 	const state: IClassroom = location?.state;
+	const navigation = useNavigate();
 
 	const { id } = useParams();
 	const { toast } = useToast();
@@ -126,9 +128,16 @@ const ClassroomDetail = () => {
 
 	return (
 		<>
-			<div className="mb-4 text-2xl font-medium">
-				QUẢN LÝ HỌC SINH LỚP {location.state.className}
+			<div className="mb-5 flex justify-start gap-5">
+				{" "}
+				<Button onClick={() => navigation(-1)}>
+					<ArrowLeft />
+				</Button>
+				<div className="mb-4 text-2xl font-medium">
+					QUẢN LÝ HỌC SINH LỚP {location.state.className}
+				</div>
 			</div>
+
 			<div className="mb-5 flex justify-between">
 				<div className="relative min-w-[295px]">
 					<Search className="absolute left-2 top-2.5 h-4 w-4 " />

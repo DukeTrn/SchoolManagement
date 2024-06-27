@@ -10,8 +10,9 @@ import { useDebounce } from "@/hooks";
 import { ColumnDef } from "@tanstack/react-table";
 import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Create } from "./Create";
+import { ArrowLeft } from "lucide-react";
 
 const statusList = [
 	{ value: "10", label: "Khối 10" },
@@ -74,6 +75,7 @@ const columns: ColumnDef<ISemesterTable>[] = [
 const SemesterDetail = () => {
 	const { id } = useParams();
 	const { toast } = useToast();
+	const navigation = useNavigate();
 	const [searchValue, setSearchValue] = useState("");
 	const [semesters, setSemesters] = useState<ISemesterTable[]>([]);
 	const [loading, setLoading] = useState<boolean>(false);
@@ -129,7 +131,15 @@ const SemesterDetail = () => {
 
 	return (
 		<>
-			<div className="mb-4 text-2xl font-medium">QUẢN LÝ HỌC KỲ {id}</div>
+			<div className="mb-5 flex justify-start gap-5">
+				<Button onClick={() => navigation(-1)}>
+					<ArrowLeft />
+				</Button>
+				<div className="mb-4 text-2xl font-medium">
+					QUẢN LÝ HỌC KỲ {id}
+				</div>
+			</div>
+
 			<div className="mb-5 flex justify-between">
 				<div className="relative min-w-[295px]">
 					<Search className="absolute left-2 top-2.5 h-4 w-4 " />

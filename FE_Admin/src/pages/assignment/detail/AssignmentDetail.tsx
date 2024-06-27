@@ -21,9 +21,10 @@ import {
 	getTeacherAssignment,
 	updateAssignment,
 } from "@/apis/asignment.api";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams, useNavigate } from "react-router-dom";
 import { getAllSemesters } from "@/apis/semester.api";
 import { Create } from "./Create";
+import { ArrowLeft } from "lucide-react";
 
 const columns: ColumnDef<IAssignmentDisplay>[] = [
 	{
@@ -78,7 +79,7 @@ const columns: ColumnDef<IAssignmentDisplay>[] = [
 const AssignmentDetails = () => {
 	const { id } = useParams();
 	const location = useLocation();
-	console.log(location);
+	const navigation = useNavigate();
 	const state = location?.state;
 	const { toast } = useToast();
 	const [teachers, setTeachers] = useState<IAssignmentDisplay[]>([]);
@@ -156,9 +157,16 @@ const AssignmentDetails = () => {
 
 	return (
 		<>
-			<div className="mb-4 text-2xl font-medium uppercase">
-				QUẢN LÝ PHÂN CÔNG GIẢNG DẠY môn {location?.state.subjectName}
+			<div className="mb-5 flex justify-start gap-5">
+				<Button onClick={() => navigation(-1)}>
+					<ArrowLeft />
+				</Button>
+				<div className="mb-4 text-2xl font-medium uppercase">
+					QUẢN LÝ PHÂN CÔNG GIẢNG DẠY môn{" "}
+					{location?.state.subjectName}
+				</div>
 			</div>
+
 			<div className="mb-5 flex justify-between">
 				<div className="relative min-w-[295px]">
 					<Search className="absolute left-2 top-2.5 h-4 w-4 " />

@@ -80,7 +80,7 @@ const ConductClass = () => {
 			<div>
 				<TableDetails
 					pageSize={pageSize}
-					data={classInfo}
+					data={classInfo ?? []}
 					columns={columns}
 					loading={loading}
 				/>
