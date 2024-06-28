@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import Pagination from "@/components/pagination";
 import { ColumnDef } from "@tanstack/react-table";
 import { TableDetails } from "@/components/table/Table";
 import { Button } from "@/components/ui/button";
@@ -15,9 +14,8 @@ export default function TeacherStudentDetail() {
 	const { toast } = useToast();
 	const state = location?.state;
 	const [loading, setLoading] = useState<boolean>(false);
-	const [pageSize, setPageSize] = useState<number>(10);
-	const [pageNumber, setPageNumber] = useState<number>(1);
-	const [totalPage] = useState<number>(1);
+	const [pageSize] = useState<number>(10);
+	const [pageNumber] = useState<number>(1);
 	const [student, setStudent] = useState<any>([]);
 	const [selectedRow, setSelectedRow] = useState<any>();
 	const semester = state.semester;

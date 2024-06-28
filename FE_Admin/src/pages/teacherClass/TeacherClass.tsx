@@ -3,9 +3,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { IStudy } from "@/types/study.type";
 import { Link } from "react-router-dom";
 import { TableDetails } from "@/components/table/Table";
-import { StudentClassDetail } from "@/apis/student.api";
 import { IAppState, useAppSelector } from "@/redux/store";
-import { IStudent } from "@/types/student.type";
 import { getTeacherClass } from "@/apis/teacher.info.api";
 import {
 	Select,
@@ -15,7 +13,6 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { ITeacherInfo } from "@/types/teacher.type";
 
 const Semester = [
 	"20171",
@@ -42,8 +39,8 @@ export default function TeacherClass() {
 	const [loading, setLoading] = useState<boolean>(false);
 	const { accoundId } = useAppSelector((state: IAppState) => state.users);
 	const [info, setInfo] = useState<any>();
-	const [pageSize, setPageSize] = useState<number>(10);
-	const [pageNumber, setPageNumber] = useState<number>(1);
+	const [pageSize] = useState<number>(10);
+	const [pageNumber] = useState<number>(1);
 	const [semester, setSemester] = useState<string>("20231");
 
 	const columns: ColumnDef<IStudy>[] = [

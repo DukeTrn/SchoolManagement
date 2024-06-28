@@ -1,4 +1,3 @@
-import { createDepartment, updateDepartment } from "@/apis/department.api";
 import { createTeacher, updateTeacher } from "@/apis/teacher.info.api";
 import CommonInput from "@/components/input/CommonInput";
 import { Button } from "@/components/ui/button";
@@ -110,13 +109,7 @@ export function Create(props: IPanelProps) {
 		},
 	];
 
-	const {
-		register,
-		handleSubmit,
-		formState: { errors },
-		setValue,
-		reset,
-	} = useForm<any>({
+	const { register, handleSubmit, setValue } = useForm<any>({
 		defaultValues: initValues,
 		resolver: yupResolver(teacherInfoSchema),
 	});

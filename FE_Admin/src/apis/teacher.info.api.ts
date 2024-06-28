@@ -1,6 +1,5 @@
 import {
 	ITeacherInfo,
-	ITeacherClass,
 	ITeacherCreateScore,
 	ITeacherUpdateScore,
 } from "@/types/teacher.info.type";
