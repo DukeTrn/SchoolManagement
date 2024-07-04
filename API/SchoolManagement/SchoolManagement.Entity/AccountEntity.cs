@@ -26,5 +26,22 @@ namespace SchoolManagement.Entity
 
         // 1-1 User-Teacher
         public TeacherEntity Teacher { get; set; } = null!;
+
+        public string GetFullName()
+        {
+            if (Role == RoleType.Student && Student != null)
+            {
+                return $"{Student.FullName}";
+            }
+            else if ((Role == RoleType.Teacher || Role == RoleType.HomeroomTeacher) && Teacher != null)
+            {
+                return $"{Teacher.FullName}";
+            }
+            else if (Role == RoleType.Admin)
+            {
+                return "Admin";
+            }
+            return string.Empty;
+        }
     }
 }
