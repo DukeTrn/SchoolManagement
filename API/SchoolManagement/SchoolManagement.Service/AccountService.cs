@@ -338,7 +338,12 @@ namespace SchoolManagement.Service
 
         public async Task<AccountEntity> ValidateAccountAsync(string username, string password)
         {
-            var account = await _context.AccountEntities.SingleOrDefaultAsync(a => a.UserName == username);
+            //var account = await _context.AccountEntities.SingleOrDefaultAsync(a => a.UserName == username);
+
+            var account = await _context.AccountEntities
+                .Include(a => a.Student)
+                .Include(a => a.Teacher)
+                .FirstOrDefaultAsync(a => a.UserName == username);
 
             if (account == null || !BCrypt.Net.BCrypt.Verify(password, account.PasswordHashed))
             {
