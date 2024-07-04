@@ -1,6 +1,5 @@
 import { TableDetails } from "@/components/table/Table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
