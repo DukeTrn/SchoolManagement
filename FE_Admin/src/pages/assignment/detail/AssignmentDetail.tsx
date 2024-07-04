@@ -25,6 +25,7 @@ import { useLocation, useParams, useNavigate } from "react-router-dom";
 import { getAllSemesters } from "@/apis/semester.api";
 import { Create } from "./Create";
 import { ArrowLeft } from "lucide-react";
+import DeleteConfirm from "@/components/deleteConfirm";
 
 const columns: ColumnDef<IAssignmentDisplay>[] = [
 	{
@@ -219,9 +220,10 @@ const AssignmentDetails = () => {
 					>
 						Chuyển lớp
 					</Button>
-					<Button disabled={isDisableButton} onClick={handleDelete}>
-						Xóa
-					</Button>
+					<DeleteConfirm
+						disabled={isDisableButton}
+						onClick={handleDelete}
+					/>
 				</div>
 			</div>
 			<div>

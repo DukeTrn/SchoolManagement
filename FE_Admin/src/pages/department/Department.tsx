@@ -9,6 +9,7 @@ import { IDepartment } from "@/types/department.type";
 import { deleteDepartment, getAllDepartment } from "@/apis/department.api";
 import Pagination from "@/components/pagination";
 import { useToast } from "@/components/ui/use-toast";
+import DeleteConfirm from "@/components/deleteConfirm";
 
 const columns: ColumnDef<IDepartment>[] = [
 	{
@@ -120,9 +121,10 @@ const Department = () => {
 						selected={selectedRow}
 						refreshData={refreshData}
 					/>
-					<Button disabled={isDisableButton} onClick={handleDelete}>
-						Xóa
-					</Button>
+					<DeleteConfirm
+						disabled={isDisableButton}
+						onClick={handleDelete}
+					/>
 				</div>
 			</div>
 			<div className="mb-5">

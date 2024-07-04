@@ -15,6 +15,8 @@ import {
 } from "@/apis/account.api";
 import { useToast } from "@/components/ui/use-toast";
 import { useDebounce } from "@/hooks";
+import DeleteConfirm from "@/components/deleteConfirm";
+import Header from "@/components/header";
 
 const roles = [
 	{ value: "1", label: "Admin" },
@@ -157,7 +159,7 @@ const Account = () => {
 
 	return (
 		<>
-			<div className="mb-4 text-2xl font-medium">QUẢN LÝ TÀI KHOẢN</div>
+			<Header title="QUẢN LÝ TÀI KHOẢN" />
 			<div className="mb-5 flex justify-between">
 				<div className="relative min-w-[295px]">
 					<Search className="absolute left-2 top-2.5 h-4 w-4 " />
@@ -196,9 +198,10 @@ const Account = () => {
 					>
 						Ngừng hoạt động
 					</Button>
-					<Button disabled={isDisableButton} onClick={handleDelete}>
-						Xóa
-					</Button>
+					<DeleteConfirm
+						disabled={isDisableButton}
+						onClick={handleDelete}
+					/>
 				</div>
 			</div>
 			<div>

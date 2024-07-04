@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Link } from "react-router-dom";
 import { IClassroom } from "@/types/classroom.type";
+import DeleteConfirm from "@/components/deleteConfirm";
 
 const columns: ColumnDef<IClassroom>[] = [
 	{
@@ -191,9 +192,10 @@ const Classroom = () => {
 						selected={selectedRows?.[0]}
 						refreshData={refreshData}
 					/>
-					<Button disabled={isDisableButton} onClick={handleDelete}>
-						Xóa
-					</Button>
+					<DeleteConfirm
+						disabled={isDisableButton}
+						onClick={handleDelete}
+					/>
 				</div>
 			</div>
 			<div>

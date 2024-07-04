@@ -10,12 +10,12 @@ import { useDebounce } from "@/hooks";
 import { StudentDetail } from "@/pages/student/StudentDetails";
 import { IClassroom, IStudentClassroom } from "@/types/classroom.type";
 import { ColumnDef } from "@tanstack/react-table";
-import { Search } from "lucide-react";
+import { Search, ArrowLeft } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 import { Create } from "./Create";
 import { Edit } from "./Edit";
-import { ArrowLeft } from "lucide-react";
+import DeleteConfirm from "@/components/deleteConfirm";
 
 const statusList = [
 	{ value: "1", label: "Đang học" },
@@ -129,7 +129,6 @@ const ClassroomDetail = () => {
 	return (
 		<>
 			<div className="mb-5 flex justify-start gap-5">
-				{" "}
 				<Button onClick={() => navigation(-1)}>
 					<ArrowLeft />
 				</Button>
@@ -173,9 +172,10 @@ const ClassroomDetail = () => {
 						state={state}
 						disable={!selectedRow}
 					/>
-					<Button onClick={handleRemove} disabled={isDisableButton}>
-						Xóa
-					</Button>
+					<DeleteConfirm
+						disabled={isDisableButton}
+						onClick={handleRemove}
+					/>
 				</div>
 			</div>
 			<div>

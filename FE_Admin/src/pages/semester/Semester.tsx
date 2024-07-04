@@ -8,6 +8,7 @@ import Pagination from "@/components/pagination";
 import { useToast } from "@/components/ui/use-toast";
 import { deleteSemester, getAllSemesters } from "@/apis/semester.api";
 import { Create } from "./Create";
+import DeleteConfirm from "@/components/deleteConfirm";
 
 const columns: ColumnDef<ISemester>[] = [
 	{
@@ -123,9 +124,10 @@ const Semester = () => {
 						selected={selectedRow}
 						refreshData={refreshData}
 					/>
-					<Button disabled={isDisableButton} onClick={handleDelete}>
-						Xóa
-					</Button>
+					<DeleteConfirm
+						disabled={isDisableButton}
+						onClick={handleDelete}
+					/>
 				</div>
 			</div>
 			<div className="mb-5">

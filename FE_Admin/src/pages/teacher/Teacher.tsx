@@ -18,6 +18,7 @@ import {
 	exportTeacher,
 	getAllTeacher,
 } from "@/apis/teacher.api";
+import DeleteConfirm from "@/components/deleteConfirm";
 
 const statusList = [
 	{ value: "1", label: "Đang giảng dạy" },
@@ -197,9 +198,10 @@ const Teacher = () => {
 						selected={selectedRows?.[0]}
 						refreshData={refreshData}
 					/>
-					<Button disabled={isDisableButton} onClick={handleDelete}>
-						Xóa
-					</Button>
+					<DeleteConfirm
+						disabled={isDisableButton}
+						onClick={handleDelete}
+					/>
 				</div>
 				<div>
 					<Button
