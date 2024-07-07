@@ -14,6 +14,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Create } from "./Create";
 import { ArrowLeft } from "lucide-react";
 import DeleteConfirm from "@/components/deleteConfirm";
+import { ISemesterDetail } from "@/types/semester.type";
 
 const statusList = [
 	{ value: "10", label: "Khối 10" },

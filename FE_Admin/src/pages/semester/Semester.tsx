@@ -8,6 +8,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { deleteSemester, getAllSemesters } from "@/apis/semester.api";
 import { Create } from "./Create";
 import DeleteConfirm from "@/components/deleteConfirm";
+import { ISemester } from "@/types/semester.type";
 
 const columns: ColumnDef<ISemester>[] = [
 	{

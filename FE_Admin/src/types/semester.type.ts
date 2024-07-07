@@ -1,4 +1,4 @@
-type ISemester = {
+export type ISemester = {
 	semesterId: string;
 	semesterName: string;
 	timeStart: string;
@@ -6,7 +6,7 @@ type ISemester = {
 	academicYear?: string;
 };
 
-type ISemesterDetail = {
+export type ISemesterDetail = {
 	id?: string;
 	classId: string;
 	className: string;
@@ -14,4 +14,9 @@ type ISemesterDetail = {
 	homeroomTeacherName: string;
 	grade: string;
 	academicYear: string;
+};
+
+export type IFilterSemesters = {
+	semesterId: string;
+	semesterName: string;
 };

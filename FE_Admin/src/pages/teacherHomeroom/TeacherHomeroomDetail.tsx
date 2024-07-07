@@ -10,8 +10,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { getClassDetail } from "@/apis/classroom.api";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Create } from "@/pages/department/Create";
 import { useToast } from "@/components/ui/use-toast";
+import Conduct from "./Conduct";
 
 export default function TeacherHomeroomDetail() {
 	const location = useLocation();
@@ -134,10 +134,16 @@ export default function TeacherHomeroomDetail() {
 			</div>
 			<div className="mb-5">
 				<div className="flex gap-2">
-					<Create
+					{/* <Create
 						type="edit"
 						disable={isDisableButton}
 						selected={selectedRow}
+						refreshData={refreshData}
+					/> */}
+
+					<Conduct
+						selected={selectedRow}
+						disable={isDisableButton}
 						refreshData={refreshData}
 					/>
 

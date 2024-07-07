@@ -13,27 +13,8 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-
-const Semester = [
-	"20171",
-	"20172",
-	"20181",
-	"20182",
-	"20191",
-	"20192",
-	"20201",
-	"20202",
-	"20211",
-	"20212",
-	"20221",
-	"20222",
-	"20231",
-	"20232",
-	"20241",
-	"20242",
-	"20251",
-	"20252",
-];
+import { IFilterSemesters } from "@/types/semester.type";
+import { getAllFilterSemester } from "@/apis/semester.api";
 
 export default function TeacherClass() {
 	const [loading, setLoading] = useState<boolean>(false);
@@ -41,7 +22,8 @@ export default function TeacherClass() {
 	const [info, setInfo] = useState<any>();
 	const [pageSize] = useState<number>(10);
 	const [pageNumber] = useState<number>(1);
-	const [semester, setSemester] = useState<string>("20231");
+	const [semester, setSemester] = useState<string>("");
+	const [semesters, setSemesters] = useState<IFilterSemesters[]>([]);
 
 	const columns: ColumnDef<IStudy>[] = [
 		{
@@ -98,6 +80,10 @@ export default function TeacherClass() {
 
 	useEffect(() => {
 		setLoading(true);
+		getAllFilterSemester().then((res) => {
+			setSemesters(res?.data?.data);
+			setSemester(res?.data?.data[0]?.semesterId);
+		});
 		getTeacherClass(accoundId!, semester, initValue).then((res) => {
 			setInfo(res?.data.dataList);
 			setLoading(false);
@@ -120,9 +106,12 @@ export default function TeacherClass() {
 					</SelectTrigger>
 					<SelectContent className="w-full">
 						<SelectGroup>
-							{Semester?.map((value) => (
-								<SelectItem value={value} key={value}>
-									{value}
+							{semesters?.map((i) => (
+								<SelectItem
+									value={i.semesterId}
+									key={i.semesterName}
+								>
+									{i.semesterId}
 								</SelectItem>
 							))}
 						</SelectGroup>

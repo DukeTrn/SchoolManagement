@@ -13,27 +13,8 @@ import {
 } from "@/components/ui/select";
 import { TableDetails } from "@/components/table/Table";
 import Pagination from "@/components/pagination";
-
-const Semester = [
-	"20171",
-	"20172",
-	"20181",
-	"20182",
-	"20191",
-	"20192",
-	"20201",
-	"20202",
-	"20211",
-	"20212",
-	"20221",
-	"20222",
-	"20231",
-	"20232",
-	"20241",
-	"20242",
-	"20251",
-	"20252",
-];
+import { getAllFilterSemester } from "@/apis/semester.api";
+import { IFilterSemesters } from "@/types/semester.type";
 
 const Conduct = () => {
 	const [pageSize, setPageSize] = useState<number>(10);
@@ -41,8 +22,9 @@ const Conduct = () => {
 	const [totalPage] = useState<number>(1);
 	const [loading, setLoading] = useState<boolean>(false);
 	const [selectedField, setSelectedField] = useState<string>("10");
-	const [semester, setSemester] = useState<string>("20191");
+	const [semester, setSemester] = useState<string>("");
 	const [conduct, setConduct] = useState<any>([]);
+	const [semesters, setSemesters] = useState<IFilterSemesters[]>([]);
 
 	const columns: ColumnDef<IConduct>[] = [
 		{
@@ -85,6 +67,13 @@ const Conduct = () => {
 		handleGetData();
 	}, [pageNumber, pageSize, selectedField, semester]);
 
+	useEffect(() => {
+		getAllFilterSemester().then((res) => {
+			setSemesters(res?.data?.data);
+			setSemester(res?.data?.data[0]?.semesterId);
+		});
+	}, []);
+
 	const handleGetData = () => {
 		setLoading(true);
 		getConductInfo(Number(selectedField), semester).then((res) => {
@@ -106,9 +95,12 @@ const Conduct = () => {
 					</SelectTrigger>
 					<SelectContent className="w-full">
 						<SelectGroup>
-							{Semester?.map((value) => (
-								<SelectItem value={value} key={value}>
-									{value}
+							{semesters?.map((i) => (
+								<SelectItem
+									value={i.semesterId}
+									key={i.semesterId}
+								>
+									{i.semesterName}
 								</SelectItem>
 							))}
 						</SelectGroup>
