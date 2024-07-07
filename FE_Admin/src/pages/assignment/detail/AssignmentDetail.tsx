@@ -16,16 +16,13 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { IAssignmentDisplay } from "@/types/assignment.type";
-import {
-	deleteAssignment,
-	getTeacherAssignment,
-	updateAssignment,
-} from "@/apis/asignment.api";
+import { deleteAssignment, getTeacherAssignment } from "@/apis/asignment.api";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 import { getAllSemesters } from "@/apis/semester.api";
 import { Create } from "./Create";
 import { ArrowLeft } from "lucide-react";
 import DeleteConfirm from "@/components/deleteConfirm";
+import MoveClass from "./MoveClass";
 
 const columns: ColumnDef<IAssignmentDisplay>[] = [
 	{
@@ -207,7 +204,7 @@ const AssignmentDetails = () => {
 						semesterId={selectedField!}
 						subjectId={id!}
 					/>
-					<Button
+					{/* <Button
 						disabled={isDisableButton}
 						onClick={() => {
 							updateAssignment(
@@ -219,7 +216,14 @@ const AssignmentDetails = () => {
 						}}
 					>
 						Chuyển lớp
-					</Button>
+					</Button> */}
+					<MoveClass
+						disable={isDisableButton}
+						selected={selectedRow}
+						refreshData={refreshData}
+						academicYear={selectedField as string}
+						grade={Number(state?.selectedField)}
+					/>
 					<DeleteConfirm
 						disabled={isDisableButton}
 						onClick={handleDelete}
