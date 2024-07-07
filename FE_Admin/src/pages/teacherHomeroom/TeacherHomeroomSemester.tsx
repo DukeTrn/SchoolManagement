@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
-import { getStudyStudentDetail } from "@/apis/study.api";
 import { useLocation, useNavigate } from "react-router-dom";
 import Pagination from "@/components/pagination";
 import { ColumnDef } from "@tanstack/react-table";
 import { IClass } from "@/types/study.type";
 import { TableDetails } from "@/components/table/Table";
-import { mean } from "lodash";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { getTeacherSemesterScore } from "@/apis/teacher.info.api";
@@ -19,7 +17,7 @@ const TeacherHomeroomSemester = () => {
 	const [pageNumber, setPageNumber] = useState<number>(1);
 	const [totalPage] = useState<number>(1);
 	const [student, setStudent] = useState<any>([]);
-	const [point, setPoint] = useState<any>();
+	// const [point, setPoint] = useState<any>();
 	console.log(state);
 	const columns: ColumnDef<IClass>[] = [
 		{
