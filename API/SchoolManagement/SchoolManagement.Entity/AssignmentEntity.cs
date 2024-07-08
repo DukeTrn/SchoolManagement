@@ -26,5 +26,8 @@ namespace SchoolManagement.Entity
         public TeacherEntity Teacher { get; set; } = null!;
         public SubjectEntity Subject { get; set; } = null!;
         public ClassEntity Class { get; set; } = null!;
+
+        // 1-N Assign - Timetable
+        public ICollection<TimetableEntity> Timetables { get; set; } = new List<TimetableEntity>();
     }
 }
