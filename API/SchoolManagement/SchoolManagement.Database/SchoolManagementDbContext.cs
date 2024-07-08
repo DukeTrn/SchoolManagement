@@ -22,7 +22,8 @@ namespace SchoolManagement.Database
         public DbSet<SubjectEntity> SubjectEntities { get; set; } = null!;
         public DbSet<AssignmentEntity> AssignmentEntities { get; set; } = null!;
         public DbSet<SemesterDetailEntity> SemesterDetailEntities { get; set; } = null!;
-        
+        public DbSet<TimetableEntity> TimetableEntities { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -131,6 +132,11 @@ namespace SchoolManagement.Database
                 .WithMany(c => c.SemClassIds)
                 .HasForeignKey(cd => cd.SemesterId);
 
+            // Timetable N-1 Assignment
+            modelBuilder.Entity<TimetableEntity>()
+                .HasOne(t => t.Assignment)
+                .WithMany(a => a.Timetables)
+                .HasForeignKey(t => t.AssignmentId);
         }
     }
 }
