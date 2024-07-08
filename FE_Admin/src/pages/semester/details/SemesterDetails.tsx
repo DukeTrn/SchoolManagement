@@ -13,6 +13,8 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Create } from "./Create";
 import { ArrowLeft } from "lucide-react";
+import DeleteConfirm from "@/components/deleteConfirm";
+import { ISemesterDetail } from "@/types/semester.type";
 
 const statusList = [
 	{ value: "10", label: "Khối 10" },
@@ -165,9 +167,10 @@ const SemesterDetail = () => {
 			<div className="mb-5 flex justify-between">
 				<div className="flex gap-2">
 					<Create id={id as string} refreshData={refreshData} />
-					<Button onClick={handleRemove} disabled={isDisableButton}>
-						Xóa
-					</Button>
+					<DeleteConfirm
+						disabled={isDisableButton}
+						onClick={handleRemove}
+					/>
 				</div>
 			</div>
 			<div>

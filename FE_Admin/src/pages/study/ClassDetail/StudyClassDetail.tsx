@@ -15,27 +15,8 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
-
-const Semester = [
-	"20171",
-	"20172",
-	"20181",
-	"20182",
-	"20191",
-	"20192",
-	"20201",
-	"20202",
-	"20211",
-	"20212",
-	"20221",
-	"20222",
-	"20231",
-	"20232",
-	"20241",
-	"20242",
-	"20251",
-	"20252",
-];
+import { getAllFilterSemester } from "@/apis/semester.api";
+import { IFilterSemesters } from "@/types/semester.type";
 
 const StudyClassDetail = () => {
 	const location = useLocation();
@@ -56,6 +37,7 @@ const StudyClassDetail = () => {
 	const [pageSize, setPageSize] = useState<number>(10);
 	const [pageNumber, setPageNumber] = useState<number>(1);
 	const [totalPage] = useState<number>(1);
+	const [semesters, setSemesters] = useState<IFilterSemesters[]>([]);
 
 	const columns: ColumnDef<IClass>[] = [
 		{
@@ -105,6 +87,9 @@ const StudyClassDetail = () => {
 
 	const handleGetData = () => {
 		setLoading(true);
+		getAllFilterSemester().then((res) => {
+			setSemesters(res?.data?.data);
+		});
 		getStudyClassDetail(
 			initValue,
 			Number(state.selectedField),
@@ -133,9 +118,12 @@ const StudyClassDetail = () => {
 					</SelectTrigger>
 					<SelectContent className="w-full">
 						<SelectGroup>
-							{Semester?.map((value) => (
-								<SelectItem value={value} key={value}>
-									{value}
+							{semesters?.map((i) => (
+								<SelectItem
+									value={i.semesterId}
+									key={i.semesterId}
+								>
+									{i.semesterName}
 								</SelectItem>
 							))}
 						</SelectGroup>

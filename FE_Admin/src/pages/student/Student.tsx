@@ -18,6 +18,7 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import Pagination from "@/components/pagination";
 import { downloadFile } from "@/utils/utils";
+import DeleteConfirm from "@/components/deleteConfirm";
 
 const statusList = [
 	{ value: "1", label: "Đang học" },
@@ -199,9 +200,10 @@ const Student = () => {
 						selectedStudent={selectedRows?.[0]}
 						refreshData={refreshData}
 					/>
-					<Button disabled={isDisableButton} onClick={handleDelete}>
-						Xóa
-					</Button>
+					<DeleteConfirm
+						disabled={isDisableButton}
+						onClick={handleDelete}
+					/>
 				</div>
 				<div>
 					<Button

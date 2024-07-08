@@ -133,8 +133,8 @@ export function Create(props: IPanelProps) {
 				<SheetHeader>
 					<SheetTitle className="uppercase">
 						{type === "edit"
-							? "Cập nhật tổ bộ môn"
-							: "Thêm tổ bộ môn"}
+							? "Cập nhật phân công giảng dạy"
+							: "Thêm phân công giảng dạy"}
 					</SheetTitle>
 				</SheetHeader>
 				<div className="mt-5">

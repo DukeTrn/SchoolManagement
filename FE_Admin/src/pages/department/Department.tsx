@@ -1,6 +1,5 @@
 import { TableDetails } from "@/components/table/Table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
@@ -9,6 +8,7 @@ import { IDepartment } from "@/types/department.type";
 import { deleteDepartment, getAllDepartment } from "@/apis/department.api";
 import Pagination from "@/components/pagination";
 import { useToast } from "@/components/ui/use-toast";
+import DeleteConfirm from "@/components/deleteConfirm";
 
 const columns: ColumnDef<IDepartment>[] = [
 	{
@@ -120,9 +120,10 @@ const Department = () => {
 						selected={selectedRow}
 						refreshData={refreshData}
 					/>
-					<Button disabled={isDisableButton} onClick={handleDelete}>
-						Xóa
-					</Button>
+					<DeleteConfirm
+						disabled={isDisableButton}
+						onClick={handleDelete}
+					/>
 				</div>
 			</div>
 			<div className="mb-5">

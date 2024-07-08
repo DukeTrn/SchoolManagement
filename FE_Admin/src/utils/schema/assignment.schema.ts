@@ -10,3 +10,9 @@ export const assignmentSchema = yup.object({
 });
 
 export type IAssignmentSchema = yup.InferType<typeof assignmentSchema>;
+
+export const moveCLassSchema = yup.object({
+	classroom: yup.string().trim().required(defaultError),
+});
+
+export type IMoveClassSchema = yup.InferType<typeof moveCLassSchema>;

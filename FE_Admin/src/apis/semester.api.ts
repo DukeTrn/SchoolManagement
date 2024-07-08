@@ -1,4 +1,12 @@
-import { ISuccessResponseApi } from "@/types/utils.type";
+import {
+	IFilterSemesters,
+	ISemester,
+	ISemesterDetail,
+} from "@/types/semester.type";
+import {
+	ISuccessGetResponseApi,
+	ISuccessResponseApi,
+} from "@/types/utils.type";
 import http from "@/utils/http";
 
 interface ISemesterDetailBody {
@@ -40,4 +48,9 @@ export const removeSemesterDetail = (body: string[]) =>
 export const getClassSemester = (id: string) =>
 	http.get<{ data: { classId: string; className: string }[] }>(
 		`semesterdetail/filter/${id}`
+	);
+
+export const getAllFilterSemester = () =>
+	http.get<ISuccessGetResponseApi<IFilterSemesters[]>>(
+		"semester/filter/allsemesters"
 	);

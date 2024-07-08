@@ -27,6 +27,12 @@ type IHeadOfDepartmentInfo = {
 	fullName: string;
 };
 
+type IHomeroomTeacher = {
+	searchValue: string;
+	pageSize: number;
+	pageNumber: number;
+};
+
 export const getTeacherDepartmentInfo = (body: ITeacherInfoBody, id: string) =>
 	http.post<ISuccessResponseApi<ITeacherInfo[]>>(
 		`department/${id}/teachers`,
@@ -68,3 +74,15 @@ export const createTeacher = (body: ITeacherCreateScore) =>
 
 export const updateTeacher = (body: ITeacherUpdateScore) =>
 	http.put("assessment/update", body);
+
+export const getHomeroomTeacher = (accountId: string, body: IHomeroomTeacher) =>
+	http.post(`class/${accountId}/homeroom-classes`, body);
+
+export const getTeacherSemesterScore = (
+	grade: number,
+	semester: string,
+	classDetailId: string
+) =>
+	http.post(
+		`/assessment/${grade}/${semester}/${classDetailId}/semester-average`
+	);

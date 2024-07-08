@@ -4,26 +4,16 @@ import { IStudy } from "@/types/study.type";
 import { Link } from "react-router-dom";
 import { TableDetails } from "@/components/table/Table";
 import { IAppState, useAppSelector } from "@/redux/store";
-import { getTeacherClass } from "@/apis/teacher.info.api";
-import {
-	Select,
-	SelectContent,
-	SelectGroup,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
-import { IFilterSemesters } from "@/types/semester.type";
-import { getAllFilterSemester } from "@/apis/semester.api";
+import { getHomeroomTeacher } from "@/apis/teacher.info.api";
+import Pagination from "@/components/pagination";
 
-export default function TeacherClass() {
+export default function TeacherHomeroom() {
 	const [loading, setLoading] = useState<boolean>(false);
 	const { accoundId } = useAppSelector((state: IAppState) => state.users);
 	const [info, setInfo] = useState<any>();
-	const [pageSize] = useState<number>(10);
-	const [pageNumber] = useState<number>(1);
-	const [semester, setSemester] = useState<string>("");
-	const [semesters, setSemesters] = useState<IFilterSemesters[]>([]);
+	const [pageSize, setPageSize] = useState<number>(10);
+	const [pageNumber, setPageNumber] = useState<number>(1);
+	const [totalPage] = useState<number>(1);
 
 	const columns: ColumnDef<IStudy>[] = [
 		{
@@ -34,21 +24,13 @@ export default function TeacherClass() {
 				return (
 					<Link
 						to={row.getValue("classId")}
-						state={{ ...row.original, semester }}
+						state={{ ...row.original }}
 						className="cursor-pointer font-medium text-blue-600 underline"
 					>
 						{className}
 					</Link>
 				);
 			},
-		},
-		{
-			accessorKey: "subjectName",
-			header: () => {
-				return <div>Môn học</div>;
-			},
-			cell: ({ row }) => <div>{row.getValue("subjectName")}</div>,
-			minSize: 200,
 		},
 		{
 			accessorKey: "grade",
@@ -76,47 +58,21 @@ export default function TeacherClass() {
 	const initValue = {
 		pageSize: pageSize,
 		pageNumber: pageNumber,
+		searchValue: "",
 	};
 
 	useEffect(() => {
 		setLoading(true);
-		getAllFilterSemester().then((res) => {
-			setSemesters(res?.data?.data);
-			setSemester(res?.data?.data[0]?.semesterId);
-		});
-		getTeacherClass(accoundId!, semester, initValue).then((res) => {
+		getHomeroomTeacher(accoundId!, initValue).then((res) => {
 			setInfo(res?.data.dataList);
 			setLoading(false);
 		});
-	}, [semester]);
+	}, []);
 
 	return (
 		<>
 			<div className="mb-4 text-2xl font-medium">
-				DANH SÁCH LỚP GIẢNG DẠY
-			</div>
-
-			<div className="mb-5 flex justify-end">
-				<Select
-					value={semester}
-					onValueChange={(value) => setSemester(value)}
-				>
-					<SelectTrigger className="w-[200px]">
-						<SelectValue placeholder="Chọn niên khoá" />
-					</SelectTrigger>
-					<SelectContent className="w-full">
-						<SelectGroup>
-							{semesters?.map((i) => (
-								<SelectItem
-									value={i.semesterId}
-									key={i.semesterName}
-								>
-									{i.semesterId}
-								</SelectItem>
-							))}
-						</SelectGroup>
-					</SelectContent>
-				</Select>
+				DANH SÁCH LỚP CHỦ NHIỆM
 			</div>
 
 			<div>
@@ -126,6 +82,12 @@ export default function TeacherClass() {
 					columns={columns}
 					//onChange={handleChange}
 					loading={loading}
+				/>
+				<Pagination
+					pageSize={pageSize}
+					onChangePage={(value) => setPageNumber(Number(value))}
+					onChangeRow={(value) => setPageSize(Number(value))}
+					totalPageCount={totalPage}
 				/>
 			</div>
 		</>

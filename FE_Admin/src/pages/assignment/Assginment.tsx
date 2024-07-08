@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { TableDetails } from "@/components/table/Table";
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -20,6 +19,7 @@ import {
 import { Link } from "react-router-dom";
 import { ISubject } from "@/types/assignment.type";
 import { deleteSubject, getSubjects } from "@/apis/asignment.api";
+import DeleteConfirm from "@/components/deleteConfirm";
 
 const Assignment = () => {
 	const { toast } = useToast();
@@ -167,9 +167,10 @@ const Assignment = () => {
 						selected={selectedRow}
 						refreshData={refreshData}
 					/>
-					<Button disabled={isDisableButton} onClick={handleDelete}>
-						Xóa
-					</Button>
+					<DeleteConfirm
+						disabled={isDisableButton}
+						onClick={handleDelete}
+					/>
 				</div>
 			</div>
 			<div>

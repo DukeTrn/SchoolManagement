@@ -11,6 +11,7 @@ import {
 	SheetTitle,
 	SheetTrigger,
 } from "@/components/ui/sheet";
+import { ISemester } from "@/types/semester.type";
 import {
 	ISemesterSchema,
 	semesterSchema,

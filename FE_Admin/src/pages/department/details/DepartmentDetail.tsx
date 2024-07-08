@@ -18,6 +18,7 @@ import { useLocation, useParams, useNavigate } from "react-router-dom";
 import { Create } from "./Create";
 import { TeacherDetails } from "@/pages/teacher/TeacherDetail";
 import { ArrowLeft } from "lucide-react";
+import DeleteConfirm from "@/components/deleteConfirm";
 
 const statusList = [
 	{ value: "1", label: "Đang giảng dạy" },
@@ -206,9 +207,14 @@ const DepartmentDetail = () => {
 						departmentId={id as string}
 						refreshData={refreshData}
 					/>
-					<Button onClick={handleRemove} disabled={isDisableButton}>
-						Xóa
-					</Button>
+					<Create
+						departmentId={id as string}
+						refreshData={refreshData}
+					/>
+					<DeleteConfirm
+						disabled={isDisableButton}
+						onClick={handleRemove}
+					/>
 				</div>
 			</div>
 			<div>
