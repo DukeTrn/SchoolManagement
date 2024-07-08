@@ -207,6 +207,10 @@ const DepartmentDetail = () => {
 						departmentId={id as string}
 						refreshData={refreshData}
 					/>
+					<Create
+						departmentId={id as string}
+						refreshData={refreshData}
+					/>
 					<DeleteConfirm
 						disabled={isDisableButton}
 						onClick={handleRemove}

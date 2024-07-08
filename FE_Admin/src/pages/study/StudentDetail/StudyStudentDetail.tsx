@@ -205,12 +205,6 @@ const StudyStudentDetail = () => {
 				<div className="mt-2 h-5 px-2 text-left align-middle text-sm text-sm font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">
 					• ĐTBmhk: Điểm Trung Bình môn học kỳ
 				</div>
-				<Pagination
-					pageSize={pageSize}
-					onChangePage={(value) => setPageNumber(Number(value))}
-					onChangeRow={(value) => setPageSize(Number(value))}
-					totalPageCount={totalPage}
-				/>
 			</div>
 		</>
 	);
