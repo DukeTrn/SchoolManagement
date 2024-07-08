@@ -204,12 +204,16 @@ const DepartmentDetail = () => {
 			<div className="mb-5 flex justify-between">
 				<div className="flex gap-2">
 					<Create
+						type="create"
+						disable={false}
 						departmentId={id as string}
 						refreshData={refreshData}
 					/>
 					<Create
+						type="edit"
 						departmentId={id as string}
 						refreshData={refreshData}
+						disable={isDisableButton}
 					/>
 					<DeleteConfirm
 						disabled={isDisableButton}

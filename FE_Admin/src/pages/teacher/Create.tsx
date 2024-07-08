@@ -47,6 +47,13 @@ const initValues = {
 	timeStart: "",
 	timeEnd: "",
 };
+
+const statusList = [
+	{ value: "1", label: "Đang giảng dạy" },
+	{ value: "2", label: "Tạm nghỉ" },
+	{ value: "3", label: "Nghỉ việc" },
+];
+
 interface IPanelProps {
 	type: "edit" | "create";
 	selected?: ITeacher | null;
@@ -60,6 +67,7 @@ export function Panel(props: IPanelProps) {
 	const [count, setCount] = useState(0);
 	const [file, setFile] = useState<File>();
 	const [loading, setLoading] = useState<boolean>(false);
+	const [status, setStatus] = useState<string>("");
 
 	const {
 		register,
@@ -134,7 +142,7 @@ export function Panel(props: IPanelProps) {
 				setValue("timeStart", convertDateISO(info?.timeStart));
 				info?.timeEnd &&
 					setValue("timeEnd", convertDateISO(info?.timeEnd));
-
+				setStatus(info?.status ?? "");
 				setCount((count) => count + 1);
 			});
 		}
@@ -287,32 +295,30 @@ export function Panel(props: IPanelProps) {
 							errorMessage={errors.level?.message}
 						/>
 					</div>
-					<div className="mb-4">
-						<Label htmlFor="status">Tình trạng giảng dạy</Label>
-						<FormField
-							control={control}
-							name="status"
-							render={({ field }) => (
-								<Select
-									value={field.value}
-									onValueChange={field.onChange}
-								>
-									<SelectTrigger className="w-full">
-										<SelectValue placeholder="Chọn trạng thái" />
-									</SelectTrigger>
-									<SelectContent className="w-full">
-										<SelectGroup>
-											<SelectItem value="1">
-												Đang giảng dạy
-											</SelectItem>
-											<SelectItem value="2">
-												Tạm nghỉ
-											</SelectItem>
-										</SelectGroup>
-									</SelectContent>
-								</Select>
-							)}
-						/>
+					<div className="mb-5">
+						<div className="mb-1 font-semibold">
+							Tình trạng giảng dạy
+						</div>
+						<Select
+							value={status}
+							onValueChange={(value) => setStatus(value)}
+						>
+							<SelectTrigger className="">
+								<SelectValue placeholder="Tình trạng giảng dạy" />
+							</SelectTrigger>
+							<SelectContent className="w-full">
+								<SelectGroup>
+									{statusList?.map((value) => (
+										<SelectItem
+											value={value.label}
+											key={value.value}
+										>
+											{value.label}
+										</SelectItem>
+									))}
+								</SelectGroup>
+							</SelectContent>
+						</Select>
 					</div>
 
 					<div>

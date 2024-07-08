@@ -24,11 +24,14 @@ import { useForm } from "react-hook-form";
 interface IPanelProps {
 	refreshData: (message: string) => void;
 	departmentId: string;
+	type: "edit" | "create";
+	disable: boolean;
 }
 const initValues = {
 	teacher: [],
 };
-export function Create({ refreshData, departmentId }: IPanelProps) {
+export function Create(props: IPanelProps) {
+	const { type, departmentId, disable, refreshData } = props;
 	const {
 		reset,
 		handleSubmit,
@@ -77,7 +80,9 @@ export function Create({ refreshData, departmentId }: IPanelProps) {
 	return (
 		<Sheet open={openSheet} onOpenChange={setOpenSheet}>
 			<SheetTrigger asChild>
-				<Button onClick={handleGetData}>Thêm</Button>
+				<Button disabled={disable} onClick={handleGetData}>
+					{type === "edit" ? "Cập nhật" : "Thêm"}
+				</Button>
 			</SheetTrigger>
 			<SheetContent>
 				<SheetHeader>
