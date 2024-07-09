@@ -24,11 +24,14 @@ import { useForm } from "react-hook-form";
 interface IPanelProps {
 	refreshData: (message: string) => void;
 	departmentId: string;
+	type: "edit" | "create";
+	disable: boolean;
 }
 const initValues = {
 	teacher: [],
 };
-export function Create({ refreshData, departmentId }: IPanelProps) {
+export function Create(props: IPanelProps) {
+	const { type, departmentId, disable, refreshData } = props;
 	const {
 		reset,
 		handleSubmit,
@@ -77,39 +80,130 @@ export function Create({ refreshData, departmentId }: IPanelProps) {
 	return (
 		<Sheet open={openSheet} onOpenChange={setOpenSheet}>
 			<SheetTrigger asChild>
-				<Button onClick={handleGetData}>Thêm</Button>
+				<Button disabled={disable} onClick={handleGetData}>
+					{type === "edit" ? "Trưởng/phó bộ môn" : "Thêm"}
+				</Button>
 			</SheetTrigger>
 			<SheetContent>
 				<SheetHeader>
 					<SheetTitle className="uppercase">
-						Thêm giáo viên
+						{type === "create" && "Thêm giáo viên"}
+						{type === "edit" && "Trưởng/Phó bộ môn"}
 					</SheetTitle>
 				</SheetHeader>
-				<div className="mb-8 mt-5">
-					<Label htmlFor="teacher" className="required ">
-						Giáo viên
-					</Label>
-					<FormField
-						control={control}
-						name="teacher"
-						render={({ field }) => (
-							<FormItem className="mt-[2px] flex flex-col">
-								<MultiSelect
-									options={list}
-									onValueChange={field.onChange}
-									// handleRetrieve={handleGetData}
-									value={field.value}
-									placeholder="Thêm giáo viên"
-									variant="inverted"
-									animation={2}
-									maxCount={0}
-									width={335}
-									errorMessage={errors.teacher?.message!}
-								/>
-							</FormItem>
-						)}
-					/>
-				</div>
+				{type === "create" && (
+					<div className="mb-8 mt-5">
+						<Label htmlFor="teacher" className="required ">
+							Giáo viên
+						</Label>
+						<FormField
+							control={control}
+							name="teacher"
+							render={({ field }) => (
+								<FormItem className="mt-[2px] flex flex-col">
+									<MultiSelect
+										options={list}
+										onValueChange={field.onChange}
+										// handleRetrieve={handleGetData}
+										value={field.value}
+										placeholder="Thêm giáo viên"
+										variant="inverted"
+										animation={2}
+										maxCount={0}
+										width={335}
+										errorMessage={errors.teacher?.message!}
+									/>
+								</FormItem>
+							)}
+						/>
+					</div>
+				)}
+
+				{type === "edit" && (
+					<div>
+						<div className="mb-8 mt-5">
+							<Label htmlFor="teacher" className="required ">
+								Trưởng bộ môn
+							</Label>
+							<FormField
+								control={control}
+								name="teacher"
+								render={({ field }) => (
+									<FormItem className="mt-[2px] flex flex-col">
+										<MultiSelect
+											options={list}
+											onValueChange={field.onChange}
+											// handleRetrieve={handleGetData}
+											value={field.value}
+											placeholder="Thêm giáo viên"
+											variant="inverted"
+											animation={2}
+											maxCount={0}
+											width={335}
+											errorMessage={
+												errors.teacher?.message!
+											}
+										/>
+									</FormItem>
+								)}
+							/>
+						</div>
+						<div className="mb-8 mt-5">
+							<Label htmlFor="teacher" className="required ">
+								Phó bộ môn 1
+							</Label>
+							<FormField
+								control={control}
+								name="teacher"
+								render={({ field }) => (
+									<FormItem className="mt-[2px] flex flex-col">
+										<MultiSelect
+											options={list}
+											onValueChange={field.onChange}
+											// handleRetrieve={handleGetData}
+											value={field.value}
+											placeholder="Thêm giáo viên"
+											variant="inverted"
+											animation={2}
+											maxCount={0}
+											width={335}
+											errorMessage={
+												errors.teacher?.message!
+											}
+										/>
+									</FormItem>
+								)}
+							/>
+						</div>
+						<div className="mb-8 mt-5">
+							<Label htmlFor="teacher" className="required ">
+								Phó bộ môn 2
+							</Label>
+							<FormField
+								control={control}
+								name="teacher"
+								render={({ field }) => (
+									<FormItem className="mt-[2px] flex flex-col">
+										<MultiSelect
+											options={list}
+											onValueChange={field.onChange}
+											// handleRetrieve={handleGetData}
+											value={field.value}
+											placeholder="Thêm giáo viên"
+											variant="inverted"
+											animation={2}
+											maxCount={0}
+											width={335}
+											errorMessage={
+												errors.teacher?.message!
+											}
+										/>
+									</FormItem>
+								)}
+							/>
+						</div>
+					</div>
+				)}
 				<Button className="w-full" onClick={onSubmit} loading={loading}>
 					Lưu
 				</Button>

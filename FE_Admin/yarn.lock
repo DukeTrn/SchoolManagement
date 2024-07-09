@@ -3458,6 +3458,11 @@ react-router@6.23.1:
   dependencies:
     "@remix-run/router" "1.16.1"
 
+react-string-format@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/react-string-format/-/react-string-format-1.2.0.tgz#3de545221dbe5acfae12dc319d897962338559c9"
+  integrity sha512-fH/+zt++0IrO3ovSXR428+VQc/8bOVxn6JOd10xBteW9v4aQOuH9/+8SheV4qB1PDEnzNwZwl3sysEhWruTMrA==
+
 react-style-singleton@^2.2.1:
   version "2.2.1"
   resolved "https://registry.npmjs.org/react-style-singleton/-/react-style-singleton-2.2.1.tgz"

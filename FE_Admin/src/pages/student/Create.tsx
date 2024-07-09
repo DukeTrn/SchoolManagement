@@ -23,6 +23,15 @@ import {
 	updateStudent,
 } from "@/apis/student.api";
 import { convertDateISO } from "@/utils/utils";
+import {
+	Select,
+	SelectContent,
+	SelectGroup,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+import { format } from "react-string-format";
 
 const initValues = {
 	studentId: "",
@@ -46,6 +55,13 @@ const initValues = {
 	motherEmail: "",
 	academicYear: "",
 };
+
+const statusList = [
+	{ value: "1", label: "Đang học" },
+	{ value: "2", label: "Đình chỉ" },
+	{ value: "3", label: "Nghỉ học" },
+];
+
 interface IPanelProps {
 	type: "edit" | "create";
 	selectedStudent?: IStudent | null;
@@ -59,6 +75,7 @@ export function Panel(props: IPanelProps) {
 	const [count, setCount] = useState(0);
 	const [file, setFile] = useState<File>();
 	const [loading, setLoading] = useState<boolean>(false);
+	const [status, setStatus] = useState<string>("");
 
 	const {
 		register,
@@ -78,7 +95,7 @@ export function Panel(props: IPanelProps) {
 		file && formData.append("avatar", file);
 		formData.append(
 			"studentId",
-			Math.floor(Math.random() * 1000).toString()
+			Math.floor(1000 + Math.random() * 9000).toString()
 		);
 		formData.append("fullName", data?.fullName);
 		formData.append("dob", new Date(data?.dob).toISOString());
@@ -137,10 +154,13 @@ export function Panel(props: IPanelProps) {
 					setValue("fatherName", info?.fatherName);
 					setValue("fatherJob", info?.fatherJob);
 					setValue("fatherPhoneNumber", info?.fatherPhoneNumber);
+					setValue("fatherEmail", info?.fatherEmail);
 					setValue("motherName", info?.motherName);
 					setValue("motherJob", info?.motherJob);
 					setValue("motherPhoneNumber", info?.motherPhoneNumber);
+					setValue("motherEmail", info?.motherEmail);
 					setCount((count) => count + 1);
+					setStatus(info?.status ?? "");
 				}
 			);
 		}
@@ -257,6 +277,33 @@ export function Panel(props: IPanelProps) {
 							// errorMessage={errors.email?.message}
 						/>
 					</div>
+					{type === "edit" && (
+						<div className="mb-5">
+							<div className="mb-1 font-semibold">
+								Tình trạng học tập
+							</div>
+							<Select
+								value={status}
+								onValueChange={(value) => setStatus(value)}
+							>
+								<SelectTrigger className="">
+									<SelectValue placeholder="Tình trạng học tập" />
+								</SelectTrigger>
+								<SelectContent className="w-full">
+									<SelectGroup>
+										{statusList?.map((value) => (
+											<SelectItem
+												value={value.label}
+												key={value.value}
+											>
+												{value.label}
+											</SelectItem>
+										))}
+									</SelectGroup>
+								</SelectContent>
+							</Select>
+						</div>
+					)}
 					<div className="mb-4">
 						<Label htmlFor="avatar">Avatar</Label>
 						<Input
@@ -303,6 +350,14 @@ export function Panel(props: IPanelProps) {
 						/>
 					</div>
 					<div>
+						<Label htmlFor="fatherEmail">Email bố</Label>
+						<CommonInput
+							className="mt-[2px]"
+							name="email"
+							register={register}
+						/>
+					</div>
+					<div>
 						<Label htmlFor="motherName" className="required">
 							Họ tên mẹ:
 						</Label>
@@ -333,6 +388,14 @@ export function Panel(props: IPanelProps) {
 							name="motherPhoneNumber"
 							register={register}
 							errorMessage={errors.motherPhoneNumber?.message}
+						/>
+					</div>
+					<div>
+						<Label htmlFor="motherEmail">Email mẹ</Label>
+						<CommonInput
+							className="mt-[2px]"
+							name="email"
+							register={register}
 						/>
 					</div>
 
