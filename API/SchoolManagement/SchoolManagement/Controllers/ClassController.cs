@@ -2,7 +2,6 @@
 using SchoolManagement.Common.Enum;
 using SchoolManagement.Common.Exceptions;
 using SchoolManagement.Model;
-using SchoolManagement.Service;
 using SchoolManagement.Service.Intention;
 
 namespace SchoolManagement.Web.Controllers
@@ -11,10 +10,13 @@ namespace SchoolManagement.Web.Controllers
     public class ClassController : ControllerBase
     {
         private readonly IClassService _service;
+        private readonly ITimetableService _timetableService;
 
-        public ClassController(IClassService service)
+        public ClassController(IClassService service, 
+            ITimetableService timetableService)
         {
             _service = service;
+            _timetableService = timetableService;
         }
 
         /// <summary>
@@ -204,5 +206,179 @@ namespace SchoolManagement.Web.Controllers
                 return StatusCode(500, new { Error = $"An unexpected error occurred: {ex.Message}" });
             }
         }
+
+        #region Timetable
+        /// <summary>
+        /// Thời khóa biểu của lớp trong 1 học kỳ
+        /// </summary>
+        /// <param name="classId"></param>
+        /// <param name="semesterId"></param>
+        /// <returns></returns>
+        [HttpGet("timetable/{classId}/{semesterId}/list")]
+        public async Task<ActionResult<List<TimetableDisplayModel>>> GetTimetablesByClassIdAsync(string classId, string semesterId)
+        {
+            try
+            {
+                var timetables = await _timetableService.GetTimetablesByClassIdAsync(classId, semesterId);
+                return Ok(timetables);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"An error occurred while fetching timetables for ClassId {classId} and SemesterId {semesterId}. Please try again later.");
+            }
+        }
+
+        /// <summary>
+        /// (Cổng GV) Danh sách thời khóa biểu 
+        /// </summary>
+        /// <param name="accountId"></param>
+        /// <returns></returns>
+        [HttpGet("timetable/teacher/{accountId}/list")]
+        public async Task<IActionResult> GetTimetablesByTeacherAccountId(Guid accountId)
+        {
+            try
+            {
+                var timetables = await _timetableService.GetTimetablesByTeacherAccountIdAsync(accountId);
+                return Ok(timetables);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Get timetable by id
+        /// </summary>
+        /// <param name="timetableId"></param>
+        /// <returns></returns>
+        [HttpGet("timetable/{timetableId}")]
+        public async Task<IActionResult> GetTimetableById(Guid timetableId)
+        {
+            try
+            {
+                var timetable = await _timetableService.GetTimetableByIdAsync(timetableId);
+                return Ok(new
+                {
+                    result = true,
+                    data = timetable
+                });
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(new
+                {
+                    result = false,
+                    message = ex.Message
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new
+                {
+                    result = false,
+                    message = $"An error occurred while fetching the timetable. {ex.Message}"
+                });
+            }
+        }
+
+        /// <summary>
+        /// tạo TKB
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost, Route("timetable/create")]
+        public async Task<IActionResult> CreateTimetable([FromBody] TimetableCreateModel model)
+        {
+            try
+            {
+                await _timetableService.CreateTimetableAsync(model);
+                return Ok(new { result = true, message = "Tạo thời khóa biểu mới thành công." });
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(new { result = false, message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { result = false, message = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { result = false, message = "An error occurred while creating the timetable." });
+            }
+        }
+
+        /// <summary>
+        /// cập nhật TKB
+        /// </summary>
+        /// <param name="timetableId"></param>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPut("timetable/{timetableId}")]
+        public async Task<IActionResult> UpdateTimetable(Guid timetableId, [FromBody] TimetableUpdateModel model)
+        {
+            try
+            {
+                await _timetableService.UpdateTimetableAsync(timetableId, model);
+                return Ok(new
+                {
+                    result = true,
+                    message = "Cập nhật thời khóa biểu thành công."
+                });
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(new
+                {
+                    result = false,
+                    message = ex.Message
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new
+                {
+                    result = false,
+                    message = $"An error occurred while updating the timetable. {ex.Message}"
+                });
+            }
+        }
+
+        /// <summary>
+        /// xóa TKB
+        /// </summary>
+        /// <param name="timetableId"></param>
+        /// <returns></returns>
+        [HttpDelete("timetable/{timetableId}")]
+        public async Task<IActionResult> DeleteTimetable(Guid timetableId)
+        {
+            try
+            {
+                await _timetableService.DeleteTimetableAsync(timetableId);
+                return Ok(new
+                {
+                    result = true,
+                    message = "Xóa lịch thành công!"
+                });
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(new
+                {
+                    result = false,
+                    message = ex.Message
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new
+                {
+                    result = false,
+                    message = $"An error occurred while deleting the timetable. {ex.Message}"
+                });
+            }
+        }
+        #endregion
     }
 }
