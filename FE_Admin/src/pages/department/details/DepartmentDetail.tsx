@@ -209,15 +209,17 @@ const DepartmentDetail = () => {
 						departmentId={id as string}
 						refreshData={refreshData}
 					/>
+					<DeleteConfirm
+						disabled={isDisableButton}
+						onClick={handleRemove}
+					/>
+				</div>
+				<div>
 					<Create
 						type="edit"
 						departmentId={id as string}
 						refreshData={refreshData}
 						disable={isDisableButton}
-					/>
-					<DeleteConfirm
-						disabled={isDisableButton}
-						onClick={handleRemove}
 					/>
 				</div>
 			</div>
