@@ -30,6 +30,7 @@ public static class AppSetupExtension
         app.UseAuthentication();
         app.UseAuthorization();
 
+        //app.UseRouting();
         app.MapControllers();
         //app.UseStaticFiles(new StaticFileOptions
         //{

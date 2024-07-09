@@ -2,14 +2,12 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 using SchoolManagement.Common.Enum;
 using SchoolManagement.Database;
-using SchoolManagement.Model;
 using SchoolManagement.Startup.BuilderExtensions;
-using System;
 using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -34,7 +32,16 @@ public static class BuilderSetupExtension
             //c.OperationFilter<SwaggerExtension>();
             c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetEntryAssembly()?.GetName().Name}.xml"));
 
+            c.MapType<TimeSpan>(() => new OpenApiSchema
+            {
+                Type = "string",
+                Example = new OpenApiString("00:00:00"),
+                Pattern = @"^(\d+\.(\d{1,7})|(\d{1,7}))?((?<=\d)s)?$",
+                Description = "Time span formatted as HH:mm:ss",
+            });
+
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "School Management", Version = "v1" });
+            //c.EnableAnnotations();
             c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 Name = "Authorization",

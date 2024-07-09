@@ -17,10 +17,7 @@ namespace SchoolManagement.Entity
         public DayOfWeakType DayOfWeek { get; set; } // Ex: Monday
 
         [Required]
-        public TimeSpan StartTime { get; set; }
-
-        [Required]
-        public TimeSpan EndTime { get; set; }
+        public PeriodType Period { get; set; }
 
         [ForeignKey(nameof(AssignmentId))]
         public AssignmentEntity Assignment { get; set; } = null!;
