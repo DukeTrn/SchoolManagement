@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select";
 import { IFilterSemesters } from "@/types/semester.type";
 import { getAllFilterSemester } from "@/apis/semester.api";
+import { Button } from "@/components/ui/button";
 
 export default function TeacherClass() {
 	const [loading, setLoading] = useState<boolean>(false);
@@ -79,11 +80,14 @@ export default function TeacherClass() {
 	};
 
 	useEffect(() => {
-		setLoading(true);
 		getAllFilterSemester().then((res) => {
 			setSemesters(res?.data?.data);
 			setSemester(res?.data?.data[0]?.semesterId);
 		});
+	}, []);
+
+	useEffect(() => {
+		setLoading(true);
 		getTeacherClass(accoundId!, semester, initValue).then((res) => {
 			setInfo(res?.data.dataList);
 			setLoading(false);
@@ -96,7 +100,8 @@ export default function TeacherClass() {
 				DANH SÁCH LỚP GIẢNG DẠY
 			</div>
 
-			<div className="mb-5 flex justify-end">
+			<div className="mb-5 flex justify-between">
+				<Button>Thời khóa biểu</Button>
 				<Select
 					value={semester}
 					onValueChange={(value) => setSemester(value)}
