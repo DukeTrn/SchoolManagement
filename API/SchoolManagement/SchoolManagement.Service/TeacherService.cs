@@ -268,7 +268,8 @@ namespace SchoolManagement.Service
                 return await _context.TeacherEntities.Where(t => t.Status == TeacherStatusType.Active).Select(t => new TeacherFilterModel
                 {
                     TeacherId = t.TeacherId,
-                    FullName = t.FullName
+                    FullName = t.FullName,
+                    DepartmentId = t.DepartmentId ?? ""
                 }).ToListAsync();
 
             }

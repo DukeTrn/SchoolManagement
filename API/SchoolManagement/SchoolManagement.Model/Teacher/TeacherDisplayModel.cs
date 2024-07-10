@@ -35,6 +35,7 @@ namespace SchoolManagement.Model
     {
         public string TeacherId { get; set; } = string.Empty; // Khóa chính
         public string FullName { get; set; } = string.Empty;
+        public string DepartmentId { get; set; } = string.Empty;
     }
 
     public class TeacherHeadsModel : TeacherFilterModel
