@@ -208,11 +208,11 @@ export function Create(props: IPanelProps) {
 								</Select>
 							</div>
 						</div>
-						<div className="mb-8 mt-2 mt-5">
+						<div className="mb-8 mt-5">
 							<Label htmlFor="sublead2" className="required ">
 								Phó bộ môn 2
 							</Label>
-							<div className="mb-5 flex">
+							<div className="mb-5 mt-2 flex">
 								<Select
 									value={sublead2}
 									onValueChange={(value) =>
