@@ -260,6 +260,7 @@ namespace SchoolManagement.Service
                         TimetableId = t.TimetableId,
                         AssignmentId = t.AssignmentId,
                         ClassName = t.Assignment.Class.ClassName,
+                        Grade = t.Assignment.Class.Grade,
                         SubjectName = t.Assignment.Subject.SubjectName,
                         TeacherName = t.Assignment.Teacher.FullName,
                         DayOfWeek = t.DayOfWeek,
