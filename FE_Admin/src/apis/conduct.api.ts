@@ -22,3 +22,15 @@ export const getConductClass = (
 		`conduct/${grade}/${semesterId}/${classId}/students`,
 		body
 	);
+
+export const updateConduct = (
+	body: { conductType: number; feedback?: string },
+	id: string
+) => http.put(`conduct/${id}`, body);
+
+export const getConductId = (studentId: string, semesterId: string) =>
+	http.get<{
+		conductId: string;
+		conductName: number;
+		feedback: string;
+	}>(`conduct/student/${studentId}/semester/${semesterId}`);

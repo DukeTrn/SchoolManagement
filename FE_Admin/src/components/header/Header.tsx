@@ -7,11 +7,11 @@ interface IProps {
 const Header = (props: IProps) => {
 	const { title } = props;
 	return (
-		<div className="mb-10 flex justify-between">
+		<div className="mb-10 flex items-center justify-between">
 			<div className="mb-4 flex-1 text-2xl font-medium uppercase">
 				{title}
 			</div>
-			<div className="flex">
+			<div className="flex items-center gap-2">
 				<div>
 					<Avatar>
 						<AvatarImage
