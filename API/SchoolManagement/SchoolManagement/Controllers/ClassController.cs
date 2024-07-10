@@ -335,6 +335,10 @@ namespace SchoolManagement.Web.Controllers
                     message = ex.Message
                 });
             }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { result = false, message = ex.Message });
+            }
             catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new
