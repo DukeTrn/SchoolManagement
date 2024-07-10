@@ -243,12 +243,12 @@ namespace SchoolManagement.Service
         }
 
 
-        public async ValueTask<List<TimetableDisplayModel>> GetTimetablesByTeacherAccountIdAsync(Guid accountId)
+        public async ValueTask<List<TimetableDisplayModel>> GetTimetablesByTeacherAccountIdAsync(Guid accountId, string semesterId)
         {
             try
             {
                 var timetables = await _context.TimetableEntities
-                    .Where(t => t.Assignment.Teacher.AccountId == accountId)
+                    .Where(t => t.Assignment.Teacher.AccountId == accountId && t.Assignment.SemesterId == semesterId)
                     .Include(t => t.Assignment)
                         .ThenInclude(a => a.Class)
                     .Include(t => t.Assignment)

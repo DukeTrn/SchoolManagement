@@ -232,13 +232,14 @@ namespace SchoolManagement.Web.Controllers
         /// (Cổng GV) Danh sách thời khóa biểu 
         /// </summary>
         /// <param name="accountId"></param>
+        /// <param name="semesterId"></param>
         /// <returns></returns>
-        [HttpGet("timetable/teacher/{accountId}/list")]
-        public async Task<IActionResult> GetTimetablesByTeacherAccountId(Guid accountId)
+        [HttpGet("timetable/teacher/{accountId}/{semesterId}/list")]
+        public async Task<IActionResult> GetTimetablesByTeacherAccountId(Guid accountId, string semesterId)
         {
             try
             {
-                var timetables = await _timetableService.GetTimetablesByTeacherAccountIdAsync(accountId);
+                var timetables = await _timetableService.GetTimetablesByTeacherAccountIdAsync(accountId, semesterId);
                 return Ok(timetables);
             }
             catch (Exception ex)
