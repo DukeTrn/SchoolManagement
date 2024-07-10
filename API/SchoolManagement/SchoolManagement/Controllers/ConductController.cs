@@ -97,7 +97,7 @@ namespace SchoolManagement.Web.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPut("{id}")]
-        public async ValueTask<ActionResult> UpdateConduct(Guid id, [FromForm] ConductUpdateModel model)
+        public async ValueTask<ActionResult> UpdateConduct(Guid id, [FromBody] ConductUpdateModel model)
         {
             try
             {

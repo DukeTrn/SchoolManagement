@@ -219,7 +219,7 @@ const DepartmentDetail = () => {
 						type="edit"
 						departmentId={id as string}
 						refreshData={refreshData}
-						disable={isDisableButton}
+						disable={false}
 					/>
 				</div>
 			</div>

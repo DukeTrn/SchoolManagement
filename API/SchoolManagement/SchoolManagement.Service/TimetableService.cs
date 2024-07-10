@@ -5,6 +5,7 @@ using SchoolManagement.Database;
 using SchoolManagement.Entity;
 using SchoolManagement.Model;
 using SchoolManagement.Service.Intention;
+using System.Xml;
 
 namespace SchoolManagement.Service
 {
@@ -49,7 +50,7 @@ namespace SchoolManagement.Service
                     throw new NotFoundException(errorMessage);
                 }
                 var assignment = await _context.AssignmentEntities
-                                .FirstOrDefaultAsync(a => a.ClassId == model.ClassId 
+                                .FirstOrDefaultAsync(a => a.ClassId == model.ClassId
                                         && a.SemesterId == model.SemesterId
                                         && a.SubjectId == model.SubjectId);
 
@@ -95,19 +96,38 @@ namespace SchoolManagement.Service
             {
                 _logger.LogInformation($"Updating timetable with ID {timetableId}.");
 
-                // Tìm kiếm timetable với ID tương ứng
-                var existingTimetable = await _context.TimetableEntities.FindAsync(timetableId);
+                var existingTimetable = await _context.TimetableEntities
+                    .Include(t => t.Assignment)
+                    .FirstOrDefaultAsync(t => t.TimetableId == timetableId);
                 if (existingTimetable == null)
                 {
                     _logger.LogWarning($"Timetable with ID {timetableId} not found.");
-                    throw new NotFoundException("Timetable not found.");
+                    throw new NotFoundException("Không tìm thấy thời khóa biểu này");
+                }
+                if (existingTimetable.Assignment == null)
+                {
+                    _logger.LogWarning($"Assignment for timetable with ID {timetableId} not found.");
+                    throw new NotFoundException("Không tìm thấy phân công giảng dạy cho thời khóa biểu này");
                 }
 
-                // Cập nhật các thuộc tính của timetable
+                // Kiểm tra trùng lặp thời gian
+                var conflictTimetable = await _context.TimetableEntities
+                    .Where(t => t.Assignment.SemesterId == existingTimetable.Assignment.SemesterId
+                                && t.DayOfWeek == model.DayOfWeek
+                                && t.Period == model.Period
+                                && t.TimetableId != timetableId)
+                    .FirstOrDefaultAsync();
+
+                if (conflictTimetable != null)
+                {
+                    var errorMessage = "Thời khóa biểu bị trùng lịch.";
+                    _logger.LogWarning(errorMessage);
+                    throw new InvalidOperationException(errorMessage);
+                }
+
                 existingTimetable.DayOfWeek = model.DayOfWeek;
                 existingTimetable.Period = model.Period;
 
-                // Lưu các thay đổi vào cơ sở dữ liệu
                 _context.TimetableEntities.Update(existingTimetable);
                 await _context.SaveChangesAsync();
 
