@@ -9,7 +9,7 @@ namespace SchoolManagement.Service.Intention
         ValueTask DeleteTimetableAsync(Guid timetableId);
         ValueTask<TimetableDisplayModel> GetTimetableByIdAsync(Guid timetableId);
         ValueTask<List<TimetableDisplayModel>> GetTimetablesByClassIdAsync(string classId, string semesterId);
-        ValueTask<List<TimetableDisplayModel>> GetTimetablesByTeacherAccountIdAsync(Guid accountId);
+        ValueTask<List<TimetableDisplayModel>> GetTimetablesByTeacherAccountIdAsync(Guid accountId, string semesterId);
 
     }
 }
