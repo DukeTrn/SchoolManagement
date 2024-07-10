@@ -24,6 +24,12 @@ interface IAddTeacher {
 	departmentId: string;
 	teacherIds: string[];
 }
+interface IPromoteTeacher {
+	departmentId: string;
+	headId: string;
+	firstDeputyId: string;
+	secondDeputyId: string;
+}
 export const getAllDepartment = (body: {
 	pageSize: number;
 	pageNumber: number;
@@ -51,4 +57,8 @@ export const addTeacherDepartment = (body: IAddTeacher) => {
 
 export const deleteTeacherDepartment = (body: IAddTeacher) => {
 	return http.post("department/remove-teachers", body);
+};
+
+export const promoteTeacherDepartment = (body: IPromoteTeacher) => {
+	return http.post("department/promote-teachers", body);
 };

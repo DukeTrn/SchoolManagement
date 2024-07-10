@@ -1,6 +1,7 @@
 import {
 	addTeacherDepartment,
 	getTeacherDepartment,
+	promoteTeacherDepartment,
 } from "@/apis/department.api";
 import { MultiSelect } from "@/components/multiselect/MultiSelect";
 import { Button } from "@/components/ui/button";
@@ -18,8 +19,16 @@ import {
 	departmentDetailSchema,
 } from "@/utils/schema/department.schema";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import {
+	Select,
+	SelectContent,
+	SelectGroup,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 
 interface IPanelProps {
 	refreshData: (message: string) => void;
@@ -50,8 +59,15 @@ export function Create(props: IPanelProps) {
 			fullName: string;
 		}[]
 	>([]);
+	const [lead, setLead] = useState<string>("");
+	const [sublead1, setSublead1] = useState<string>("");
+	const [sublead2, setSublead2] = useState<string>("");
 
-	console.log("errors", errors);
+	useEffect(() => {
+		setLead("");
+		setSublead1("");
+		setSublead2("");
+	}, []);
 
 	const handleGetData = () => {
 		getTeacherDepartment().then((res) => {
@@ -71,6 +87,21 @@ export function Create(props: IPanelProps) {
 			refreshData("Thêm giáo viên vào bộ môn thành công");
 		});
 	});
+
+	const onEditSubmit = () => {
+		setLoading(true);
+		promoteTeacherDepartment({
+			departmentId: departmentId,
+			headId: lead,
+			firstDeputyId: sublead1,
+			secondDeputyId: sublead2,
+		}).then(() => {
+			setLoading(false);
+			reset(initValues);
+			setOpenSheet(false);
+			refreshData("Thay đổi giáo viên");
+		});
+	};
 
 	const list = teachers?.map((item) => ({
 		label: item?.fullName,
@@ -122,89 +153,97 @@ export function Create(props: IPanelProps) {
 				{type === "edit" && (
 					<div>
 						<div className="mb-8 mt-5">
-							<Label htmlFor="teacher" className="required ">
+							<Label htmlFor="lead" className="required">
 								Trưởng bộ môn
 							</Label>
-							<FormField
-								control={control}
-								name="teacher"
-								render={({ field }) => (
-									<FormItem className="mt-[2px] flex flex-col">
-										<MultiSelect
-											options={list}
-											onValueChange={field.onChange}
-											// handleRetrieve={handleGetData}
-											value={field.value}
-											placeholder="Thêm giáo viên"
-											variant="inverted"
-											animation={2}
-											maxCount={0}
-											width={335}
-											errorMessage={
-												errors.teacher?.message!
-											}
-										/>
-									</FormItem>
-								)}
-							/>
+							<div className="mb-5 mt-2 flex">
+								<Select
+									value={lead}
+									onValueChange={(value) => setLead(value)}
+								>
+									<SelectTrigger className="w-[200px]">
+										<SelectValue placeholder="Chọn giáo viên" />
+									</SelectTrigger>
+									<SelectContent className="w-full">
+										<SelectGroup>
+											{list?.map((i) => (
+												<SelectItem
+													value={i.value}
+													key={i.label}
+												>
+													{i.label}
+												</SelectItem>
+											))}
+										</SelectGroup>
+									</SelectContent>
+								</Select>
+							</div>
 						</div>
 						<div className="mb-8 mt-5">
-							<Label htmlFor="teacher" className="required ">
+							<Label htmlFor="sublead1" className="required ">
 								Phó bộ môn 1
 							</Label>
-							<FormField
-								control={control}
-								name="teacher"
-								render={({ field }) => (
-									<FormItem className="mt-[2px] flex flex-col">
-										<MultiSelect
-											options={list}
-											onValueChange={field.onChange}
-											// handleRetrieve={handleGetData}
-											value={field.value}
-											placeholder="Thêm giáo viên"
-											variant="inverted"
-											animation={2}
-											maxCount={0}
-											width={335}
-											errorMessage={
-												errors.teacher?.message!
-											}
-										/>
-									</FormItem>
-								)}
-							/>
+							<div className="mb-5 mt-2 flex">
+								<Select
+									value={sublead1}
+									onValueChange={(value) =>
+										setSublead1(value)
+									}
+								>
+									<SelectTrigger className="w-[200px]">
+										<SelectValue placeholder="Chọn giáo viên" />
+									</SelectTrigger>
+									<SelectContent className="w-full">
+										<SelectGroup>
+											{list?.map((i) => (
+												<SelectItem
+													value={i.value}
+													key={i.label}
+												>
+													{i.label}
+												</SelectItem>
+											))}
+										</SelectGroup>
+									</SelectContent>
+								</Select>
+							</div>
 						</div>
 						<div className="mb-8 mt-5">
-							<Label htmlFor="teacher" className="required ">
+							<Label htmlFor="sublead2" className="required ">
 								Phó bộ môn 2
 							</Label>
-							<FormField
-								control={control}
-								name="teacher"
-								render={({ field }) => (
-									<FormItem className="mt-[2px] flex flex-col">
-										<MultiSelect
-											options={list}
-											onValueChange={field.onChange}
-											// handleRetrieve={handleGetData}
-											value={field.value}
-											placeholder="Thêm giáo viên"
-											variant="inverted"
-											animation={2}
-											maxCount={0}
-											width={335}
-											errorMessage={
-												errors.teacher?.message!
-											}
-										/>
-									</FormItem>
-								)}
-							/>
+							<div className="mb-5 mt-2 flex">
+								<Select
+									value={sublead2}
+									onValueChange={(value) =>
+										setSublead2(value)
+									}
+								>
+									<SelectTrigger className="w-[200px]">
+										<SelectValue placeholder="Chọn giáo viên" />
+									</SelectTrigger>
+									<SelectContent className="w-full">
+										<SelectGroup>
+											{list?.map((i) => (
+												<SelectItem
+													value={i.value}
+													key={i.label}
+												>
+													{i.label}
+												</SelectItem>
+											))}
+										</SelectGroup>
+									</SelectContent>
+								</Select>
+							</div>
 						</div>
 					</div>
 				)}
-				<Button className="w-full" onClick={onSubmit} loading={loading}>
+				<Button
+					className="w-full"
+					onClick={type === "create" ? onSubmit : onEditSubmit}
+					loading={loading}
+				>
 					Lưu
 				</Button>
 			</SheetContent>
