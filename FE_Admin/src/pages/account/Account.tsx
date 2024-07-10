@@ -16,7 +16,6 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { useDebounce } from "@/hooks";
 import DeleteConfirm from "@/components/deleteConfirm";
-import Header from "@/components/header";
 
 const roles = [
 	{ value: "1", label: "Admin" },
@@ -159,7 +158,9 @@ const Account = () => {
 
 	return (
 		<>
-			<Header title="QUẢN LÝ TÀI KHOẢN" />
+			<div className="mb-4 flex-1 text-2xl font-medium uppercase">
+				Quản lý tài khoản
+			</div>
 			<div className="mb-5 flex justify-between">
 				<div className="relative min-w-[295px]">
 					<Search className="absolute left-2 top-2.5 h-4 w-4 " />

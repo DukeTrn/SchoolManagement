@@ -4,6 +4,7 @@ import {
 	Select,
 	SelectContent,
 	SelectGroup,
+	SelectItem,
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
@@ -16,33 +17,59 @@ import {
 } from "@/components/ui/sheet";
 import { useEffect, useState } from "react";
 import { FormField } from "@/components/ui/form";
-import {
-	IMoveClassSchema,
-	moveCLassSchema,
-} from "@/utils/schema/assignment.schema";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import CommonInput from "@/components/input/CommonInput";
+import { IFilterSemesters } from "@/types/semester.type";
+import { getSemesterInAcademicYear } from "@/apis/semester.api";
+import {
+	conductSchema,
+	IConductSchema,
+} from "@/utils/schema/teacher.info.schema";
+import { getConductId, updateConduct } from "@/apis/conduct.api";
 
 interface IPanelProps {
 	selected?: any;
 	disable: boolean;
 	refreshData: (value: string, varient?: boolean) => void;
+	academicYear: string;
 }
 
-const initValues = {
-	classroom: "",
-};
+const initValues = {};
+
+const conductList = [
+	{
+		name: "",
+		value: 0,
+	},
+	{
+		name: "Tốt",
+		value: 1,
+	},
+	{
+		name: "Khá",
+		value: 2,
+	},
+	{
+		name: "Trung bình",
+		value: 3,
+	},
+	{
+		name: "Yếu",
+		value: 4,
+	},
+];
 
 const Conduct = (props: IPanelProps) => {
-	const { selected, disable } = props;
+	const { selected, disable, refreshData, academicYear } = props;
 	const [openSheet, setOpenSheet] = useState(false);
 	const [count, setCount] = useState(0);
 	const [loading, setLoading] = useState(false);
+	const [semesters, setSemesters] = useState<IFilterSemesters[]>([]);
 
-	const { handleSubmit, control, reset } = useForm<IMoveClassSchema>({
+	const { handleSubmit, control, reset, register } = useForm<IConductSchema>({
 		defaultValues: initValues,
-		resolver: yupResolver(moveCLassSchema),
+		resolver: yupResolver(conductSchema),
 	});
 
 	const resetState = () => {
@@ -59,25 +86,24 @@ const Conduct = (props: IPanelProps) => {
 
 	const handleGetData = () => {
 		if (count === 0) {
-			// getClassFilter(
-			// 	`${props.academicYear.slice(0, 4)} - ${
-			// 		Number(props.academicYear.slice(0, 4)) + 1
-			// 	}`,
-			// 	props.grade
-			// ).then((res) => {
-			// 	setClassroom(res?.data.data);
-			// });
-
+			getSemesterInAcademicYear(academicYear).then((res) => {
+				setSemesters(res?.data.data);
+			});
 			setCount((count) => count + 1);
 		}
 	};
 
-	const onSubmit = handleSubmit((data) => {
-		console.log(data);
+	console.log("select", selected);
+
+	const onSubmit = handleSubmit(async (data) => {
 		setLoading(true);
-		// updateAssignment(selected?.assignmentId, data?.classroom).then(() => {
-		// 	refreshData("Chuyển lớp thành công!");
-		// });
+		const conduct = await getConductId(selected?.studentId, data?.semester);
+		await updateConduct(
+			{ conductType: Number(data?.conduct), feedback: data?.comment },
+			conduct?.data.conductId
+		);
+		setLoading(false);
+		refreshData("Cập nhật thành công!");
 	});
 
 	return (
@@ -93,31 +119,31 @@ const Conduct = (props: IPanelProps) => {
 				</SheetHeader>
 
 				<div className="mt-5">
-					<Label htmlFor="classroom" className="required">
+					<Label htmlFor="semester" className="required">
 						Học kỳ
 					</Label>
 					<div className="mt-1">
 						<FormField
 							control={control}
-							name="classroom"
+							name="semester"
 							render={({ field }) => (
 								<Select
 									value={field.value}
 									onValueChange={field.onChange}
 								>
 									<SelectTrigger className="w-full">
-										<SelectValue placeholder="20191" />
+										<SelectValue placeholder="Chọn học kỳ" />
 									</SelectTrigger>
 									<SelectContent className="w-full">
 										<SelectGroup>
-											{/* {classroom?.map((i) => (
+											{semesters?.map((i) => (
 												<SelectItem
-													value={i.classId}
-													key={i.classId}
+													value={i.semesterId}
+													key={i.semesterId}
 												>
-													{i.className}
+													{i.semesterName}
 												</SelectItem>
-											))} */}
+											))}
 										</SelectGroup>
 									</SelectContent>
 								</Select>
@@ -126,31 +152,31 @@ const Conduct = (props: IPanelProps) => {
 					</div>
 				</div>
 				<div className="mt-5">
-					<Label htmlFor="classroom" className="required">
+					<Label htmlFor="conduct" className="required">
 						Hạnh kiểm
 					</Label>
 					<div className="mt-1">
 						<FormField
 							control={control}
-							name="classroom"
+							name="conduct"
 							render={({ field }) => (
 								<Select
 									value={field.value}
 									onValueChange={field.onChange}
 								>
 									<SelectTrigger className="w-full">
-										<SelectValue placeholder="Tốt" />
+										<SelectValue placeholder="Chọn hạnh kiểm" />
 									</SelectTrigger>
 									<SelectContent className="w-full">
 										<SelectGroup>
-											{/* {classroom?.map((i) => (
+											{conductList?.map((i) => (
 												<SelectItem
-													value={i.classId}
-													key={i.classId}
+													value={i.value.toString()}
+													key={i.value}
 												>
-													{i.className}
+													{i.name}
 												</SelectItem>
-											))} */}
+											))}
 										</SelectGroup>
 									</SelectContent>
 								</Select>
@@ -160,15 +186,14 @@ const Conduct = (props: IPanelProps) => {
 				</div>
 
 				<div className="mt-5">
-					<Label htmlFor="email" className="required">
+					<Label htmlFor="comment" className="required">
 						Nhận xét
 					</Label>
 					<CommonInput
 						className="mt-[2px]"
-						name="email"
-						placeholder="Tốt"
-						// register={register}
-						// errorMessage={errors.email?.message}
+						name="comment"
+						placeholder=""
+						register={register}
 					/>
 				</div>
 

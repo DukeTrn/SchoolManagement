@@ -145,6 +145,7 @@ export default function TeacherHomeroomDetail() {
 						selected={selectedRow}
 						disable={isDisableButton}
 						refreshData={refreshData}
+						academicYear={state?.academicYear}
 					/>
 
 					<Button

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { getStudyStudentDetail } from "@/apis/study.api";
 import { useLocation, useNavigate } from "react-router-dom";
-import Pagination from "@/components/pagination";
 import { ColumnDef } from "@tanstack/react-table";
 import { IClass } from "@/types/study.type";
 import { TableDetails } from "@/components/table/Table";
@@ -14,9 +13,8 @@ const StudyStudentDetail = () => {
 	const navigation = useNavigate();
 	const state = location?.state;
 	const [loading, setLoading] = useState<boolean>(false);
-	const [pageSize, setPageSize] = useState<number>(10);
-	const [pageNumber, setPageNumber] = useState<number>(1);
-	const [totalPage] = useState<number>(1);
+	const [pageSize] = useState<number>(10);
+	const [pageNumber] = useState<number>(1);
 	const [student, setStudent] = useState<any>([]);
 	const [point, setPoint] = useState<any>();
 	const columns: ColumnDef<IClass>[] = [

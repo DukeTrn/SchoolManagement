@@ -54,3 +54,10 @@ export const getAllFilterSemester = () =>
 	http.get<ISuccessGetResponseApi<IFilterSemesters[]>>(
 		"semester/filter/allsemesters"
 	);
+
+export const getSemesterInAcademicYear = (academicYear: string) =>
+	http.get<ISuccessGetResponseApi<IFilterSemesters[]>>(
+		`semester/filter/semesters?academicYear=${encodeURIComponent(
+			academicYear
+		)}`
+	);

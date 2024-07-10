@@ -126,7 +126,7 @@ const Assignment = () => {
 	return (
 		<>
 			<div className="mb-4 text-2xl font-medium">
-				QUẢN LÝ PHÂN CÔNG GIẢNG DẠY
+				QUẢN LÝ MÔN HỌC
 			</div>
 			<div className="mb-5 flex justify-between">
 				<div className="relative min-w-[295px]">
