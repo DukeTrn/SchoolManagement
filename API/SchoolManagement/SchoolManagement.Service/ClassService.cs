@@ -143,7 +143,7 @@ namespace SchoolManagement.Service
                         AcademicYear = c.AcademicYear,
                         Grade = c.Grade,
                         TotalStudents = _context.ClassDetailEntities.Count(s => s.ClassId == c.ClassId)
-                    });
+                    }).OrderByDescending(c => c.AcademicYear);
 
                 // Lấy tổng số bản ghi
                 var totalCount = await query.CountAsync();
@@ -202,7 +202,7 @@ namespace SchoolManagement.Service
                         SubjectName = a.Subject.SubjectName,
                         TotalStudents = a.Class.ClassDetails.Count
                     })
-                    .Distinct(); // Loại bỏ các lớp trùng lặp trong trường hợp giáo viên dạy nhiều môn cùng lớp;
+                    .Distinct().OrderByDescending(c => c.AcademicYear); // Loại bỏ các lớp trùng lặp trong trường hợp giáo viên dạy nhiều môn cùng lớp;
 
                 int pageNumber = queryModel.PageNumber != null && queryModel.PageNumber.Value > 0 ? queryModel.PageNumber.Value : 1;
                 int pageSize = queryModel.PageSize != null && queryModel.PageSize.Value > 0 ? queryModel.PageSize.Value : 10;

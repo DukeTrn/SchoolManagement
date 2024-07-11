@@ -70,7 +70,7 @@ export function Create(props: IPanelProps) {
 	}, []);
 
 	const handleGetData = () => {
-		getTeacherDepartment().then((res) => {
+		getTeacherDepartment(departmentId).then((res) => {
 			setTeachers(res?.data?.data);
 		});
 	};
@@ -161,20 +161,38 @@ export function Create(props: IPanelProps) {
 									value={lead}
 									onValueChange={(value) => setLead(value)}
 								>
-									<SelectTrigger className="w-[200px]">
+									<SelectTrigger className="">
 										<SelectValue placeholder="Chọn giáo viên" />
 									</SelectTrigger>
 									<SelectContent className="w-full">
 										<SelectGroup>
-											{list?.map((i) => (
-												<SelectItem
-													value={i.value}
-													key={i.label}
-												>
-													{i.label}
-												</SelectItem>
-											))}
+											{list
+												?.filter(
+													(item) =>
+														item.value !==
+															sublead1 &&
+														item.value !== sublead2
+												)
+												.map((i) => (
+													<SelectItem
+														value={i.value}
+														key={i.label}
+													>
+														{i.label}
+													</SelectItem>
+												))}
 										</SelectGroup>
+										<Button
+											className="w-full px-2"
+											variant="secondary"
+											size="sm"
+											onClick={(e) => {
+												e.stopPropagation();
+												setLead("");
+											}}
+										>
+											Hoàn tác
+										</Button>
 									</SelectContent>
 								</Select>
 							</div>
@@ -190,20 +208,37 @@ export function Create(props: IPanelProps) {
 										setSublead1(value)
 									}
 								>
-									<SelectTrigger className="w-[200px]">
+									<SelectTrigger className="">
 										<SelectValue placeholder="Chọn giáo viên" />
 									</SelectTrigger>
 									<SelectContent className="w-full">
 										<SelectGroup>
-											{list?.map((i) => (
-												<SelectItem
-													value={i.value}
-													key={i.label}
-												>
-													{i.label}
-												</SelectItem>
-											))}
+											{list
+												?.filter(
+													(item) =>
+														item.value !== lead &&
+														item.value !== sublead2
+												)
+												.map((i) => (
+													<SelectItem
+														value={i.value}
+														key={i.label}
+													>
+														{i.label}
+													</SelectItem>
+												))}
 										</SelectGroup>
+										<Button
+											className="w-full px-2"
+											variant="secondary"
+											size="sm"
+											onClick={(e) => {
+												e.stopPropagation();
+												setSublead1("");
+											}}
+										>
+											Hoàn tác
+										</Button>
 									</SelectContent>
 								</Select>
 							</div>
@@ -219,20 +254,37 @@ export function Create(props: IPanelProps) {
 										setSublead2(value)
 									}
 								>
-									<SelectTrigger className="w-[200px]">
+									<SelectTrigger className="">
 										<SelectValue placeholder="Chọn giáo viên" />
 									</SelectTrigger>
 									<SelectContent className="w-full">
 										<SelectGroup>
-											{list?.map((i) => (
-												<SelectItem
-													value={i.value}
-													key={i.label}
-												>
-													{i.label}
-												</SelectItem>
-											))}
+											{list
+												?.filter(
+													(item) =>
+														item.value !== lead &&
+														item.value !== sublead1
+												)
+												.map((i) => (
+													<SelectItem
+														value={i.value}
+														key={i.label}
+													>
+														{i.label}
+													</SelectItem>
+												))}
 										</SelectGroup>
+										<Button
+											className="w-full px-2"
+											variant="secondary"
+											size="sm"
+											onClick={(e) => {
+												e.stopPropagation();
+												setSublead2("");
+											}}
+										>
+											Hoàn tác
+										</Button>
 									</SelectContent>
 								</Select>
 							</div>

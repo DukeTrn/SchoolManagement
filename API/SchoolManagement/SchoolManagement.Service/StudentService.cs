@@ -544,6 +544,7 @@ namespace SchoolManagement.Service
                         TotalStudents = cd.Class.ClassDetails.Count,
                         AcademicYear = cd.Class.AcademicYear
                     })
+                    .OrderByDescending(c => c.AcademicYear)
                     .ToListAsync();
 
                 _logger.LogInformation("Successfully retrieved {ClassCount} classes for student with account ID {AccountId}.", studentClasses.Count, accountId);
