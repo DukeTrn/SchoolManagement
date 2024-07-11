@@ -115,6 +115,7 @@ export default function Create(props: IPanelProps) {
 						register={register}
 						errorMessage={errors.grade?.message}
 						placeholder="Ví dụ: 10"
+						disabled={type == "edit"}
 					/>
 				</div>
 				<div>

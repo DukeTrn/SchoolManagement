@@ -86,8 +86,8 @@ export function Panel(props: IPanelProps) {
 
 		file && formData.append("avatar", file);
 		formData.append(
-			"teacherId",
-			Math.floor(Math.random() * 1000).toString()
+			"teacherId", data?.teacherId
+			// Math.floor(Math.random() * 1000).toString()
 		);
 		formData.append("fullName", data?.fullName);
 		formData.append("dob", new Date(data?.dob).toISOString());
