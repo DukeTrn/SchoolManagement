@@ -427,6 +427,26 @@ namespace SchoolManagement.Service
             }
         }
 
+        public async ValueTask<IEnumerable<TeacherFilterModel>> GetTeachersInDeptFilter(string departmentId)
+        {
+            try
+            {
+                var allTeachersInDept = await _context.TeacherEntities.Where(t => t.DepartmentId == departmentId).ToListAsync();
+
+                var teacherFilterModels = allTeachersInDept.Select(t => new TeacherFilterModel
+                {
+                    TeacherId = t.TeacherId,
+                    FullName = t.FullName
+                }).ToList();
+
+                return teacherFilterModels;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An error occurred while getting teachers not in any department for filter. Error: {ex}", ex);
+                throw;
+            }
+        }
         #endregion
 
     }

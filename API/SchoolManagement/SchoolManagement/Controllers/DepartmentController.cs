@@ -1,9 +1,7 @@
-﻿using DocumentFormat.OpenXml.Bibliography;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using SchoolManagement.Common.Enum;
 using SchoolManagement.Common.Exceptions;
 using SchoolManagement.Model;
-using SchoolManagement.Service;
 using SchoolManagement.Service.Intention;
 
 namespace SchoolManagement.Web.Controllers
@@ -320,6 +318,30 @@ namespace SchoolManagement.Web.Controllers
             try
             {
                 var teachers = await _service.GetFilterTeachersNotInAnyDepartment();
+                return Ok(new
+                {
+                    result = true,
+                    data = teachers,
+                    messageType = 0
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(200, new { result = false, messageType = MessageType.Error, message = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Filter lấy giáo viên trong tổ
+        /// </summary>
+        /// /// <param name="departmentId"></param>
+        /// <returns></returns>
+        [HttpGet, Route("{departmentId}/teachers/filter")]
+        public async Task<IActionResult> GetTeachersInDeptFilter(string departmentId)
+        {
+            try
+            {
+                var teachers = await _service.GetTeachersInDeptFilter(departmentId);
                 return Ok(new
                 {
                     result = true,
