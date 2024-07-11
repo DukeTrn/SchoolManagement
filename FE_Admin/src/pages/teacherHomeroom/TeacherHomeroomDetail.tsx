@@ -3,7 +3,7 @@ import Pagination from "@/components/pagination";
 import { IClass } from "@/types/study.type";
 import { ColumnDef } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useDebounce } from "@/hooks";
 import { Search, ArrowLeft } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -66,15 +66,7 @@ export default function TeacherHomeroomDetail() {
 			header: "MSHS",
 			cell: ({ row }) => {
 				const studentId = row.original.studentId;
-				return (
-					<Link
-						to={row.getValue("studentId")}
-						state={row.original}
-						className="cursor-pointer font-medium text-blue-600 underline"
-					>
-						{studentId}
-					</Link>
-				);
+				return <div>{studentId}</div>;
 			},
 		},
 		{

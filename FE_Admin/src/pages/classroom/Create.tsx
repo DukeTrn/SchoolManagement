@@ -186,7 +186,7 @@ export function Create(props: IPanelProps) {
 								disabled={type == "edit"}
 							>
 								<SelectTrigger className="w-full">
-									<SelectValue placeholder="Chọn trạng thái" />
+									<SelectValue placeholder="Chọn khối" />
 								</SelectTrigger>
 								<SelectContent className="w-full">
 									<SelectGroup>
@@ -268,7 +268,7 @@ export function Create(props: IPanelProps) {
 								onValueChange={field.onChange}
 							>
 								<SelectTrigger className="w-full">
-									<SelectValue placeholder="Chọn giáo chủ nhiệm" />
+									<SelectValue placeholder="Chọn giáo viên chủ nhiệm" />
 								</SelectTrigger>
 								<SelectContent className="w-full">
 									<SelectGroup>

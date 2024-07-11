@@ -34,6 +34,7 @@ import TeacherStudentDetail from "@/pages/teacherClass/TeacherStudentDetail";
 import TeacherHomeroom from "@/pages/teacherHomeroom/TeacherHomeroom";
 import TeacherHomeroomDetail from "@/pages/teacherHomeroom/TeacherHomeroomDetail";
 import TeacherHomeroomSemester from "@/pages/teacherHomeroom/TeacherHomeroomSemester";
+import ChangePassword from "@/pages/changePassword";
 
 const ProtectedRoute = () => {
 	const { accoundId } = useAppSelector((state: IAppState) => state.users);
@@ -45,7 +46,9 @@ const RejectedRoute = () => {
 };
 
 const useRouteElement = () => {
-	const { role } = useAppSelector((state: IAppState) => state.users);
+	const { role, accoundId } = useAppSelector(
+		(state: IAppState) => state.users
+	);
 	const isAdmin = role === userRole.admin;
 	const isTeacher = role === userRole.gv || userRole.gvcn;
 	const isStudent = role === userRole.hs;
@@ -293,12 +296,8 @@ const useRouteElement = () => {
 					),
 				},
 				{
-					path: path.teacherHomeroomAcademicyear,
-					element: isTeacher && (
-						<MainLayout>
-							<div>zzz</div>
-						</MainLayout>
-					),
+					path: path.changePassword,
+					element: accoundId && <ChangePassword />,
 				},
 			],
 		},
