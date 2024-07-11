@@ -35,6 +35,9 @@ const path = {
 	studentClass: "/student-class",
 	studentClassDetail: "/student-class/:id",
 	studentClassDetailInfo: "/student-class/:id/:id1",
+
+	//changePassword
+	changePassword: "/changePassword",
 } as const;
 
 export default path;
