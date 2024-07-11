@@ -24,6 +24,7 @@ const statusList = [
 	{ value: "1", label: "Đang học" },
 	{ value: "2", label: "Đình chỉ" },
 	{ value: "3", label: "Nghỉ  học" },
+	{ value: "4", label: "Tốt nghiệp" },
 ];
 
 const columns: ColumnDef<IStudent>[] = [
