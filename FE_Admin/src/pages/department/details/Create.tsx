@@ -166,15 +166,33 @@ export function Create(props: IPanelProps) {
 									</SelectTrigger>
 									<SelectContent className="w-full">
 										<SelectGroup>
-											{list?.map((i) => (
-												<SelectItem
-													value={i.value}
-													key={i.label}
-												>
-													{i.label}
-												</SelectItem>
-											))}
+											{list
+												?.filter(
+													(item) =>
+														item.value !==
+															sublead1 &&
+														item.value !== sublead2
+												)
+												.map((i) => (
+													<SelectItem
+														value={i.value}
+														key={i.label}
+													>
+														{i.label}
+													</SelectItem>
+												))}
 										</SelectGroup>
+										<Button
+											className="w-full px-2"
+											variant="secondary"
+											size="sm"
+											onClick={(e) => {
+												e.stopPropagation();
+												setLead("");
+											}}
+										>
+											Hoàn tác
+										</Button>
 									</SelectContent>
 								</Select>
 							</div>
@@ -195,15 +213,32 @@ export function Create(props: IPanelProps) {
 									</SelectTrigger>
 									<SelectContent className="w-full">
 										<SelectGroup>
-											{list?.map((i) => (
-												<SelectItem
-													value={i.value}
-													key={i.label}
-												>
-													{i.label}
-												</SelectItem>
-											))}
+											{list
+												?.filter(
+													(item) =>
+														item.value !== lead &&
+														item.value !== sublead2
+												)
+												.map((i) => (
+													<SelectItem
+														value={i.value}
+														key={i.label}
+													>
+														{i.label}
+													</SelectItem>
+												))}
 										</SelectGroup>
+										<Button
+											className="w-full px-2"
+											variant="secondary"
+											size="sm"
+											onClick={(e) => {
+												e.stopPropagation();
+												setSublead1("");
+											}}
+										>
+											Hoàn tác
+										</Button>
 									</SelectContent>
 								</Select>
 							</div>
@@ -224,15 +259,32 @@ export function Create(props: IPanelProps) {
 									</SelectTrigger>
 									<SelectContent className="w-full">
 										<SelectGroup>
-											{list?.map((i) => (
-												<SelectItem
-													value={i.value}
-													key={i.label}
-												>
-													{i.label}
-												</SelectItem>
-											))}
+											{list
+												?.filter(
+													(item) =>
+														item.value !== lead &&
+														item.value !== sublead1
+												)
+												.map((i) => (
+													<SelectItem
+														value={i.value}
+														key={i.label}
+													>
+														{i.label}
+													</SelectItem>
+												))}
 										</SelectGroup>
+										<Button
+											className="w-full px-2"
+											variant="secondary"
+											size="sm"
+											onClick={(e) => {
+												e.stopPropagation();
+												setSublead2("");
+											}}
+										>
+											Hoàn tác
+										</Button>
 									</SelectContent>
 								</Select>
 							</div>
