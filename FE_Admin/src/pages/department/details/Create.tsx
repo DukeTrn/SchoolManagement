@@ -99,7 +99,7 @@ export function Create(props: IPanelProps) {
 			setLoading(false);
 			reset(initValues);
 			setOpenSheet(false);
-			refreshData("Thay đổi giáo viên");
+			refreshData("Bổ nhiệm giáo viên thành công");
 		});
 	};
 
