@@ -43,7 +43,17 @@ const MainLayout = ({ children }: IMainLayout) => {
 							</div>
 							<Nav links={navs} />
 						</div>
+
 						<div className="px-2">
+							<Button
+								variant="outline"
+								className="mb-5 w-full"
+								onClick={() => {
+									navigation(path.changePassword);
+								}}
+							>
+								Đổi mật khẩu
+							</Button>
 							<Button
 								variant="outline"
 								className="mb-5 w-full"
