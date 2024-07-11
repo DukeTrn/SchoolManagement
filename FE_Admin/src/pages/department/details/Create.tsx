@@ -70,7 +70,7 @@ export function Create(props: IPanelProps) {
 	}, []);
 
 	const handleGetData = () => {
-		getTeacherDepartment().then((res) => {
+		getTeacherDepartment(departmentId).then((res) => {
 			setTeachers(res?.data?.data);
 		});
 	};
@@ -161,7 +161,7 @@ export function Create(props: IPanelProps) {
 									value={lead}
 									onValueChange={(value) => setLead(value)}
 								>
-									<SelectTrigger className="w-[200px]">
+									<SelectTrigger className="">
 										<SelectValue placeholder="Chọn giáo viên" />
 									</SelectTrigger>
 									<SelectContent className="w-full">
@@ -190,7 +190,7 @@ export function Create(props: IPanelProps) {
 										setSublead1(value)
 									}
 								>
-									<SelectTrigger className="w-[200px]">
+									<SelectTrigger className="">
 										<SelectValue placeholder="Chọn giáo viên" />
 									</SelectTrigger>
 									<SelectContent className="w-full">
@@ -219,7 +219,7 @@ export function Create(props: IPanelProps) {
 										setSublead2(value)
 									}
 								>
-									<SelectTrigger className="w-[200px]">
+									<SelectTrigger className="">
 										<SelectValue placeholder="Chọn giáo viên" />
 									</SelectTrigger>
 									<SelectContent className="w-full">
