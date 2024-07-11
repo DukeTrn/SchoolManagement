@@ -343,7 +343,7 @@ namespace SchoolManagement.Service
             var account = await _context.AccountEntities
                 .Include(a => a.Student)
                 .Include(a => a.Teacher)
-                .FirstOrDefaultAsync(a => a.UserName == username);
+                .FirstOrDefaultAsync(a => a.UserName == username && a.IsActive);
 
             if (account == null || !BCrypt.Net.BCrypt.Verify(password, account.PasswordHashed))
             {

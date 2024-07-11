@@ -18,7 +18,7 @@ namespace SchoolManagement.Entity
         public string PhoneNumber { get; set; } = string.Empty;
         public string? Avatar { get; set; }
         public string Email { get; set; } = string.Empty;
-        public StudentStatusType Status { get; set; } // tình trạng học tập (đang học - đình chỉ - thôi học)
+        public StudentStatusType Status { get; set; } // tình trạng học tập (đang học - đình chỉ - thôi học - tốt nghiệp)
 
         // Parent information
         public string FatherName { get; set; } = string.Empty;

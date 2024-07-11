@@ -23,7 +23,7 @@ namespace SchoolManagement.Database
         public DbSet<AssignmentEntity> AssignmentEntities { get; set; } = null!;
         public DbSet<SemesterDetailEntity> SemesterDetailEntities { get; set; } = null!;
         public DbSet<TimetableEntity> TimetableEntities { get; set; }
-
+        public DbSet<AttendanceEntity> AttendanceEntities { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -137,6 +137,20 @@ namespace SchoolManagement.Database
                 .HasOne(t => t.Assignment)
                 .WithMany(a => a.Timetables)
                 .HasForeignKey(t => t.AssignmentId);
+
+            // Attendance N-1 ClassDetail
+            modelBuilder.Entity<AttendanceEntity>()
+                .HasOne(a => a.ClassDetail)
+                .WithMany(cd => cd.Attendances)
+                .HasForeignKey(a => a.ClassDetailId);
+
+            // Attendance N-1 Semester
+            modelBuilder.Entity<AttendanceEntity>()
+                .HasOne(a => a.Semester)
+                .WithMany(s => s.Attendances)
+                .HasForeignKey(a => a.SemesterId);
+
+            base.OnModelCreating(modelBuilder);
         }
     }
 }

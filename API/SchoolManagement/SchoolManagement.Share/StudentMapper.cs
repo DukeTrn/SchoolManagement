@@ -52,6 +52,8 @@ namespace SchoolManagement.Share
                     return "Đình chỉ";
                 case StudentStatusType.Inactive:
                     return "Nghỉ học";
+                case StudentStatusType.Graduated:
+                    return "Tốt nghiệp";
                 default:
                     return string.Empty;
             }

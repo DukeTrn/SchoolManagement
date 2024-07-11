@@ -593,7 +593,9 @@ namespace SchoolManagement.Service
                 case StudentStatusType.Suspended:
                     return "Đình chỉ";
                 case StudentStatusType.Inactive:
-                    return "Nghỉ học";
+                    return "Nghỉ học"; 
+                case StudentStatusType.Graduated:
+                    return "Tốt nghiệp";
                 default:
                     return string.Empty;
             }
