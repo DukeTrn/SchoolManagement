@@ -22,7 +22,7 @@ namespace SchoolManagement.Model
         public IFormFile? Avatar { get; set; }
         [Required(ErrorMessage = "Email is required")]
         public string? Email { get; set; }
-        public StudentStatusType Status { get; set; } // tình trạng học tập (đang học - đình chỉ - thôi học)
+        public StudentStatusType Status { get; set; } // tình trạng học tập (đang học - đình chỉ - thôi học - tốt nghiệp)
 
         // Parent information
         [Required(ErrorMessage = "Father name is required")]

@@ -23,5 +23,8 @@ namespace SchoolManagement.Entity
         public ICollection<AssessmentEntity> Assessments { get; set; } = null!;
         // 1-N Class-SemClass
         public ICollection<SemesterDetailEntity> SemClassIds { get; set; } = null!;
+
+        // 1-N Semester-Attendances
+        public ICollection<AttendanceEntity> Attendances { get; set; } = new List<AttendanceEntity>();
     }
 }

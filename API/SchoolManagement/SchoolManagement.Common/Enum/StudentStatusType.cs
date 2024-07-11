@@ -9,5 +9,7 @@ namespace SchoolManagement.Common.Enum
         Suspended = 2,
         [Description("Nghỉ học")]
         Inactive = 3,
+        [Description("Tốt nghiệp")]
+        Graduated = 4,
     }
 }

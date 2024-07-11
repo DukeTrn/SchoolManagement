@@ -18,5 +18,8 @@ namespace SchoolManagement.Entity
 
         // 1-N ClassDetail-Assessments
         public ICollection<AssessmentEntity> Assessments { get; set; } = null!;
+
+        // 1-N ClassDetail-Attendances
+        public ICollection<AttendanceEntity> Attendances { get; set; } = new List<AttendanceEntity>();
     }
 }
