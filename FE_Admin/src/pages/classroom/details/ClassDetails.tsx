@@ -40,6 +40,11 @@ const columns: ColumnDef<IStudentClassroom>[] = [
 		size: 30,
 	},
 	{
+		accessorKey: "number",
+		header: "STT",
+		cell: ({ row }) => <div>{row.getValue("number")}</div>,
+	},
+	{
 		accessorKey: "studentId",
 		header: "MSHS",
 		cell: ({ row }) => (

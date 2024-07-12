@@ -86,7 +86,8 @@ export function Panel(props: IPanelProps) {
 
 		file && formData.append("avatar", file);
 		formData.append(
-			"teacherId", data?.teacherId
+			"teacherId",
+			data?.teacherId
 			// Math.floor(Math.random() * 1000).toString()
 		);
 		formData.append("fullName", data?.fullName);
@@ -102,6 +103,7 @@ export function Panel(props: IPanelProps) {
 		data?.timeEnd &&
 			formData.append("timeEnd", new Date(data?.timeEnd).toISOString());
 		formData.append("timeStart", new Date(data?.timeStart).toISOString());
+		status && formData.append("status", status);
 
 		setLoading(true);
 
@@ -310,7 +312,7 @@ export function Panel(props: IPanelProps) {
 								<SelectGroup>
 									{statusList?.map((value) => (
 										<SelectItem
-											value={value.label}
+											value={value.value}
 											key={value.value}
 										>
 											{value.label}

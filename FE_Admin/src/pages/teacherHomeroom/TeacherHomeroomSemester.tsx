@@ -6,7 +6,10 @@ import { IClass } from "@/types/study.type";
 import { TableDetails } from "@/components/table/Table";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
-import { getTeacherSemesterScore } from "@/apis/teacher.info.api";
+import {
+	getTeacherAcademicScore,
+	getTeacherSemesterScore,
+} from "@/apis/teacher.info.api";
 
 const TeacherHomeroomSemester = () => {
 	const location = useLocation();
@@ -50,14 +53,25 @@ const TeacherHomeroomSemester = () => {
 
 	const handleGetData = () => {
 		setLoading(true);
-		getTeacherSemesterScore(
-			state.grade,
-			state.semester,
-			state.classDetailId
-		).then((res) => {
-			setStudent(res.data?.data);
-			setLoading(false);
-		});
+		if (state?.academic) {
+			getTeacherAcademicScore(
+				state.grade,
+				state.semester,
+				state.classDetailId
+			).then((res) => {
+				setStudent(res.data?.data);
+				setLoading(false);
+			});
+		} else {
+			getTeacherSemesterScore(
+				state.grade,
+				state.semester,
+				state.classDetailId
+			).then((res) => {
+				setStudent(res.data?.data);
+				setLoading(false);
+			});
+		}
 	};
 
 	return (
@@ -94,7 +108,7 @@ const TeacherHomeroomSemester = () => {
 				<div className="mt-2 h-5 px-2 text-left align-middle text-sm font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">
 					Chú Thích
 				</div>
-				<div className="mt-2 h-5 px-2 text-left align-middle text-sm text-sm font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">
+				<div className="mt-2 h-5 px-2 text-left align-middle text-sm font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">
 					• ĐTBmhk: Điểm Trung Bình môn học kỳ
 				</div>
 				<Pagination

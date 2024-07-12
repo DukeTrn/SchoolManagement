@@ -12,6 +12,15 @@ import { getClassDetail } from "@/apis/classroom.api";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/components/ui/use-toast";
 import Conduct from "./Conduct";
+import { MultiSelect } from "@/components/multiselect/MultiSelect";
+import { StudentDetail } from "../student/StudentDetails";
+
+const statusList = [
+	{ value: "1", label: "Đang học" },
+	{ value: "2", label: "Đình chỉ" },
+	{ value: "3", label: "Nghỉ  học" },
+	{ value: "4", label: "Tốt nghiệp" },
+];
 
 export default function TeacherHomeroomDetail() {
 	const location = useLocation();
@@ -26,6 +35,7 @@ export default function TeacherHomeroomDetail() {
 	const [searchValue, setSearchValue] = useState("");
 	const [selectedRow, setSelectedRow] = useState<any>();
 	const { toast } = useToast();
+	const [selectedField, setSelectedField] = useState<string[]>([]);
 
 	const searchQuery = useDebounce(searchValue, 1500);
 	const handleChange = (value: any) => {
@@ -64,10 +74,9 @@ export default function TeacherHomeroomDetail() {
 		{
 			accessorKey: "studentId",
 			header: "MSHS",
-			cell: ({ row }) => {
-				const studentId = row.original.studentId;
-				return <div>{studentId}</div>;
-			},
+			cell: ({ row }) => (
+				<StudentDetail studentId={row.getValue("studentId")} />
+			),
 		},
 		{
 			accessorKey: "fullName",
@@ -90,7 +99,7 @@ export default function TeacherHomeroomDetail() {
 		searchValue: searchQuery,
 		pageSize: pageSize,
 		pageNumber: pageNumber,
-		status: [1, 2],
+		status: selectedField?.map((i) => Number(i)),
 	};
 	useEffect(() => {
 		handleGetData();
@@ -124,6 +133,28 @@ export default function TeacherHomeroomDetail() {
 				</Button>
 				<div className="mb-4 text-2xl font-medium">{`DANH SÁCH HỌC SINH LỚP HỌC ${state.className}`}</div>
 			</div>
+			<div className="mb-5 flex justify-between">
+				<div className="relative min-w-[295px]">
+					<Search className="absolute left-2 top-2.5 h-4 w-4 " />
+					<Input
+						width={300}
+						placeholder="Tìm kiếm"
+						className="pl-8"
+						onChange={(e) => setSearchValue(e.target?.value)}
+					/>
+				</div>
+				<MultiSelect
+					options={statusList}
+					onValueChange={setSelectedField}
+					handleRetrieve={handleGetData}
+					value={selectedField}
+					placeholder="Tình trạng học tập"
+					variant="inverted"
+					animation={2}
+					maxCount={0}
+					width={230}
+				/>
+			</div>
 			<div className="mb-5">
 				<div className="flex gap-2">
 					{/* <Create
@@ -152,6 +183,7 @@ export default function TeacherHomeroomDetail() {
 										classDetailId:
 											selectedRow.classDetailId,
 										fullName: selectedRow.fullName,
+										academic: false,
 									},
 								}
 							);
@@ -166,11 +198,12 @@ export default function TeacherHomeroomDetail() {
 								`/teacher-homeroom/${state.classId}/${state.academicYear}`,
 								{
 									state: {
-										semester: semester,
+										semester: state.academicYear,
 										grade: state.grade,
 										classDetailId:
 											selectedRow.classDetailId,
 										fullName: selectedRow.fullName,
+										academic: true,
 									},
 								}
 							);
@@ -179,15 +212,6 @@ export default function TeacherHomeroomDetail() {
 						Tổng kết
 					</Button>
 				</div>
-			</div>
-			<div className="relative mb-5 max-w-[300px]">
-				<Search className="absolute left-2 top-2.5 h-4 w-4 " />
-				<Input
-					width={300}
-					placeholder="Tìm kiếm"
-					className="pl-8"
-					onChange={(e) => setSearchValue(e.target?.value)}
-				/>
 			</div>
 			<div>
 				<TableDetails

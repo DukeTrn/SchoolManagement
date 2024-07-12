@@ -61,3 +61,6 @@ export const getSemesterInAcademicYear = (academicYear: string) =>
 			academicYear
 		)}`
 	);
+
+export const getAllAcademicYear = () =>
+	http.get<ISuccessGetResponseApi<string[]>>(`semester/filter/academicyears`);

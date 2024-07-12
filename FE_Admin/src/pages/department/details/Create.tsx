@@ -29,7 +29,13 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { getHeadOfDepartment } from "@/apis/teacher.info.api";
 
+const headRole = {
+	lead: 3,
+	sub1: 1,
+	sub2: 2,
+};
 interface IPanelProps {
 	refreshData: (message: string) => void;
 	departmentId: string;
@@ -70,9 +76,19 @@ export function Create(props: IPanelProps) {
 	}, []);
 
 	const handleGetData = () => {
-		getTeacherDepartment(departmentId).then((res) => {
-			setTeachers(res?.data?.data);
-		});
+		getTeacherDepartment(departmentId)
+			.then((res) => {
+				setTeachers(res?.data?.data);
+			})
+			.then(() => {
+				getHeadOfDepartment(departmentId).then((res1) => {
+					const role = res1.data.data?.[0]?.role;
+					const value = res1?.data?.data?.[0].teacherId;
+					if (role === headRole.lead) setLead(value);
+					if (role === headRole.sub1) setSublead1(value);
+					if (role == headRole.sub2) setSublead2(value);
+				});
+			});
 	};
 
 	const onSubmit = handleSubmit((data) => {

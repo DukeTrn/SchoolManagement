@@ -114,6 +114,7 @@ export function Panel(props: IPanelProps) {
 		formData.append("motherJob", data?.motherJob);
 		formData.append("motherPhoneNumber", data?.motherPhoneNumber);
 		data?.motherEmail && formData.append("motherEmail", data?.motherEmail);
+		status && formData.append("status", status);
 
 		setLoading(true);
 
@@ -279,9 +280,7 @@ export function Panel(props: IPanelProps) {
 					</div>
 					{type === "edit" && (
 						<div className="mb-5">
-							<div className="mb-1 font-semibold">
-								Tình trạng học tập
-							</div>
+							<Label className="mb-2">Tình trạng học tập</Label>
 							<Select
 								value={status}
 								onValueChange={(value) => setStatus(value)}
@@ -293,7 +292,7 @@ export function Panel(props: IPanelProps) {
 									<SelectGroup>
 										{statusList?.map((value) => (
 											<SelectItem
-												value={value.label}
+												value={value.value}
 												key={value.value}
 											>
 												{value.label}

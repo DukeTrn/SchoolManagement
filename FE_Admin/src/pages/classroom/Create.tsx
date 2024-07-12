@@ -3,6 +3,7 @@ import {
 	getFreeTeacher,
 	updateClass,
 } from "@/apis/classroom.api";
+import { getAllAcademicYear } from "@/apis/semester.api";
 import CommonInput from "@/components/input/CommonInput";
 import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/ui/form";
@@ -32,14 +33,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 
-const academicYears = [
-	"2019 - 2020",
-	"2020 - 2021",
-	"2021 - 2022",
-	"2022 - 2023",
-	"2023 - 2024",
-	"2024 - 2025",
-];
 interface IPanelProps {
 	type: "edit" | "create";
 	selected?: IClassroom | null;
@@ -62,6 +55,7 @@ export function Create(props: IPanelProps) {
 	const [count, setCount] = useState(0);
 	const [loading, setLoading] = useState(false);
 	const [freeTeacher, setFreeTeacher] = useState<IFreeTeacher[]>([]);
+	const [academicYears, setAcademicYears] = useState<string[]>([]);
 
 	const {
 		control,
@@ -80,6 +74,12 @@ export function Create(props: IPanelProps) {
 	useEffect(() => {
 		setCount(0);
 	}, [selected]);
+
+	useEffect(() => {
+		getAllAcademicYear().then((res) => {
+			setAcademicYears(res?.data?.data);
+		});
+	}, []);
 
 	useEffect(() => {
 		setFreeTeacher([]);

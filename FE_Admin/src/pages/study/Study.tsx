@@ -13,15 +13,7 @@ import { IStudy } from "@/types/study.type";
 import { Link } from "react-router-dom";
 import { TableDetails } from "@/components/table/Table";
 import Pagination from "@/components/pagination";
-
-const academicYears = [
-	"2019 - 2020",
-	"2020 - 2021",
-	"2021 - 2022",
-	"2022 - 2023",
-	"2023 - 2024",
-	"2024 - 2025",
-];
+import { getAllAcademicYear } from "@/apis/semester.api";
 
 const Study = () => {
 	const [selectedField, setSelectedField] = useState<string>("10");
@@ -29,10 +21,11 @@ const Study = () => {
 	const [pageSize, setPageSize] = useState<number>(10);
 	const [pageNumber, setPageNumber] = useState<number>(1);
 	const [totalPage] = useState<number>(1);
-	const [year, setYear] = useState<string>("2019 - 2020");
+	const [year, setYear] = useState<string>();
 	const [classroom, setClassroom] = useState<
 		{ classId: string; className: string; homeroomTeacherName: string }[]
 	>([]);
+	const [academicYears, setAcademicYears] = useState<string[]>([]);
 
 	const columns: ColumnDef<IStudy>[] = [
 		{
@@ -70,9 +63,16 @@ const Study = () => {
 		handleGetData();
 	}, [pageNumber, pageSize, selectedField, year]);
 
+	useEffect(() => {
+		getAllAcademicYear().then((res) => {
+			setAcademicYears(res?.data?.data);
+			setYear(res?.data?.data?.[0]);
+		});
+	}, []);
+
 	const handleGetData = () => {
 		setLoading(true);
-		getStudyInfo(year, Number(selectedField)).then((res) => {
+		getStudyInfo(year as string, Number(selectedField)).then((res) => {
 			setClassroom(res?.data?.data);
 			setLoading(false);
 		});

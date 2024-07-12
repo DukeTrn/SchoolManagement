@@ -25,6 +25,7 @@ type IHeadOfDepartmentInfo = {
 	role: number;
 	teacherId: string;
 	fullName: string;
+	departmentId?: string;
 };
 
 type IHomeroomTeacher = {
@@ -86,3 +87,10 @@ export const getTeacherSemesterScore = (
 	http.post(
 		`/assessment/${grade}/${semester}/${classDetailId}/semester-average`
 	);
+
+export const getTeacherAcademicScore = (
+	grade: number,
+	academic: string,
+	classDetailId: string
+) =>
+	http.post(`/assessment/${grade}/${academic}/${classDetailId}/year-average`);
