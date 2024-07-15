@@ -123,8 +123,6 @@ const DepartmentDetail = () => {
 	const searchQuery = useDebounce(searchValue, 1500);
 	const isDisableButton = selectedRows?.length === 0;
 
-	console.log(location);
-
 	useEffect(() => {
 		handleGetData();
 	}, [pageNumber, pageSize, searchQuery, id]);

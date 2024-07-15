@@ -80,8 +80,6 @@ const MoveClass = (props: IPanelProps) => {
 		}
 	};
 
-	console.log("select", selected);
-
 	const onSubmit = handleSubmit((data) => {
 		setLoading(true);
 		updateAssignment(selected?.assignmentId!, data?.classroom).then(() => {

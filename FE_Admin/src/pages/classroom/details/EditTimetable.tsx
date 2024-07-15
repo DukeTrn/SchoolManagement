@@ -129,8 +129,6 @@ export function EditTimeTable(props: IPanelProps) {
 			});
 	});
 
-	console.log("openEditSheet", openEditSheet);
-
 	return (
 		<Sheet open={openEditSheet} onOpenChange={setOpenEditSheet}>
 			<SheetTrigger asChild>

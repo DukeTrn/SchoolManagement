@@ -36,6 +36,7 @@ import TeacherHomeroomDetail from "@/pages/teacherHomeroom/TeacherHomeroomDetail
 import TeacherHomeroomSemester from "@/pages/teacherHomeroom/TeacherHomeroomSemester";
 import ChangePassword from "@/pages/changePassword";
 import Timetable from "@/pages/classroom/details/Timetable";
+import TeacherTimetable from "@/pages/teacherClass/TeacherTimetable";
 
 const ProtectedRoute = () => {
 	const { accoundId } = useAppSelector((state: IAppState) => state.users);
@@ -51,7 +52,7 @@ const useRouteElement = () => {
 		(state: IAppState) => state.users
 	);
 	const isAdmin = role === userRole.admin;
-	const isTeacher = role === userRole.gv || userRole.gvcn;
+	const isTeacher = role === userRole.gv || role === userRole.gvcn;
 	const isStudent = role === userRole.hs;
 
 	const routeElement = useRoutes([
@@ -297,8 +298,16 @@ const useRouteElement = () => {
 					),
 				},
 				{
-					path: path.timetable,
+					path: path.teacherTimetable,
 					element: isTeacher && (
+						<MainLayout>
+							<TeacherTimetable />
+						</MainLayout>
+					),
+				},
+				{
+					path: path.timetable,
+					element: isAdmin && (
 						<MainLayout>
 							<Timetable />
 						</MainLayout>
@@ -312,11 +321,7 @@ const useRouteElement = () => {
 		},
 		{
 			path: "*",
-			element: (
-				<MainLayout>
-					<NotFound />
-				</MainLayout>
-			),
+			element: <NotFound />,
 		},
 		{
 			path: "",

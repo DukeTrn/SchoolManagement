@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { IStudy } from "@/types/study.type";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { TableDetails } from "@/components/table/Table";
 import { IAppState, useAppSelector } from "@/redux/store";
 import { getTeacherClass } from "@/apis/teacher.info.api";
@@ -18,6 +18,7 @@ import { getAllFilterSemester } from "@/apis/semester.api";
 import { Button } from "@/components/ui/button";
 
 export default function TeacherClass() {
+	const navigation = useNavigate();
 	const [loading, setLoading] = useState<boolean>(false);
 	const { accoundId } = useAppSelector((state: IAppState) => state.users);
 	const [info, setInfo] = useState<any>();
@@ -88,10 +89,12 @@ export default function TeacherClass() {
 
 	useEffect(() => {
 		setLoading(true);
-		getTeacherClass(accoundId!, semester, initValue).then((res) => {
-			setInfo(res?.data.dataList);
-			setLoading(false);
-		});
+		if (semester) {
+			getTeacherClass(accoundId!, semester, initValue).then((res) => {
+				setInfo(res?.data.dataList);
+				setLoading(false);
+			});
+		}
 	}, [semester]);
 
 	return (
@@ -101,7 +104,17 @@ export default function TeacherClass() {
 			</div>
 
 			<div className="mb-5 flex justify-between">
-				<Button>Thời khóa biểu</Button>
+				<Button
+					onClick={() => {
+						navigation(`/teacher-class/timetable/${semester}`, {
+							state: {
+								semester: semester,
+							},
+						});
+					}}
+				>
+					Thời khóa biểu
+				</Button>
 				<Select
 					value={semester}
 					onValueChange={(value) => setSemester(value)}

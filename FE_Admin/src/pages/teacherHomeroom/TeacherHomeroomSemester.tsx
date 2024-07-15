@@ -21,7 +21,7 @@ const TeacherHomeroomSemester = () => {
 	const [totalPage] = useState<number>(1);
 	const [student, setStudent] = useState<any>([]);
 	// const [point, setPoint] = useState<any>();
-	console.log(state);
+
 	const columns: ColumnDef<IClass>[] = [
 		{
 			accessorKey: "subjectName",

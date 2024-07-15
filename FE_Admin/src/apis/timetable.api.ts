@@ -31,3 +31,11 @@ export const updateTimetable = (
 
 export const removeTimetable = (timetableId: string) =>
 	http.delete(`class/timetable/${timetableId}`);
+
+export const getTeacherTimetableList = (
+	accountId: string,
+	semesterId: string
+) =>
+	http.get<ITimetable[]>(
+		`class/timetable/teacher/${accountId}/${semesterId}/list`
+	);

@@ -93,8 +93,6 @@ const Conduct = (props: IPanelProps) => {
 		}
 	};
 
-	console.log("select", selected);
-
 	const onSubmit = handleSubmit(async (data) => {
 		setLoading(true);
 		const conduct = await getConductId(selected?.studentId, data?.semester);
