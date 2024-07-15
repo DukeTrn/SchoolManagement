@@ -35,6 +35,7 @@ import TeacherHomeroom from "@/pages/teacherHomeroom/TeacherHomeroom";
 import TeacherHomeroomDetail from "@/pages/teacherHomeroom/TeacherHomeroomDetail";
 import TeacherHomeroomSemester from "@/pages/teacherHomeroom/TeacherHomeroomSemester";
 import ChangePassword from "@/pages/changePassword";
+import Timetable from "@/pages/classroom/details/Timetable";
 
 const ProtectedRoute = () => {
 	const { accoundId } = useAppSelector((state: IAppState) => state.users);
@@ -292,6 +293,14 @@ const useRouteElement = () => {
 					element: isTeacher && (
 						<MainLayout>
 							<TeacherHomeroomSemester />
+						</MainLayout>
+					),
+				},
+				{
+					path: path.timetable,
+					element: isTeacher && (
+						<MainLayout>
+							<Timetable />
 						</MainLayout>
 					),
 				},

@@ -17,9 +17,10 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { IClassroom } from "@/types/classroom.type";
 import DeleteConfirm from "@/components/deleteConfirm";
+import { Button } from "@/components/ui/button";
 
 const columns: ColumnDef<IClassroom>[] = [
 	{
@@ -84,6 +85,7 @@ const columns: ColumnDef<IClassroom>[] = [
 ];
 
 const Classroom = () => {
+	const navigation = useNavigate();
 	const { toast } = useToast();
 	const [classes, setClasses] = useState<IClassroom[]>([]);
 	const [loading, setLoading] = useState<boolean>(false);
@@ -179,7 +181,7 @@ const Classroom = () => {
 				</Select>
 			</div>
 			<div className="mb-5 flex justify-between">
-				<div className="flex justify-between gap-2">
+				<div className="flex gap-2">
 					<Create
 						type="create"
 						disable={false}
@@ -195,6 +197,21 @@ const Classroom = () => {
 						disabled={isDisableButton}
 						onClick={handleDelete}
 					/>
+				</div>
+				<div>
+					<Button
+						disabled={isDisableButton}
+						onClick={() => {
+							navigation(
+								`/classroom/timetable/${selectedRows[0].classId}`,
+								{
+									state: selectedRows[0],
+								}
+							);
+						}}
+					>
+						Thời khoá biểu
+					</Button>
 				</div>
 			</div>
 			<div>

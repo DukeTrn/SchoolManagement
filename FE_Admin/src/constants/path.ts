@@ -18,6 +18,7 @@ const path = {
 	assignmentDetail: "assignment/:id",
 	conduct: "/conduct",
 	conductClass: "/conduct/:id",
+	timetable: "/classroom/timetable/:id",
 
 	//teacher
 	teacherInfo: "/teacher-info",
