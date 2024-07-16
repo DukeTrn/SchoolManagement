@@ -36,6 +36,7 @@ const path = {
 	studentClass: "/student-class",
 	studentClassDetail: "/student-class/:id",
 	studentClassDetailInfo: "/student-class/:id/:id1",
+	studentTimeTable: "/student-class/timetable/:id",
 
 	//changePassword
 	changePassword: "/changePassword",

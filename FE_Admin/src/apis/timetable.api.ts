@@ -39,3 +39,6 @@ export const getTeacherTimetableList = (
 	http.get<ITimetable[]>(
 		`class/timetable/teacher/${accountId}/${semesterId}/list`
 	);
+
+export const getStudentTimetableList = (classId: string, semesterId: string) =>
+	http.get<ITimetable[]>(`class/timetable/${classId}/${semesterId}/list`);

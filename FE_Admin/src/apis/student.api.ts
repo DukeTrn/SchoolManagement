@@ -12,6 +12,12 @@ interface IStudentBody {
 	status: number[];
 }
 
+interface IBodyStudentClassroom {
+	searchValue: string;
+	pageSize: number;
+	pageNumber: number;
+}
+
 export const getAllStudent = (body: IStudentBody) =>
 	http.post<ISuccessResponseApi<IStudentInfo[]>>("student/all", body);
 
@@ -53,3 +59,8 @@ export const StudentFilterDetail = (id: string) =>
 
 export const StudentClassDetail = (id: string) =>
 	http.get<ISuccessGetResponseApi<IStudent>>(`student/student/${id}/classes`);
+
+export const getStudentClassDetail = (
+	body: IBodyStudentClassroom,
+	classId: string
+) => http.post<ISuccessResponseApi<any>>(`classdetail/all/${classId}`, body);

@@ -1,4 +1,3 @@
-import { getStudyClassDetail } from "@/apis/study.api";
 import { TableDetails } from "@/components/table/Table";
 import Pagination from "@/components/pagination";
 import { IClass } from "@/types/study.type";
@@ -10,6 +9,7 @@ import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { getStudentClassDetail } from "@/apis/student.api";
 
 export default function StudentClassDetail() {
 	const location = useLocation();
@@ -29,8 +29,20 @@ export default function StudentClassDetail() {
 	const [pageNumber, setPageNumber] = useState<number>(1);
 	const [totalPage] = useState<number>(1);
 	const [searchValue, setSearchValue] = useState("");
+	const classId = state.classId;
 
 	const searchQuery = useDebounce(searchValue, 1500);
+
+	const renderStatus = (value: number) => {
+		switch (value) {
+			case 1:
+				return "Đang học";
+			case 2:
+				return "Đình chỉ";
+			case 3:
+				return "Nghỉ học";
+		}
+	};
 
 	const columns: ColumnDef<IClass>[] = [
 		{
@@ -67,9 +79,11 @@ export default function StudentClassDetail() {
 			minSize: 200,
 		},
 		{
-			accessorKey: "homeroomTeacherName",
+			accessorKey: "status",
 			header: "Tình trạng học tập",
-			cell: ({ row }) => <div>{row.getValue("homeroomTeacherName")}</div>,
+			cell: ({ row }) => (
+				<div>{renderStatus(row.getValue("status"))}</div>
+			),
 		},
 	];
 
@@ -77,6 +91,7 @@ export default function StudentClassDetail() {
 		searchValue: searchQuery,
 		pageSize: pageSize,
 		pageNumber: pageNumber,
+		status: [1, 2],
 	};
 	useEffect(() => {
 		handleGetData();
@@ -84,13 +99,8 @@ export default function StudentClassDetail() {
 
 	const handleGetData = () => {
 		setLoading(true);
-		getStudyClassDetail(
-			initValue,
-			state.grade,
-			semester,
-			state.classId
-		).then((res) => {
-			setStudent(res.data?.data.dataList);
+		getStudentClassDetail(initValue, state.classId).then((res) => {
+			setStudent(res.data?.dataList);
 			setLoading(false);
 		});
 	};
@@ -110,6 +120,20 @@ export default function StudentClassDetail() {
 					className="pl-8"
 					onChange={(e) => setSearchValue(e.target?.value)}
 				/>
+			</div>
+			<div className="mb-5">
+				<Button
+					onClick={() => {
+						navigation(`/student-class/timetable/${semester}`, {
+							state: {
+								semester: semester,
+								classId: classId,
+							},
+						});
+					}}
+				>
+					Thời khóa biểu
+				</Button>
 			</div>
 			<div>
 				<TableDetails
