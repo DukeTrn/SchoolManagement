@@ -76,10 +76,12 @@ const Conduct = () => {
 
 	const handleGetData = () => {
 		setLoading(true);
-		getConductInfo(Number(selectedField), semester).then((res) => {
-			setConduct(res?.data?.data);
-			setLoading(false);
-		});
+		if (semester) {
+			getConductInfo(Number(selectedField), semester).then((res) => {
+				setConduct(res?.data?.data);
+				setLoading(false);
+			});
+		}
 	};
 
 	return (
